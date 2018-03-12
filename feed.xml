@@ -6,9 +6,77 @@
 </description>
     <link>https://pnguyen.io/</link>
     <atom:link href="https://pnguyen.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 12 Mar 2018 08:52:58 +0800</pubDate>
-    <lastBuildDate>Mon, 12 Mar 2018 08:52:58 +0800</lastBuildDate>
+    <pubDate>Mon, 12 Mar 2018 10:07:52 +0800</pubDate>
+    <lastBuildDate>Mon, 12 Mar 2018 10:07:52 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>How Is This Blog Deployed?</title>
+        <description>&lt;p&gt;In this post, I’ll go through the pipeline that automatically picks up any change to my source code, builds and deploys to my Github Page.&lt;/p&gt;
+
+&lt;p&gt;Below is an overview of the pipeline:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/2018-03-12/github-page-pipeline.png&quot; alt=&quot;Github Page Pipeline&quot; title=&quot;Github Page Pipeline&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;There are 2 Github repositories involved:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll-material-bliss&lt;/code&gt;: contains all the source code of the blog (including Jekyll templates, Javascript source code written in React, etc). This repository is originally from &lt;a href=&quot;https://github.com/InsidiousMind/material-bliss-jekyll-theme&quot; title=&quot;material-bliss-jekyll-theme&quot;&gt;material-bliss-jekyll-theme&lt;/a&gt; and modified a bit by me.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;hpcsc.github.io&lt;/code&gt;: this is the &lt;code class=&quot;highlighter-rouge&quot;&gt;production&lt;/code&gt; Github page and is the target of the deployment. This repository contains static posts transformed by Jekyll, transpiled and bundled javascript, etc.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The process is triggered by any commit to &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll-material-bliss&lt;/code&gt;. &lt;code class=&quot;highlighter-rouge&quot;&gt;Travis&lt;/code&gt; listens, picks up the commit and starts building. Here’s a snippet of &lt;code class=&quot;highlighter-rouge&quot;&gt;.travis.yml&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;install:
+- env
+- &quot;./bin/ci-bundle-install.sh&quot;
+- &quot;./bin/ci-npm-install.sh&quot;
+script:
+- &quot;./build-prod.sh&quot;
+after_success:
+  - &quot;./bin/ci-commit-artifacts.sh&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In the &lt;code class=&quot;highlighter-rouge&quot;&gt;install&lt;/code&gt; phase, Travis prints out all environment variables available, installs Ruby &lt;code class=&quot;highlighter-rouge&quot;&gt;bundler&lt;/code&gt;, does &lt;code class=&quot;highlighter-rouge&quot;&gt;bundle install&lt;/code&gt;, and then &lt;code class=&quot;highlighter-rouge&quot;&gt;npm install&lt;/code&gt; in the CI agent.&lt;/p&gt;
+
+&lt;p&gt;In the &lt;code class=&quot;highlighter-rouge&quot;&gt;build&lt;/code&gt; phase (&lt;code class=&quot;highlighter-rouge&quot;&gt;script&lt;/code&gt; section), Travis CI agent generates Javascript files using &lt;code class=&quot;highlighter-rouge&quot;&gt;webpack&lt;/code&gt; in production mode, render some React components into Jekyll templates (.e.g. &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;Post/&amp;gt;&lt;/code&gt;) and finally invokes Jekyll to transform templates into static files. At the end of this phase, all of the build assets are generated into &lt;code class=&quot;highlighter-rouge&quot;&gt;public&lt;/code&gt; folder in CI agent.&lt;/p&gt;
+
+&lt;p&gt;The interesting part is in Travis &lt;code class=&quot;highlighter-rouge&quot;&gt;after_success&lt;/code&gt; script. If the build is successful, Travis invokes &lt;code class=&quot;highlighter-rouge&quot;&gt;ci-commit-artifacts.sh&lt;/code&gt; script to &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;deploy&quot;&lt;/code&gt; to &lt;code class=&quot;highlighter-rouge&quot;&gt;production&lt;/code&gt; Github Page. This script is originally from &lt;a href=&quot;https://github.com/nielsenramon/kickster/blob/master/snippets/travis/automated&quot;&gt;Kickster&lt;/a&gt; but it doesn’t suit my purpose (because it assumes the Github Page is of type &lt;code class=&quot;highlighter-rouge&quot;&gt;Project&lt;/code&gt; and deploys to &lt;code class=&quot;highlighter-rouge&quot;&gt;gh-pages&lt;/code&gt; branch instead of &lt;code class=&quot;highlighter-rouge&quot;&gt;master&lt;/code&gt;) so I modified it to do a few things:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Clone &lt;code class=&quot;highlighter-rouge&quot;&gt;hpcsc.github.io&lt;/code&gt; repository in a sub folder of current directory with the name &lt;code class=&quot;highlighter-rouge&quot;&gt;deploy-repository&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Copy artifacts from previous build step (&lt;code class=&quot;highlighter-rouge&quot;&gt;public&lt;/code&gt; folder) into &lt;code class=&quot;highlighter-rouge&quot;&gt;deploy-repository&lt;/code&gt; sub folder, override any file that exists in the destination:&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  rm -rf ./deploy-repository/assets
+  yes | cp -rf public/* ./deploy-repository
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Final step is to add the changes to Git, commit and push back to &lt;code class=&quot;highlighter-rouge&quot;&gt;hpcsc.github.io&lt;/code&gt;. All of these commits have commit message in the following format: &lt;code class=&quot;highlighter-rouge&quot;&gt;[TRAVIS][#$TRAVIS_BUILD_NUMBER][$GIT_COMMIT_SHORT_HASH] triggered by jekyll-material-bliss&lt;/code&gt;.&lt;/p&gt;
+
+    &lt;p&gt;Also note that instead of pushing to &lt;code class=&quot;highlighter-rouge&quot;&gt;https://github.com/hpcsc/hpcsc.github.io&lt;/code&gt;, this script pushes to &lt;code class=&quot;highlighter-rouge&quot;&gt;https://{github-personal-access-token}@github.com/hpcsc/hpcsc.github.io&lt;/code&gt; where &lt;code class=&quot;highlighter-rouge&quot;&gt;{github-personal-access-token}&lt;/code&gt; is decrypted and provided by Travis from &lt;code class=&quot;highlighter-rouge&quot;&gt;secure&lt;/code&gt; variable in &lt;code class=&quot;highlighter-rouge&quot;&gt;.travis.yml&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;After this step, the change is successfully deployed to Github Page and can be viewed at &lt;code class=&quot;highlighter-rouge&quot;&gt;hpcsc.github.io&lt;/code&gt;. However users will normally access my site through &lt;code class=&quot;highlighter-rouge&quot;&gt;Cloudfare CDN&lt;/code&gt; instead.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 12 Mar 2018 09:00:00 +0800</pubDate>
+        <link>https://pnguyen.io/posts/how-is-this-blog-deployed</link>
+        <guid isPermaLink="true">https://pnguyen.io/posts/how-is-this-blog-deployed</guid>
+        
+        <category>devops</category>
+        
+        <category>jekyll</category>
+        
+        <category>blog</category>
+        
+        
+        <category>devops,</category>
+        
+        <category>deployment</category>
+        
+      </item>
     
       <item>
         <title>Hello World</title>
@@ -21,7 +89,7 @@
   &lt;li&gt;Docker/Kubernetes&lt;/li&gt;
 &lt;/ul&gt;
 </description>
-        <pubDate>Sat, 03 Feb 2018 01:15:59 +0800</pubDate>
+        <pubDate>Fri, 02 Mar 2018 01:15:59 +0800</pubDate>
         <link>https://pnguyen.io/posts/hello-world</link>
         <guid isPermaLink="true">https://pnguyen.io/posts/hello-world</guid>
         

@@ -1,0 +1,87 @@
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>How Is This Blog Deployed?</title>
+  <meta name="description" content="In this post, I’ll go through the pipeline that automatically picks up any change to my source code, builds and deploys to my Github Page.">
+  
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+  <link type="text/css" rel="stylesheet" href="/assets/main-45e55f15b77a84cbbc74a0dbb8a0975cafea38030cc80bcf80cdc808f0095c8f.css" integrity="sha384-VTIR5KjWTcy87K8hx5rJYyWXhSWzz4DipNxJWxJUlRryPTTrnvqz24GVxGuds+gx" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+  <link rel="canonical" href="https://pnguyen.io/posts/how-is-this-blog-deployed">
+  <link rel="alternate" type="application/rss+xml" title="David Nguyen" href="https://pnguyen.io/feed.xml">
+</head>
+
+
+<body><div class="single-post-content" id="single-post-content">
+    <div class="paper-wrapper" id="post-static-content" style="color:#fafafa;background-color:#303030;transition:all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;box-sizing:border-box;font-family:Roboto, sans-serif;-webkit-tap-highlight-color:rgba(0,0,0,0);box-shadow:0 14px 45px rgba(0, 0, 0, 0.25),
+         0 10px 18px rgba(0, 0, 0, 0.22);border-radius:2px;mui-prepared:;-webkit-transition:all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;-moz-transition:all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;-moz-box-sizing:border-box;">
+        <article class="post" itemscope="" itemtype="http://schema.org/BlogPosting">
+            <header class="post-header">
+                <h1 class="post-title" itemprop="name headline">How Is This Blog Deployed?</h1>
+                <p class="post-meta"><time datetime="{`2018-03-12T09:00:00+08:00`}" itemprop="datePublished">Mar 12, 2018</time></p>
+            </header>
+            <div class="post-content" itemprop="articleBody"><p>In this post, I’ll go through the pipeline that automatically picks up any change to my source code, builds and deploys to my Github Page.</p>
+
+<p>Below is an overview of the pipeline:</p>
+
+<p><img src="/assets/2018-03-12/github-page-pipeline.png" alt="Github Page Pipeline" title="Github Page Pipeline" /></p>
+
+<p>There are 2 Github repositories involved:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">jekyll-material-bliss</code>: contains all the source code of the blog (including Jekyll templates, Javascript source code written in React, etc). This repository is originally from <a href="https://github.com/InsidiousMind/material-bliss-jekyll-theme" title="material-bliss-jekyll-theme">material-bliss-jekyll-theme</a> and modified a bit by me.</li>
+  <li><code class="highlighter-rouge">hpcsc.github.io</code>: this is the <code class="highlighter-rouge">production</code> Github page and is the target of the deployment. This repository contains static posts transformed by Jekyll, transpiled and bundled javascript, etc.</li>
+</ul>
+
+<p>The process is triggered by any commit to <code class="highlighter-rouge">jekyll-material-bliss</code>. <code class="highlighter-rouge">Travis</code> listens, picks up the commit and starts building. Here’s a snippet of <code class="highlighter-rouge">.travis.yml</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>install:
+- env
+- "./bin/ci-bundle-install.sh"
+- "./bin/ci-npm-install.sh"
+script:
+- "./build-prod.sh"
+after_success:
+  - "./bin/ci-commit-artifacts.sh"
+</code></pre></div></div>
+
+<p>In the <code class="highlighter-rouge">install</code> phase, Travis prints out all environment variables available, installs Ruby <code class="highlighter-rouge">bundler</code>, does <code class="highlighter-rouge">bundle install</code>, and then <code class="highlighter-rouge">npm install</code> in the CI agent.</p>
+
+<p>In the <code class="highlighter-rouge">build</code> phase (<code class="highlighter-rouge">script</code> section), Travis CI agent generates Javascript files using <code class="highlighter-rouge">webpack</code> in production mode, render some React components into Jekyll templates (.e.g. <code class="highlighter-rouge">&lt;Post/&gt;</code>) and finally invokes Jekyll to transform templates into static files. At the end of this phase, all of the build assets are generated into <code class="highlighter-rouge">public</code> folder in CI agent.</p>
+
+<p>The interesting part is in Travis <code class="highlighter-rouge">after_success</code> script. If the build is successful, Travis invokes <code class="highlighter-rouge">ci-commit-artifacts.sh</code> script to <code class="highlighter-rouge">"deploy"</code> to <code class="highlighter-rouge">production</code> Github Page. This script is originally from <a href="https://github.com/nielsenramon/kickster/blob/master/snippets/travis/automated">Kickster</a> but it doesn’t suit my purpose (because it assumes the Github Page is of type <code class="highlighter-rouge">Project</code> and deploys to <code class="highlighter-rouge">gh-pages</code> branch instead of <code class="highlighter-rouge">master</code>) so I modified it to do a few things:</p>
+
+<ul>
+  <li>Clone <code class="highlighter-rouge">hpcsc.github.io</code> repository in a sub folder of current directory with the name <code class="highlighter-rouge">deploy-repository</code></li>
+  <li>
+    <p>Copy artifacts from previous build step (<code class="highlighter-rouge">public</code> folder) into <code class="highlighter-rouge">deploy-repository</code> sub folder, override any file that exists in the destination:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  rm -rf ./deploy-repository/assets
+  yes | cp -rf public/* ./deploy-repository
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Final step is to add the changes to Git, commit and push back to <code class="highlighter-rouge">hpcsc.github.io</code>. All of these commits have commit message in the following format: <code class="highlighter-rouge">[TRAVIS][#$TRAVIS_BUILD_NUMBER][$GIT_COMMIT_SHORT_HASH] triggered by jekyll-material-bliss</code>.</p>
+
+    <p>Also note that instead of pushing to <code class="highlighter-rouge">https://github.com/hpcsc/hpcsc.github.io</code>, this script pushes to <code class="highlighter-rouge">https://{github-personal-access-token}@github.com/hpcsc/hpcsc.github.io</code> where <code class="highlighter-rouge">{github-personal-access-token}</code> is decrypted and provided by Travis from <code class="highlighter-rouge">secure</code> variable in <code class="highlighter-rouge">.travis.yml</code></p>
+  </li>
+</ul>
+
+<p>After this step, the change is successfully deployed to Github Page and can be viewed at <code class="highlighter-rouge">hpcsc.github.io</code>. However users will normally access my site through <code class="highlighter-rouge">Cloudfare CDN</code> instead.</p>
+</div>
+            <div>
+                <div id="disqus_thread"></div>
+            </div>
+        </article>
+    </div>
+    <script type="text/javascript" src="https://pnguyen.disqus.com/embed.js"></script>
+</div>
+    <div id="root"></div>
+</body>
+<script src="https://pnguyen.io/assets/js/bundle.js" type="text/javascript"></script>
+
+</html>
