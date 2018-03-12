@@ -6,8 +6,8 @@
 </description>
     <link>https://pnguyen.io/</link>
     <atom:link href="https://pnguyen.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 12 Mar 2018 10:07:52 +0800</pubDate>
-    <lastBuildDate>Mon, 12 Mar 2018 10:07:52 +0800</lastBuildDate>
+    <pubDate>Mon, 12 Mar 2018 11:15:19 +0800</pubDate>
+    <lastBuildDate>Mon, 12 Mar 2018 11:15:19 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
     
       <item>
@@ -16,7 +16,7 @@
 
 &lt;p&gt;Below is an overview of the pipeline:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-03-12/github-page-pipeline.png&quot; alt=&quot;Github Page Pipeline&quot; title=&quot;Github Page Pipeline&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/2018-03-12-github-page-pipeline-4fec520df481e044fa871c0364acbffec1c5b1f37d4f9e4dff9cea18174974de.png&quot; alt=&quot;Github Page Pipeline&quot; title=&quot;Github Page Pipeline&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;There are 2 Github repositories involved:&lt;/p&gt;
 
