@@ -6,9 +6,133 @@
 </description>
     <link>https://pnguyen.io/</link>
     <atom:link href="https://pnguyen.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 12 Mar 2018 11:15:19 +0800</pubDate>
-    <lastBuildDate>Mon, 12 Mar 2018 11:15:19 +0800</lastBuildDate>
+    <pubDate>Sat, 31 Mar 2018 15:44:55 +0800</pubDate>
+    <lastBuildDate>Sat, 31 Mar 2018 15:44:55 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>A Sample GoCD Pipeline</title>
+        <description>&lt;p&gt;As a software developer at ThoughtWorks, I had always wanted to try out GoCD (an open source Continuous Integration and Continuous Delivery system originally developed by ThoughtWorks) but couldn’t find a chance until early of this week. My client team is currently using Bamboo from Atlassian as their CI server. Having played with Bamboo for the past one year at the client side, I feel the tool can do the job, but sometimes quite limited (.e.g. in integration among multiple build plans, modelling complicated value stream). My senior suggested me to give the client a Lunch &amp;amp; Learn session on GoCD and how powerful it is compared to Bamboo, and so I spent one whole afternoon setting up a sample pipeline (as code) for the demonstration. I’ll go through my setup in this post.&lt;/p&gt;
+
+&lt;p&gt;First, I created a docker-compose file (&lt;a href=&quot;https://github.com/hpcsc/gocd&quot;&gt;https://github.com/hpcsc/gocd&lt;/a&gt;) to easily spin up a GoCD server, 3 agents, 1 local Git repository (Gogs) for demonstration purpose.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-gocd-setup-local-3537c0e4c203c721b81198296e762dd638381bc3a8224e4ec26fbbeb263a52ac.png&quot; alt=&quot;GoCD Setup Local&quot; title=&quot;GoCD Setup Local&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Also note that the 3 agents have docker installed and share docker socket with host machine, so any image/container created by the agents will be available in the host machine.&lt;/p&gt;
+
+&lt;p&gt;Before we proceed, we need to clarify a common term that can have different meaning in GoCD, compared to other tools: pipeline. I’ll just shamelessly borrow the explaination from &lt;a href=&quot;https://www.gocd.org/getting-started/part-3/&quot;&gt;GoCD Getting Started Guide&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The Value Stream Map is the full end-to-end (from commits to production) view across pipelines, and maps to the concept of a “Continuous Delivery Pipeline” or “Deployment Pipeline”, in the book, “Continuous Delivery” by Jez Humble and David Farley.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;and&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;There are some unfortunate differences in naming between GoCD and the book. What is termed as a “Stage of a Deployment Pipeline” in the book is called a “Pipeline” in GoCD. The “Deployment Pipeline” (end-to-end) is called the “Value Stream Map”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;To follow GoCD terminology, I’ll call the whole end-to-end flow is Value Stream Map, which contain multiple GoCD pipelines.&lt;/p&gt;
+
+&lt;p&gt;And below is overview of the Value Stream Map that I created for demonstration. This Value Stream Map is designed to be as close as possible to the current build pipeline used at my client.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-gocd-sample-pipeline-41fc71f8654017a70afd69410ca6a5d449b92b71e84b1e83f36068dd0c66a273.png&quot; alt=&quot;&quot; title=&quot;GoCD Sample Pipeline&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It contains 3 Git materials:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/hpcsc/sample-pipeline-backend&quot;&gt;https://github.com/hpcsc/sample-pipeline-backend&lt;/a&gt;: backend build scripts and pipeline code&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/hpcsc/sample-pipeline-mobile&quot;&gt;https://github.com/hpcsc/sample-pipeline-mobile&lt;/a&gt;: mobile build scripts and pipeline code&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/hpcsc/sample-pipeline-system-tests&quot;&gt;https://github.com/hpcsc/sample-pipeline-system-tests&lt;/a&gt;: system tests build scripts and pipeline code&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Each repository has similar structure:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-backend-repo-organization-2831fbb82734260d998a95d724fda2029f714f6334c7485c8b5949fd9a0349c8.png&quot; alt=&quot;&quot; title=&quot;Backend Repository Organization&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;gocd-pipelines&lt;/code&gt;: GoCD pipeline as code (to be explained later)&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;scripts&lt;/code&gt;: build scripts, to be invoked by tasks in GoCD pipelines. These build scripts are organized into &lt;code class=&quot;highlighter-rouge&quot;&gt;commit&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;acceptance&lt;/code&gt; stages as in &lt;code class=&quot;highlighter-rouge&quot;&gt;Continuous Delivery&lt;/code&gt; book. Each script does nothing but just &lt;code class=&quot;highlighter-rouge&quot;&gt;echo&lt;/code&gt; some message and &lt;code class=&quot;highlighter-rouge&quot;&gt;sleep&lt;/code&gt; for several seconds, .e.g. this is &lt;code class=&quot;highlighter-rouge&quot;&gt;build.sh&lt;/code&gt;&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;c&quot;&gt;#!/bin/sh&lt;/span&gt;
+
+  &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;=========== Building Backend: Start ==============&quot;&lt;/span&gt;
+
+  &lt;span class=&quot;nb&quot;&gt;sleep &lt;/span&gt;5
+
+  &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;=========== Building Backend: Done  ==============&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The value stream map is triggered by a commit to either backend repository or mobile repository. The commit will trigger corresponding commit pipeline (&lt;code class=&quot;highlighter-rouge&quot;&gt;MobileCommitPhase&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;BackendCommitPhase&lt;/code&gt;). These pipelines contain 2 stages: &lt;code class=&quot;highlighter-rouge&quot;&gt;Build&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;Unit_Tests&lt;/code&gt; (which containing jobs and tasks that trigger corresponding scripts mentioned above)&lt;/p&gt;
+
+&lt;p&gt;Once the commit phase is done, deployment to dev environment is triggered. For mobile, this means 2 pipelines are run in parallel (&lt;code class=&quot;highlighter-rouge&quot;&gt;MobileDevDeploymentAndroid&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;MobileDevDeploymentIOS&lt;/code&gt;)&lt;/p&gt;
+
+&lt;p&gt;When all dev deployments are done, &lt;code class=&quot;highlighter-rouge&quot;&gt;SystemTests&lt;/code&gt; pipeline is triggered. In a real world pipeline, this will pull system tests tool and scripts from &lt;code class=&quot;highlighter-rouge&quot;&gt;system-tests&lt;/code&gt; repo, start backend, start mobile and run system tests against mobile which in turn hit backend server. The last stage of this pipeline is &lt;code class=&quot;highlighter-rouge&quot;&gt;Approve&lt;/code&gt; stage, which can only by triggered manually. This is to simulate in real scenario where the decision to deploy to UAT is decided by some business user.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-system-tests-pipeline-1a73ac15f081e149440fa5ec340279574f408a725c335f7239fcd84afe6c15a1.png&quot; alt=&quot;&quot; title=&quot;System Tests Pipeline&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once pipeline is approved, it will run 3 pipelines in parallel: &lt;code class=&quot;highlighter-rouge&quot;&gt;MobileUATDeploymentAndroid&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;MobileUATDeploymentIOS&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;MobileUATDeploymentBackend&lt;/code&gt;. Note that these pipelines use the same scripts as in Dev deployment pipelines, only differ by parameters passing to the scripts.&lt;/p&gt;
+
+&lt;p&gt;My sample value stream map stops here, but in real scenario, it can continue further to other environments if needed&lt;/p&gt;
+
+&lt;p&gt;Now I’m going to go through how pipeline as code is setup in GoCD. This is one of the features that I find quite attractive in GoCD. In other tools, pipeline as code is normally defined by a programming language/DSL, .e.g. Bamboo uses JVM languages like Java/Scala to define pipeline, TeamCity uses Kotlin. In GoCD, you can define pipeline as code in XML/JSON/YAML (or other format with additional plugins). These formats are declarative in nature, and are much easier for people to get started up, easy to read, require no complicated development environment (IDE, SDK) and therefore are ideal to setup pipeline as code. There might be a situation where XML/JSON/YAML cannot satisfy the requirements and you will need to use a general programming language to define pipelines, but those cases are rarer.&lt;/p&gt;
+
+&lt;p&gt;In this sample, I’m going to define the backend commit pipeline using YAML:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-sample-pipeline-as-code-b53257f35e63d1614ea5645cbb7dad390ebb8bae00988aa7a782b2903f5ec0f8.png&quot; alt=&quot;&quot; title=&quot;Sample Pipeline as Code&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I have highlighted in the screenshot the relevant places where pipeline, stage, job, and task are defined. It should be straightforward to read the remaining definition of the pipeline.&lt;/p&gt;
+
+&lt;p&gt;These pipelines are defined in files with extension &lt;code class=&quot;highlighter-rouge&quot;&gt;.gocd.yaml&lt;/code&gt;. The last part is to let GoCD know which repository the pipelines come from. This is done in GoCD &lt;code class=&quot;highlighter-rouge&quot;&gt;Config XML&lt;/code&gt; menu:&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;config-repos&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;config-repo&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;pluginId=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;yaml.config.plugin&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;backend-config-repo&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;git&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;url=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://git-repo:3000/gocd/backend.git&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/config-repo&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;config-repo&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;pluginId=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;yaml.config.plugin&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;mobile-config-repo&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;git&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;url=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://git-repo:3000/gocd/mobile.git&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/config-repo&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;config-repo&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;pluginId=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;yaml.config.plugin&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;system-tests-config-repo&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;git&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;url=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://git-repo:3000/gocd/system-tests.git&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/config-repo&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/config-repos&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;GoCD YAML plugin will watch these repositories and find all files with &lt;code class=&quot;highlighter-rouge&quot;&gt;.gocd.yaml&lt;/code&gt; extension for pipeline definition.&lt;/p&gt;
+
+&lt;p&gt;That’s all for the technical part. After playing with GoCD for a while, I find GoCD quite pleasant to use. Its UI and interaction flow are carefully considered to maximize user experience. One example of that is when clicking in a pipeline, I’m presented with a history of that pipeline instances, with stages that it contains and ability to rerun any stage in a single click:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-pipeline-history-ddc925b0f892c86cb8ffaf0aa8e429c0e419677142e026312e256923c4a5cb5d.png&quot; alt=&quot;&quot; title=&quot;GoCD Pipeline History&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;For me, this is a big plus compared to Bamboo, where you need to click into individual build to see which stage fails, and you can only re-run failed stage or re-run the whole build, not re-run any stage like GoCD.&lt;/p&gt;
+
+&lt;p&gt;Another nice feature of GoCD is Value Stream Map, which is the full end-to-end view across pipelines. It allows you to quickly see upstream dependencies, downstream pipelines for a pipeline instance.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-value-stream-map-6429a935ee00e7e460ff00b6338a1704cd71ff0b25abeeec12265729a19b4bd4.png&quot; alt=&quot;&quot; title=&quot;GoCD Value Stream Map&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In summary, GoCD is a powerful tool with rich feature set built in that allows you to easily model any complicated pipeline. I highly recommend it for projects of any size.&lt;/p&gt;
+</description>
+        <pubDate>Fri, 30 Mar 2018 23:55:00 +0800</pubDate>
+        <link>https://pnguyen.io/posts/a-sample-gocd-pipeline</link>
+        <guid isPermaLink="true">https://pnguyen.io/posts/a-sample-gocd-pipeline</guid>
+        
+        <category>devops</category>
+        
+        <category>deployment</category>
+        
+        <category>gocd</category>
+        
+        
+        <category>devops,</category>
+        
+        <category>deployment,</category>
+        
+        <category>gocd</category>
+        
+      </item>
     
       <item>
         <title>How Is This Blog Deployed?</title>
