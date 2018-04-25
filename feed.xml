@@ -6,8 +6,8 @@
 </description>
     <link>https://pnguyen.io/</link>
     <atom:link href="https://pnguyen.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 14 Apr 2018 13:59:46 +0800</pubDate>
-    <lastBuildDate>Sat, 14 Apr 2018 13:59:46 +0800</lastBuildDate>
+    <pubDate>Wed, 25 Apr 2018 23:06:50 +0800</pubDate>
+    <lastBuildDate>Wed, 25 Apr 2018 23:06:50 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
     
       <item>
@@ -70,7 +70,7 @@
 
 &lt;p&gt;Once the commit phase is done, deployment to dev environment is triggered. For mobile, this means 2 pipelines are run in parallel (&lt;code class=&quot;highlighter-rouge&quot;&gt;MobileDevDeploymentAndroid&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;MobileDevDeploymentIOS&lt;/code&gt;)&lt;/p&gt;
 
-&lt;p&gt;When all dev deployments are done, &lt;code class=&quot;highlighter-rouge&quot;&gt;SystemTests&lt;/code&gt; pipeline is triggered. In a real world pipeline, this will pull system tests tool and scripts from &lt;code class=&quot;highlighter-rouge&quot;&gt;system-tests&lt;/code&gt; repo, start backend, start mobile and run system tests against mobile which in turn hit backend server. The last stage of this pipeline is &lt;code class=&quot;highlighter-rouge&quot;&gt;Approve&lt;/code&gt; stage, which can only by triggered manually. This is to simulate in real scenario where the decision to deploy to UAT is decided by some business user.&lt;/p&gt;
+&lt;p&gt;When all dev deployments are done, &lt;code class=&quot;highlighter-rouge&quot;&gt;SystemTests&lt;/code&gt; pipeline is triggered. In a real world pipeline, this will pull system tests tool and scripts from &lt;code class=&quot;highlighter-rouge&quot;&gt;system-tests&lt;/code&gt; repo, start backend, start mobile and run system tests against mobile which in turn hit backend server. The last stage of this pipeline is &lt;code class=&quot;highlighter-rouge&quot;&gt;Approve&lt;/code&gt; stage, which can only be triggered manually. This is to simulate a real scenario where the decision to deploy to UAT is decided by some business user.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-system-tests-pipeline-1a73ac15f081e149440fa5ec340279574f408a725c335f7239fcd84afe6c15a1.png&quot; alt=&quot;&quot; title=&quot;System Tests Pipeline&quot; /&gt;&lt;/p&gt;
 

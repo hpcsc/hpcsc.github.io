@@ -82,7 +82,7 @@
 
 <p>Once the commit phase is done, deployment to dev environment is triggered. For mobile, this means 2 pipelines are run in parallel (<code class="highlighter-rouge">MobileDevDeploymentAndroid</code> and <code class="highlighter-rouge">MobileDevDeploymentIOS</code>)</p>
 
-<p>When all dev deployments are done, <code class="highlighter-rouge">SystemTests</code> pipeline is triggered. In a real world pipeline, this will pull system tests tool and scripts from <code class="highlighter-rouge">system-tests</code> repo, start backend, start mobile and run system tests against mobile which in turn hit backend server. The last stage of this pipeline is <code class="highlighter-rouge">Approve</code> stage, which can only by triggered manually. This is to simulate in real scenario where the decision to deploy to UAT is decided by some business user.</p>
+<p>When all dev deployments are done, <code class="highlighter-rouge">SystemTests</code> pipeline is triggered. In a real world pipeline, this will pull system tests tool and scripts from <code class="highlighter-rouge">system-tests</code> repo, start backend, start mobile and run system tests against mobile which in turn hit backend server. The last stage of this pipeline is <code class="highlighter-rouge">Approve</code> stage, which can only be triggered manually. This is to simulate a real scenario where the decision to deploy to UAT is decided by some business user.</p>
 
 <p><img src="/assets/2018-03-30-system-tests-pipeline-1a73ac15f081e149440fa5ec340279574f408a725c335f7239fcd84afe6c15a1.png" alt="" title="System Tests Pipeline" /></p>
 
