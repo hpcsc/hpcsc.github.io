@@ -6,8 +6,8 @@
 </description>
     <link>https://pnguyen.io/</link>
     <atom:link href="https://pnguyen.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 15 Jun 2018 00:42:00 +0800</pubDate>
-    <lastBuildDate>Fri, 15 Jun 2018 00:42:00 +0800</lastBuildDate>
+    <pubDate>Fri, 15 Jun 2018 01:03:06 +0800</pubDate>
+    <lastBuildDate>Fri, 15 Jun 2018 01:03:06 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
     
       <item>
@@ -251,7 +251,7 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;h2 id=&quot;summary&quot;&gt;Summary&lt;/h2&gt;
 
-&lt;p&gt;My key takeaway after implementing this pipeline is that: it’s important to have a clear seperation between Terraform infrastructure definition (which is equivalent to traditional software application/code) and Terraform environment specific configuration (containing Terraform state, environment specific &lt;code class=&quot;highlighter-rouge&quot;&gt;tfvars&lt;/code&gt;). This separation allows us to apply the same pipeline design techniques in traditional software build pipeline.&lt;/p&gt;
+&lt;p&gt;My key takeaway after implementing this pipeline: it’s important to have a clear seperation between Terraform infrastructure definition (which is equivalent to traditional software application/code) and Terraform environment specific configuration (containing Terraform state, environment specific &lt;code class=&quot;highlighter-rouge&quot;&gt;tfvars&lt;/code&gt;). This separation allows us to apply the same pipeline design techniques from traditional software build pipeline to build CD pipelines for infrastructure.&lt;/p&gt;
 </description>
         <pubDate>Wed, 13 Jun 2018 09:00:00 +0800</pubDate>
         <link>https://pnguyen.io/posts/terraform-pipeline</link>
