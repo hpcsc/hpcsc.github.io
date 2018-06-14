@@ -6,8 +6,8 @@
 </description>
     <link>https://pnguyen.io/</link>
     <atom:link href="https://pnguyen.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 13 Jun 2018 12:45:20 +0800</pubDate>
-    <lastBuildDate>Wed, 13 Jun 2018 12:45:20 +0800</lastBuildDate>
+    <pubDate>Fri, 15 Jun 2018 00:42:00 +0800</pubDate>
+    <lastBuildDate>Fri, 15 Jun 2018 00:42:00 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
     
       <item>
@@ -36,6 +36,16 @@
   &lt;li&gt;jq (for json processing)&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;p&gt;I also use &lt;a href=&quot;https://github.com/tomzo/gocd-yaml-config-plugin&quot;&gt;GoCD YAML Config Plugin&lt;/a&gt; to define GoCD pipelines in YAML.&lt;/p&gt;
+
+&lt;p&gt;Source code for this demonstration (including GoCD YAML pipelines) can be found in my github repositories:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/hpcsc/terraform-pipeline&quot;&gt;terraform-pipeline&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/hpcsc/terraform-pipeline-config&quot;&gt;terraform-pipeline-config&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/hpcsc/terraform-pipeline-packer&quot;&gt;terraform-pipeline-packer&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h2 id=&quot;pipeline-design&quot;&gt;Pipeline Design&lt;/h2&gt;
 
 &lt;p&gt;Here’s an overview of the pipeline:&lt;/p&gt;
@@ -52,7 +62,7 @@
   &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;terraform-pipeline-config&lt;/code&gt;: contains &lt;code class=&quot;highlighter-rouge&quot;&gt;tfvars&lt;/code&gt; files which are configuration for Terraform that are specific to each environment&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Separation of Terraform infrastructure definition and Terraform environment-specific configuration is on purpose. This separation closely resemble how we normally separate code and configuration (passed in through environment variables, property files, etc). In normal build pipeline, code is only built/compiled once and deployed to different environments with different configurations. Similarly, in this pipeline, Terraform infrastructure definition is processed once, stored in S3 and applied to different environments using different Terraform configurations.&lt;/p&gt;
+&lt;p&gt;Separation of Terraform infrastructure definition and Terraform environment-specific configuration closely resembles how we normally separate code and configuration in traditional software development. In traditional build pipelines, code is only built/compiled once and deployed to different environments with different configurations (in the form of environment variables applied at startup/run time, or property file configuration applied at deployment time etc). Similarly, in Terraform pipeline, Terraform infrastructure definition files are processed once, stored in S3 and subsequently applied to different environments using different Terraform environment-specific configurations.&lt;/p&gt;
 
 &lt;p&gt;As seen from the diagram above, the pipeline goes through 4 stages (4 pipelines in GoCD term): PackerCommit -&amp;gt; TerraformCommit -&amp;gt; TerraformStaging -&amp;gt; TerraformProduction&lt;/p&gt;
 
@@ -62,7 +72,7 @@
 
 &lt;h4 id=&quot;packercommit-stage&quot;&gt;PackerCommit Stage&lt;/h4&gt;
 
-&lt;p&gt;Here’s how the Packer builder is defined:&lt;/p&gt;
+&lt;p&gt;Packer file &lt;code class=&quot;highlighter-rouge&quot;&gt;nginx.json&lt;/code&gt; defines a single builder:&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &quot;variables&quot;: {
     &quot;build_label&quot;: &quot;&quot;
@@ -79,9 +89,9 @@
   ]
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;It takes in an environment variable BUILD_LABEL (to be passed in by GoCD) and uses that to tag AMI name. Other settings are just standard EC2 settings&lt;/p&gt;
+&lt;p&gt;Environment variable BUILD_LABEL (which is passed in by GoCD) is used to name final AMI. Other settings are just standard EC2 settings&lt;/p&gt;
 
-&lt;p&gt;The Packer uses shell and file provisioners to install nginx and copies custom index.html (stored in the same repository with Packer file) over:&lt;/p&gt;
+&lt;p&gt;Packer also uses shell and file provisioners to install nginx and copies custom index.html (stored in the same repository with Packer file) to AMI:&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &quot;provisioners&quot;: [
     {
@@ -108,8 +118,8 @@
 &lt;p&gt;In GoCD, the PackerCommit stage contains only 2 simple tasks:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Validate: calling to &lt;code class=&quot;highlighter-rouge&quot;&gt;packer validate&lt;/code&gt; to validate the syntax of Packer definition file&lt;/li&gt;
-  &lt;li&gt;Build: calling to &lt;code class=&quot;highlighter-rouge&quot;&gt;packer build&lt;/code&gt; to build an AMI, passing in GoCD pipeline label. After this step is successful, an AMI with label &lt;code class=&quot;highlighter-rouge&quot;&gt;nginx-terraform-pipeline-{LABEL}&lt;/code&gt; is created and stored in AWS&lt;/li&gt;
+  &lt;li&gt;Validate: calling to &lt;code class=&quot;highlighter-rouge&quot;&gt;packer validate&lt;/code&gt; to validate the syntax of Packer json file&lt;/li&gt;
+  &lt;li&gt;Build: calling to &lt;code class=&quot;highlighter-rouge&quot;&gt;packer build&lt;/code&gt; to build an AMI, passing in GoCD pipeline label. Output of this task is an AMI with label &lt;code class=&quot;highlighter-rouge&quot;&gt;nginx-terraform-pipeline-{LABEL}&lt;/code&gt; stored in AWS.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;Successful build of Packer image also triggers the next stage: &lt;code class=&quot;highlighter-rouge&quot;&gt;TerraformCommit&lt;/code&gt;&lt;/p&gt;
@@ -133,7 +143,7 @@
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;This definition uses a few security groups defined in &lt;code class=&quot;highlighter-rouge&quot;&gt;modules/nginx/security-group.tf&lt;/code&gt; that allow incoming port 80, 22, any outgoing connection. It also uses Terraform data source to dynamically look up AMI created by Packer in previous stage. This is definition of the data source:&lt;/p&gt;
+&lt;p&gt;This definition uses a few security groups defined in &lt;code class=&quot;highlighter-rouge&quot;&gt;modules/nginx/security-group.tf&lt;/code&gt; that allow incoming connection to ports 80, 22, and allow any outgoing connection. It also uses Terraform data source to dynamically look up the AMI created by Packer in previous stage. This is definition of the data source:&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;data &quot;aws_ami&quot; &quot;nginx_ami&quot; {
   most_recent = true
@@ -149,7 +159,7 @@
 
 &lt;p&gt;This data source simply filters AWS AMI for the most recent AMI created by current AWS account, with the name following pattern &lt;code class=&quot;highlighter-rouge&quot;&gt;nginx-terraform-pipeline-{BUILD_NUMBER}&lt;/code&gt;. The &lt;code class=&quot;highlighter-rouge&quot;&gt;packer_build_number&lt;/code&gt; variable is passed in by GoCD&lt;/p&gt;
 
-&lt;p&gt;We also use S3 to store Terraform state of each environment:&lt;/p&gt;
+&lt;p&gt;I also use S3 to store Terraform state of each environment:&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;terraform {
   backend &quot;s3&quot; {
@@ -160,7 +170,7 @@
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;This tells Terraform to store state in S3 bucket &lt;code class=&quot;highlighter-rouge&quot;&gt;terraform-pipeline-state&lt;/code&gt;, use dynamodb table &lt;code class=&quot;highlighter-rouge&quot;&gt;tf-state-lock&lt;/code&gt; to lock when there’s multiple concurrent edit. This definition ignores &lt;code class=&quot;highlighter-rouge&quot;&gt;key&lt;/code&gt; property (which is the name of the state file in S3 bucket) on purpose. The &lt;code class=&quot;highlighter-rouge&quot;&gt;key&lt;/code&gt; property is going to be passed in by each environment-specific pipeline later.&lt;/p&gt;
+&lt;p&gt;This tells Terraform to store state in S3 bucket &lt;code class=&quot;highlighter-rouge&quot;&gt;terraform-pipeline-state&lt;/code&gt; and use dynamodb table &lt;code class=&quot;highlighter-rouge&quot;&gt;tf-state-lock&lt;/code&gt; to lock the state when there are concurrent edits. This definition deliberately ignores required &lt;code class=&quot;highlighter-rouge&quot;&gt;key&lt;/code&gt; property (which is the name of the state file in S3 bucket). It is going to be passed in by each GoCD environment-specific pipeline.&lt;/p&gt;
 
 &lt;p&gt;The TerraformCommit pipeline consists of a few tasks:&lt;/p&gt;
 
@@ -169,15 +179,15 @@
   &lt;li&gt;Test: this is just a simple &lt;code class=&quot;highlighter-rouge&quot;&gt;echo&lt;/code&gt; at the moment. In a real world scenario, I would imagine a few things can be done in this task:
     &lt;ul&gt;
       &lt;li&gt;spin up an actual EC2 instance using provided Terraform files to quickly test that the files work. The instance can be destroyed immediately after verification&lt;/li&gt;
-      &lt;li&gt;or use some Terraform specific testing tools like &lt;code class=&quot;highlighter-rouge&quot;&gt;kitchen-terraform&lt;/code&gt; to test. I don’t have enough exposure to these tools to comment.&lt;/li&gt;
+      &lt;li&gt;and/or use some Terraform specific testing tools like &lt;code class=&quot;highlighter-rouge&quot;&gt;kitchen-terraform&lt;/code&gt; to test. I don’t have enough exposure to these tools to comment.&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
-  &lt;li&gt;Sync to S3: after Test step, we should have sufficient confidence that the Terraform files work. This step will copy those Terraform files to S3. We are treating the Terraform files as artifacts produced by the build process and need to be stored in some artifact repository. The same files can be used in subsequent stages. This will ensure that the same files are “promoted” through different environments. The artifacts are stored in S3 in different folders with the GoCD pipeline label (.e.g. 8.24) as name.&lt;/li&gt;
+  &lt;li&gt;Sync to S3: after Test step, we should have sufficient confidence that the Terraform files work. This step will copy those Terraform files (artifacts produced by the build process) to S3 which acts as an artifact repository. This step allows us to use same set of files in subsequent stages. Or in other words, Terraform files are “promoted” through different build stages. Each build has a separate folder in S3, named according to GoCD pipeline label (.e.g. 8.24).&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;terraformstaging-stage&quot;&gt;TerraformStaging stage&lt;/h4&gt;
 
-&lt;p&gt;First is the organization of &lt;code class=&quot;highlighter-rouge&quot;&gt;terraform-pipeline-config&lt;/code&gt; repository:&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;terraform-pipeline-config&lt;/code&gt; repository file layout:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-config-organization-2dc7c64d639c2615fa691a58fe1a3173542360e9d79b7fbf960c6103df649fdc.png&quot; alt=&quot;&quot; title=&quot;terraform-pipeline-config Organization&quot; /&gt;&lt;/p&gt;
 
@@ -191,7 +201,7 @@
 &lt;p&gt;This TerraformStaging stage does a few things:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Sync from S3: this task will download artifacts from previous pipeline to the agent. Since this pipeline has previous pipeline (TerraformCommit) as one of the materials, it has access to previous pipeline label through one of the environment variable (&lt;code class=&quot;highlighter-rouge&quot;&gt;GO_DEPENDENCY_LABEL_TERRAFORMMODULESYNCEDTOS3&lt;/code&gt;). We can use this environment variable to figure out which folder in S3 to download artifacts. This works but quite fragile and can be broken quite easily if the structure of previous pipeline label changes or if we restructure build pipeline. In a real world usage, I would use a more robust way to find out this folder name, .e.g. approaches from this article &lt;a href=&quot;https://support.thoughtworks.com/hc/en-us/articles/213254026-Pass-variables-to-other-pipelines&quot;&gt;Pass variables to other pipelines&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Sync from S3: this task downloads artifacts from previous stage to the agent. Since this GoCD pipeline has previous pipeline (TerraformCommit) as one of the materials, it has access to previous pipeline label through one of the environment variable (&lt;code class=&quot;highlighter-rouge&quot;&gt;GO_DEPENDENCY_LABEL_TERRAFORMMODULESYNCEDTOS3&lt;/code&gt;). We can use this environment variable to figure out which folder in S3 to download artifacts. This works but is quite fragile and is easily broken if format of previous pipeline label changes or if we restructure build pipeline. In a real world usage, I would use a more robust way to find out this folder name, .e.g. approaches from this article &lt;a href=&quot;https://support.thoughtworks.com/hc/en-us/articles/213254026-Pass-variables-to-other-pipelines&quot;&gt;Pass variables to other pipelines&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Terraform Init: this step configures the backend file to be used for Staging environment using &lt;code class=&quot;highlighter-rouge&quot;&gt;backend.tfvars&lt;/code&gt;&lt;/li&gt;
   &lt;li&gt;Terraform Apply: this is the actual step that makes changes to Staging EC2 server. Below is the script that is called by this task:&lt;/li&gt;
 &lt;/ul&gt;
@@ -204,7 +214,7 @@ PACKER_BUILD_NO=$(echo ${PIPELINE_LABEL} | cut -d '.' -f1)
 echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quot;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;This script simply extracts build number from first stage (PackerCommit) and passes it to &lt;code class=&quot;highlighter-rouge&quot;&gt;terraform apply&lt;/code&gt; as input variable. This is so that Terraform data source can look up correct AMI created by Packer&lt;/p&gt;
+&lt;p&gt;This script simply extracts build number from first stage (PackerCommit) and passes it to &lt;code class=&quot;highlighter-rouge&quot;&gt;terraform apply&lt;/code&gt; as input variable. This variable is used by Terraform data source to look up correct Packer AMI&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Smoke Test: this is a simple post-deployment test to make sure that the EC2 server is up and Nginx is working correctly. It extracts public ip of the created EC2 server by calling &lt;code class=&quot;highlighter-rouge&quot;&gt;terraform output&lt;/code&gt;:&lt;/li&gt;
@@ -213,13 +223,13 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PUBLIC_IP=$(terraform output -json | jq -r '.server_public_ip.value')
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;From this, it keeps calling &lt;code class=&quot;highlighter-rouge&quot;&gt;curl&lt;/code&gt; to the server every 2 seconds for 60 seconds. If server is not up after 60 seconds, it will fail the build&lt;/p&gt;
+&lt;p&gt;Then it keeps invoking &lt;code class=&quot;highlighter-rouge&quot;&gt;curl&lt;/code&gt; to that public IP every 2 seconds, for 60 seconds. If nginx is not up after 60 seconds, it will fail the build&lt;/p&gt;
 
-&lt;p&gt;If everything goes smoothly, you will see something like this in the build log for the first time build. It correctly identifies that a new EC2 server to be created.&lt;/p&gt;
+&lt;p&gt;If everything goes smoothly, we will see something like this in the build log for the first time build. It correctly identifies that a new EC2 server is to be created.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-staging-log-1491e49cd28fdcdc1a766e74f3b97a638a5389090cdaf027253edb5ddd1a9f9f.png&quot; alt=&quot;&quot; title=&quot;TerraformStaging first build log&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;And when I copy the public IP in the previous screenshot and paste it to browser:&lt;/p&gt;
+&lt;p&gt;Browsing to the public IP gives us this result:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-staging-nginx-aac2ffc2d041c2f8690f8c07c286cb7b6f98f4fc28696975cfea2cb40dcb0f94.png&quot; alt=&quot;&quot; title=&quot;TerraformStaging Nginx output&quot; /&gt;&lt;/p&gt;
 
@@ -229,19 +239,19 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;p&gt;This is almost exactly the same with TerraformStaging stage. The only difference is instead of using files from &lt;code class=&quot;highlighter-rouge&quot;&gt;staging&lt;/code&gt; folder, it uses &lt;code class=&quot;highlighter-rouge&quot;&gt;production&lt;/code&gt; folder&lt;/p&gt;
 
-&lt;p&gt;That should be all. Now we have a complete pipeline that can deploy any change in infrastructure (changes in Terraform files) or change in code (Packer files) to Staging and Production.&lt;/p&gt;
+&lt;p&gt;That should be all. Now we have a complete Terraform pipeline that can deploy any change in infrastructure (changes in Terraform files) or change in code/application (.e.g. change in html page, which triggers Packer to create a new AMI) to Staging and Production.&lt;/p&gt;
 
-&lt;p&gt;As the final demonstration of deploying changes in code to Staging and Production, I update the text in &lt;code class=&quot;highlighter-rouge&quot;&gt;index.html&lt;/code&gt; to &lt;code class=&quot;highlighter-rouge&quot;&gt;Triggered by a Code Change&lt;/code&gt; and make a commit. The whole pipeline is triggered again and Terraform correctly identifies that previous server needs to be teared down and a new server needs to be spinned up for the new change:&lt;/p&gt;
+&lt;p&gt;As the final demonstration of deploying changes in code to Staging and Production, I update the text in &lt;code class=&quot;highlighter-rouge&quot;&gt;index.html&lt;/code&gt; in &lt;code class=&quot;highlighter-rouge&quot;&gt;terraform-pipeline-packer&lt;/code&gt; repository to &lt;code class=&quot;highlighter-rouge&quot;&gt;Triggered by a Code Change&lt;/code&gt; and make a commit. The whole pipeline is triggered again and Terraform correctly identifies that previous server needs to be teared down and a new server needs to be spinned up for the new change:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-code-change-log-1cb593e39a40f3f516459e1f642c1fe5323b2df6663c5ce5ae7b6b2908f4f95f.png&quot; alt=&quot;&quot; title=&quot;Terraform Code Change output&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;And visiting the new Public IP will give us this page:&lt;/p&gt;
+&lt;p&gt;Visiting the new Public IP gives us this page:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-updated-staging-nginx-8578ff7ed3479a78ccd35a3c986323ea640524c214b3cd59d2b97a0a7f6c6b78.png&quot; alt=&quot;&quot; title=&quot;Updated Staging&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;summary&quot;&gt;Summary&lt;/h2&gt;
 
-&lt;p&gt;My takeaway after implementing this pipeline is that: we should have a clear seperation between Terraform infrastructure definition (which is equivalent to normal code) and Terraform environment specific configuration (containing Terraform state, environment specific &lt;code class=&quot;highlighter-rouge&quot;&gt;tfvars&lt;/code&gt;). With this separation, we can apply the same build pipeline technique used in normal build delivery pipeline&lt;/p&gt;
+&lt;p&gt;My key takeaway after implementing this pipeline is that: it’s important to have a clear seperation between Terraform infrastructure definition (which is equivalent to traditional software application/code) and Terraform environment specific configuration (containing Terraform state, environment specific &lt;code class=&quot;highlighter-rouge&quot;&gt;tfvars&lt;/code&gt;). This separation allows us to apply the same pipeline design techniques in traditional software build pipeline.&lt;/p&gt;
 </description>
         <pubDate>Wed, 13 Jun 2018 09:00:00 +0800</pubDate>
         <link>https://pnguyen.io/posts/terraform-pipeline</link>
