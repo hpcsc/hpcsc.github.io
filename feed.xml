@@ -6,9 +6,84 @@
 </description>
     <link>https://pnguyen.io/</link>
     <atom:link href="https://pnguyen.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 15 Jun 2018 01:03:06 +0800</pubDate>
-    <lastBuildDate>Fri, 15 Jun 2018 01:03:06 +0800</lastBuildDate>
+    <pubDate>Wed, 11 Jul 2018 13:59:44 +0800</pubDate>
+    <lastBuildDate>Wed, 11 Jul 2018 13:59:44 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>Speed up ZSH loading of custom functions</title>
+        <description>&lt;p&gt;I have been using zsh with Prezto for a few years and have always been conscious about what stuffs to put in my shell profile files like &lt;code class=&quot;highlighter-rouge&quot;&gt;.zshrc&lt;/code&gt; so that a new shell can start as fast as it can.&lt;/p&gt;
+
+&lt;p&gt;If comparing the startup time of my shell to shell startup time of most other people who I have worked with, my current startup time is not bad:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/2018-07-11-zsh-startup-before-f165c22f480f0ef6a0eefddd4b2c239115df6fd7fc7e92f16eb11a8957ef252c.png&quot; alt=&quot;&quot; title=&quot;zsh startup time before&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In average, it takes around 0.5s to start.&lt;/p&gt;
+
+&lt;p&gt;However today I manage to speed it up even further, using zsh autoloading of custom functions. The idea comes from this SOF answer: &lt;a href=&quot;https://unix.stackexchange.com/a/33898&quot;&gt;https://unix.stackexchange.com/a/33898&lt;/a&gt;. In short, when you use &lt;code class=&quot;highlighter-rouge&quot;&gt;autoload&lt;/code&gt; command with a file name, zsh will mark it to be loaded automatically upon its first reference. The content of the file is going to be function body and name of the file will be function name. &lt;code class=&quot;highlighter-rouge&quot;&gt;fpath&lt;/code&gt; variable contains the search path for files that can be marked to be loaded automatically upon first usage.&lt;/p&gt;
+
+&lt;p&gt;This feature can help to speed up my zsh startup time because I have quite a number of custom shell functions defined in a custom folder. Before this change, my &lt;code class=&quot;highlighter-rouge&quot;&gt;.zshrc&lt;/code&gt; sourced all these files when starting up, even though I may not use it in current shell session:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;for func_def in ~/.functions/*; do
+    source &quot;$func_def&quot;
+done
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;With autoloading feature, I can “lazy load” those custom functions and only load a function from the definition file whenever I use it for the first time. My &lt;code class=&quot;highlighter-rouge&quot;&gt;.zshrc&lt;/code&gt; calls &lt;code class=&quot;highlighter-rouge&quot;&gt;autoload&lt;/code&gt; to mark the custom functions to be loaded automatically (this call is not loading the actual files so will be much faster than using &lt;code class=&quot;highlighter-rouge&quot;&gt;source&lt;/code&gt;)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fpath=($fpath ~/.functions)
+autoload -Uz ~/.functions/**/*
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Here’s the resutl after using &lt;code class=&quot;highlighter-rouge&quot;&gt;autoload&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/2018-07-11-zsh-startup-after-1eb3b09eef981d6580f271aff8b0df295dcef8b59b4d9b959c748d8dcfc170b4.png&quot; alt=&quot;&quot; title=&quot;zsh startup time after&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It takes 0.3s now, that’s 40% faster than before.&lt;/p&gt;
+
+&lt;p&gt;However this change also introduces a difficulty to my dotfiles installation script. Before this change, I just need to source and export files containing those custom functions at the beginning of the installation script, the remaining of the script can use those exported functions easily. With &lt;code class=&quot;highlighter-rouge&quot;&gt;autoloading&lt;/code&gt;, each file now is expected to contain body of a function. Sourcing those files will execute those body immediately at sourcing time, which is not what I want. So I need to come up with an ugly trick to load these custom functions at the beginning of my dotfiles installation script:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;autoload_functions=(
+  execute
+  echo_with_color
+  is_macos
+  is_ubuntu
+  distro_name
+  #...
+)
+
+for f in &quot;${autoload_functions[@]}&quot;
+do
+  eval &quot;
+    function $f() {
+      $(cat ./link/common/zsh/.functions/misc/$f)
+    }
+  &quot;
+done
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This script basically &lt;code class=&quot;highlighter-rouge&quot;&gt;cat&lt;/code&gt; function body from those &lt;code class=&quot;highlighter-rouge&quot;&gt;autoload&lt;/code&gt; files, and uses &lt;code class=&quot;highlighter-rouge&quot;&gt;eval&lt;/code&gt; to define a function with the same name with the file&lt;/p&gt;
+</description>
+        <pubDate>Wed, 11 Jul 2018 09:00:00 +0800</pubDate>
+        <link>https://pnguyen.io/posts/speed-up-zsh-custom-functions</link>
+        <guid isPermaLink="true">https://pnguyen.io/posts/speed-up-zsh-custom-functions</guid>
+        
+        <category>misc</category>
+        
+        <category>shell</category>
+        
+        <category>zsh</category>
+        
+        <category>startup</category>
+        
+        <category>tips</category>
+        
+        
+        <category>misc,</category>
+        
+        <category>tips</category>
+        
+      </item>
     
       <item>
         <title>Terraform Pipeline</title>
