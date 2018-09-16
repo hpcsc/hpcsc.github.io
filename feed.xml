@@ -6,9 +6,261 @@
 </description>
     <link>https://pnguyen.io/</link>
     <atom:link href="https://pnguyen.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 08 Sep 2018 22:22:11 +0800</pubDate>
-    <lastBuildDate>Sat, 08 Sep 2018 22:22:11 +0800</lastBuildDate>
+    <pubDate>Sun, 16 Sep 2018 23:25:08 +0800</pubDate>
+    <lastBuildDate>Sun, 16 Sep 2018 23:25:08 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>An utility to switch AWS profiles</title>
+        <description>&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;If you are working with AWS frequently enough, you should be aware of AWS CLI and its 2 related configuration files:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;credentials file (default location is at &lt;code class=&quot;highlighter-rouge&quot;&gt;~/.aws/credentials&lt;/code&gt;): store credentials for different aws profiles&lt;/li&gt;
+  &lt;li&gt;config file (default location is at &lt;code class=&quot;highlighter-rouge&quot;&gt;~/.aws/config&lt;/code&gt;): store additional settings like region or more importantly the information about the AWS role that you can assume&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For people that need to switch back and forth among several AWS profiles like me (there are times when I have up to 10 profiles in credentials file), managing which account is the current one is a nightmare.
+Let’s go through some of the common ways to manage current AWS profile as highlighted in https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#config-settings-and-precedence&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Command line options: I don’t want to specify the profile in every command that I invoke&lt;/li&gt;
+  &lt;li&gt;Setting of environment variables (AWS_PROFILE, AWS_DEFAULT_PROFILE, etc): this approach only works with current terminal session. Once you open a new tab or re-open your terminal, you need to set it again. You can export it in your shell startup script (&lt;code class=&quot;highlighter-rouge&quot;&gt;.bashrc&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;.zshrc&lt;/code&gt; etc) but changing profile is troublesome (edit startup script and re-source it)&lt;/li&gt;
+  &lt;li&gt;CLI configuration file/AWS credentials file: need to manually edit those files, copy the credentials of the profile that you want to switch to and set to default profile credentials. This is tedious and repetitive.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;first-attempt&quot;&gt;First attempt&lt;/h3&gt;
+
+&lt;p&gt;I wrote a small shell script that uses fzf to switch among profiles:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;local pattern=${1}
+local selected_profile=$(cat ~/.aws/credentials | awk '/\[.+\]/{ print substr($0, 2, length($0) - 2) }' | fzf-tmux --height 30% --reverse -1 -0 --header 'Select AWS profile' --query &quot;$pattern&quot;)
+eval &quot;export AWS_DEFAULT_PROFILE=$selected_profile&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;What it does is just grepping all profile names in credentials file, pipe that to fzf for interactive selection and export &lt;code class=&quot;highlighter-rouge&quot;&gt;AWS_DEFAULT_PROFILE&lt;/code&gt; variable. This works but has the limitation of environment variable approach above (only last for current terminal session). This also doesn’t handle the case of assuming role in AWS.&lt;/p&gt;
+
+&lt;h3 id=&quot;second-attempt&quot;&gt;Second Attempt&lt;/h3&gt;
+
+&lt;p&gt;I then looked for librarys/tools that can parse ini file format (that credentials and config files use) but not many options for shell script. So I wrote a python script that manipulates directly the credentials/config files instead of just setting the environment variable. It works but significantly slower compared to the shell script (I can notice a few seconds delay after selecting a profile).&lt;/p&gt;
+
+&lt;p&gt;So that’s how I ended up with writing a CLI program in Golang to manage AWS profile. Coincidentally I also wanted to try writing something in Golang since I’m new to this language.&lt;/p&gt;
+
+&lt;h2 id=&quot;code-structure&quot;&gt;Code Structure&lt;/h2&gt;
+
+&lt;p&gt;Source code: &lt;a href=&quot;https://github.com/hpcsc/aws-profile-utils&quot;&gt;https://github.com/hpcsc/aws-profile-utils&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Example Usage:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/hpcsc/aws-profile-utils/master/aws-profile-utils.gif&quot; alt=&quot;&quot; title=&quot;demo&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Disclaimer: I’m a total noob in Golang&lt;/p&gt;
+
+&lt;p&gt;The application is pretty simple. Starting from &lt;code class=&quot;highlighter-rouge&quot;&gt;main.go&lt;/code&gt;, I created a map/dictionary of handlers, with the key is the command name (like &lt;code class=&quot;highlighter-rouge&quot;&gt;get&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;set&lt;/code&gt;) and the value is an instance of Handler interface:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type Handler interface {
+	Handle() (bool, string)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Each handler defines its own arguments (using &lt;code class=&quot;highlighter-rouge&quot;&gt;kingpin&lt;/code&gt;) and what to do when it’s invoked.&lt;/p&gt;
+
+&lt;p&gt;This is the function to create the handler map:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func createHandlerMap(app *kingpin.Application) map[string]handlers.Handler{
+	getHandler := handlers.NewGetHandler(app)
+	setHandler := handlers.NewSetHandler(app, nil, nil)
+	versionHandler := handlers.NewVersionHandler(app)
+
+	return map[string]handlers.Handler {
+		getHandler.SubCommand.FullCommand(): getHandler,
+		setHandler.SubCommand.FullCommand(): setHandler,
+		versionHandler.SubCommand.FullCommand(): versionHandler,
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;When the application is invoked with any command, the main function just needs to lookup the map based on command name and invoke the &lt;code class=&quot;highlighter-rouge&quot;&gt;Handle()&lt;/code&gt; function.&lt;/p&gt;
+
+&lt;p&gt;There are only 2 main commands and their handlers: &lt;code class=&quot;highlighter-rouge&quot;&gt;GetHandler&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;SetHandler&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;gethandler&quot;&gt;GetHandler&lt;/h3&gt;
+
+&lt;p&gt;This handler does a few things:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;inspects &lt;code class=&quot;highlighter-rouge&quot;&gt;config&lt;/code&gt; file, look for &lt;code class=&quot;highlighter-rouge&quot;&gt;default&lt;/code&gt; section, compare the values in that &lt;code class=&quot;highlighter-rouge&quot;&gt;default&lt;/code&gt; section with the values in other profiles in the same file&lt;/li&gt;
+  &lt;li&gt;if there is a matching, return that value as current profile&lt;/li&gt;
+  &lt;li&gt;if not, inspects &lt;code class=&quot;highlighter-rouge&quot;&gt;credentials&lt;/code&gt; file and do the same things&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The reason it needs to look info &lt;code class=&quot;highlighter-rouge&quot;&gt;config&lt;/code&gt; file before &lt;code class=&quot;highlighter-rouge&quot;&gt;credentials&lt;/code&gt; file is because &lt;code class=&quot;highlighter-rouge&quot;&gt;config&lt;/code&gt; file store configuration to assume a role and that will take precedence over &lt;code class=&quot;highlighter-rouge&quot;&gt;credentials&lt;/code&gt; setting.&lt;/p&gt;
+
+&lt;p&gt;The constructor function of &lt;code class=&quot;highlighter-rouge&quot;&gt;GetHandler&lt;/code&gt; just defines command name, flags that it supports and returns a struct with all necessary information for processing later:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func NewGetHandler(app *kingpin.Application) GetHandler {
+	subCommand := app.Command(&quot;get&quot;, &quot;get current AWS profile (that is set to default profile)&quot;)
+
+	credentialsFilePath := subCommand.Flag(&quot;credentials-path&quot;, &quot;Path to AWS Credentials file&quot;).Default(&quot;~/.aws/credentials&quot;).String()
+	configFilePath := subCommand.Flag(&quot;config-path&quot;, &quot;Path to AWS Config file&quot;).Default(&quot;~/.aws/config&quot;).String()
+
+	return GetHandler{
+		SubCommand: subCommand,
+		Arguments:   GetHandlerArguments{
+			CredentialsFilePath: credentialsFilePath,
+			ConfigFilePath: configFilePath,
+		},
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;When &lt;code class=&quot;highlighter-rouge&quot;&gt;GetHandler.Handle()&lt;/code&gt; is invoked, the handler parses the &lt;code class=&quot;highlighter-rouge&quot;&gt;config&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;credentials&lt;/code&gt; files to Golang ini files, iterates and compares values as mentioned above. Here’s snippet for &lt;code class=&quot;highlighter-rouge&quot;&gt;config&lt;/code&gt; file processing:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;defaultRoleArn := configDefaultSection.Key(&quot;role_arn&quot;).Value()
+defaultSourceProfile := configDefaultSection.Key(&quot;source_profile&quot;).Value()
+
+for _, section := range configFile.Sections() {
+  if strings.Compare(section.Name(), &quot;default&quot;) != 0 &amp;amp;&amp;amp;
+    section.Haskey(&quot;role_arn&quot;) &amp;amp;&amp;amp;
+    section.HasKey(&quot;source_profile&quot;) &amp;amp;&amp;amp;
+    strings.Compare(section.Key(&quot;role_arn&quot;).Value(), defaultRoleArn) == 0 &amp;amp;&amp;amp;
+    strings.Compare(section.Key(&quot;source_profile&quot;).Value(), defaultSourceProfile) == 0 {
+    return true, fmt.Sprintf(&quot;assuming %s\n&quot;, section.Name())
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Logic for &lt;code class=&quot;highlighter-rouge&quot;&gt;credentials&lt;/code&gt; is similar but it looks for &lt;code class=&quot;highlighter-rouge&quot;&gt;aws_access_key_id&lt;/code&gt; instead.&lt;/p&gt;
+
+&lt;h3 id=&quot;sethandler&quot;&gt;SetHandler&lt;/h3&gt;
+
+&lt;p&gt;This handler does a bit more work:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;get all profile names from both &lt;code class=&quot;highlighter-rouge&quot;&gt;credentials&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;config&lt;/code&gt; files&lt;/li&gt;
+  &lt;li&gt;pipe those profile names to fzf (invoked as a shell process) for user selection&lt;/li&gt;
+  &lt;li&gt;once a profile is selected:
+    &lt;ul&gt;
+      &lt;li&gt;if the selected profile is from credentials file:
+        &lt;ul&gt;
+          &lt;li&gt;set the default profile in credentials file with the credentials from selected profile&lt;/li&gt;
+          &lt;li&gt;clear the default profile in config file (if have)&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;if the selected profile is from config file:
+        &lt;ul&gt;
+          &lt;li&gt;set the default profile in config file with &lt;code class=&quot;highlighter-rouge&quot;&gt;role_arn&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;source_profile&lt;/code&gt; values of selected profile&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The code is straightforward, only a few things to highlight:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;The handler used to print the output message right in the &lt;code class=&quot;highlighter-rouge&quot;&gt;Handle()&lt;/code&gt; function after processing. But I find it difficult to test that so the handler now returns a tuple of boolean and string, indicating whether the operation is successful (and should exit with exit code 0) and what message it wants to display. The main function is the one that does the actual printing of the message. By this way I can invoke the handler in the test and verify the expected message easily:&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;success, message := handler.Handle()
+if !strings.EqualFold(message, &quot;&quot;) {
+  fmt.Println(message)
+}
+
+if success {
+  os.Exit(0)
+} else {
+  os.Exit(1)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;There are a few places that the handler causes side-effect like invoking fzf in a shell process and writing the updated config to file system. Again this is not so straightforward to test. I find mocking in Golang confusing and verbal so I tried to find alternative approach instead. I did a few searches on whether Golang has something like IO Monad like Haskell but unfortunately it doesn’t have. So in the end I settle with extracting those side-effect logic to functions and let constructor take in functions with those signature:&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func NewSetHandler(app *kingpin.Application, selectProfileFn SelectProfileFn, writeToFileFn WriteToFileFn) SetHandler {
+  // omitted
+
+  finalSelectProfileFn := selectProfileByFzf
+  if selectProfileFn != nil {
+    finalSelectProfileFn = selectProfileFn
+  }
+
+  finalWriteToFileFn := writeToFile
+  if writeToFileFn != nil {
+    finalWriteToFileFn = writeToFileFn
+  }
+
+  // omitted
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Here the constructor takes in 2 function parameters: one is used when fzf is invoked, the other is used when config is written to file system. If no arguments are provided for those functions, default functions (&lt;code class=&quot;highlighter-rouge&quot;&gt;selectProfileByFzf&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;writeToFile&lt;/code&gt;) are used instead.&lt;/p&gt;
+
+&lt;p&gt;I’m not entirely satisfied with this approach because the 2 function parameters are not used anywhere else except for the tests. And Golang doesn’t support function overloading or default parameter so all the clients that use this constructor function needs to pass in the value &lt;code class=&quot;highlighter-rouge&quot;&gt;nil&lt;/code&gt; if it doesn’t want to override the behavior of those functions.&lt;/p&gt;
+
+&lt;h3 id=&quot;versionhandler&quot;&gt;VersionHandler&lt;/h3&gt;
+
+&lt;p&gt;This handler is very simple. It just prints out a string with formatted &lt;code class=&quot;highlighter-rouge&quot;&gt;version&lt;/code&gt; variable. This &lt;code class=&quot;highlighter-rouge&quot;&gt;version&lt;/code&gt; variable is set to the string “undefined” by default and will be overwritten by Golang compiler during the build process&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var version = &quot;undefined&quot;
+func (handler VersionHandler) Handle() (bool, string) {
+	fmt.Printf(&quot;aws-profile-utils (%s)&quot;, version)
+	return true, &quot;&quot;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;build-process&quot;&gt;Build Process&lt;/h2&gt;
+
+&lt;p&gt;This project is hosted in github and uses travis for build and release. The build for master branch and tags are slightly different.&lt;/p&gt;
+
+&lt;p&gt;For commit to master branch:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Travis picks up the commit, builds and tests&lt;/li&gt;
+  &lt;li&gt;If successful, rename the output binary (&lt;code class=&quot;highlighter-rouge&quot;&gt;aws-profile-utils&lt;/code&gt;) to include OS type (&lt;code class=&quot;highlighter-rouge&quot;&gt;linux&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;osx&lt;/code&gt;) and build number.&lt;/li&gt;
+  &lt;li&gt;Upload above binaries to Google Cloud Storage. I choose GCS because it has always-free tier.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For a new tag that is pushed to github:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;New tag that is pushed to github will create a release with the name that is same with tag name&lt;/li&gt;
+  &lt;li&gt;Travis picks up the commit, builds and tests&lt;/li&gt;
+  &lt;li&gt;If successful, rename the output binary (&lt;code class=&quot;highlighter-rouge&quot;&gt;aws-profile-utils&lt;/code&gt;) to include OS type (&lt;code class=&quot;highlighter-rouge&quot;&gt;linux&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;osx&lt;/code&gt;)&lt;/li&gt;
+  &lt;li&gt;Modify github release created in the 1st step to include binaries generated in the last step.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Some personal reflection after writing the program:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Golang is easy to get started.&lt;/li&gt;
+  &lt;li&gt;I feel Golang lacks many constructs to have the code as concise and elegant as other languages, .e.g. it doesn’t have built-in way to filter or map a slice, something that is very common and available in most other languages. It’s true that filtering logic is very trivial to implement in Golang but if it’s not provided by the language itself, developers will need to keep writing it over and over again. And for this reason, I feel Golang is quite verbose.&lt;/li&gt;
+  &lt;li&gt;Testing in Golang is also unnatural and verbose. Even though I already used &lt;code class=&quot;highlighter-rouge&quot;&gt;testify&lt;/code&gt; library for helping with assertion and mocking, I still feel mocking requires a lot of setup.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I may have a different opinion about above points if I have chance to play around more with Golang in the future.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 13 Sep 2018 09:00:00 +0800</pubDate>
+        <link>https://pnguyen.io/posts/aws-profile-utils</link>
+        <guid isPermaLink="true">https://pnguyen.io/posts/aws-profile-utils</guid>
+        
+        <category>programming</category>
+        
+        <category>golang</category>
+        
+        <category>devops</category>
+        
+        
+        <category>programming,</category>
+        
+        <category>golang,</category>
+        
+        <category>devops</category>
+        
+      </item>
     
       <item>
         <title>Speed up ZSH loading of custom functions</title>
