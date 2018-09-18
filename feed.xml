@@ -6,13 +6,20 @@
 </description>
     <link>https://pnguyen.io/</link>
     <atom:link href="https://pnguyen.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 16 Sep 2018 23:25:08 +0800</pubDate>
-    <lastBuildDate>Sun, 16 Sep 2018 23:25:08 +0800</lastBuildDate>
+    <pubDate>Tue, 18 Sep 2018 21:43:14 +0800</pubDate>
+    <lastBuildDate>Tue, 18 Sep 2018 21:43:14 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
     
       <item>
         <title>An utility to switch AWS profiles</title>
-        <description>&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+        <description>&lt;pre&gt;
+&lt;b&gt;TLDR&lt;/b&gt;
+
+I created a tool to switch among multiple AWS profiles.
+Installation and usage instruction are at &lt;a href=&quot;https://github.com/hpcsc/aws-profile-utils&quot;&gt;GitHub repo&lt;/a&gt;
+&lt;/pre&gt;
+
+&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
 
 &lt;p&gt;If you are working with AWS frequently enough, you should be aware of AWS CLI and its 2 related configuration files:&lt;/p&gt;
 
