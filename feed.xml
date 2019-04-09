@@ -6,8 +6,8 @@
 </description>
     <link>https://pnguyen.io/</link>
     <atom:link href="https://pnguyen.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 18 Sep 2018 21:43:14 +0800</pubDate>
-    <lastBuildDate>Tue, 18 Sep 2018 21:43:14 +0800</lastBuildDate>
+    <pubDate>Tue, 09 Apr 2019 17:47:25 +0800</pubDate>
+    <lastBuildDate>Tue, 09 Apr 2019 17:47:25 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
     
       <item>
@@ -275,7 +275,7 @@ func (handler VersionHandler) Handle() (bool, string) {
 
 &lt;p&gt;If comparing the startup time of my shell to shell startup time of most other people who I have worked with, my current startup time is not bad:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-07-11-zsh-startup-before-f165c22f480f0ef6a0eefddd4b2c239115df6fd7fc7e92f16eb11a8957ef252c.png&quot; alt=&quot;&quot; title=&quot;zsh startup time before&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-07-11-zsh-startup-before-f165c22f480f0ef6a0eefddd4b2c239115df6fd7fc7e92f16eb11a8957ef252c.png&quot; alt=&quot;&quot; title=&quot;zsh startup time before&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;In average, it takes around 0.5s to start.&lt;/p&gt;
 
@@ -296,7 +296,7 @@ autoload -Uz ~/.functions/**/*
 
 &lt;p&gt;Here’s the resutl after using &lt;code class=&quot;highlighter-rouge&quot;&gt;autoload&lt;/code&gt;:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-07-11-zsh-startup-after-1eb3b09eef981d6580f271aff8b0df295dcef8b59b4d9b959c748d8dcfc170b4.png&quot; alt=&quot;&quot; title=&quot;zsh startup time after&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-07-11-zsh-startup-after-1eb3b09eef981d6580f271aff8b0df295dcef8b59b4d9b959c748d8dcfc170b4.png&quot; alt=&quot;&quot; title=&quot;zsh startup time after&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;It takes 0.3s now, that’s 40% faster than before.&lt;/p&gt;
 
@@ -384,7 +384,7 @@ done
 
 &lt;p&gt;Here’s an overview of the pipeline:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-pipeline-10a10a34151226b01c11ec2123b878272b1ed206591dcfff5070a4243e8488f4.png&quot; alt=&quot;&quot; title=&quot;Terraform Pipeline&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-06-13-terraform-pipeline-10a10a34151226b01c11ec2123b878272b1ed206591dcfff5070a4243e8488f4.png&quot; alt=&quot;&quot; title=&quot;Terraform Pipeline&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The purpose of this pipeline is to setup 2 environments (Staging and Production) using Terraform. Each environment has 1 EC2 instance, with Nginx installed and displays a custom HTML page.&lt;/p&gt;
 
@@ -402,14 +402,14 @@ done
 
 &lt;p&gt;This is how they look in GoCD overview page:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-gocd-overview-9d01dd45644c395e0e0ee560450bece043935d87beb8baa70988f75b25d2d96f.png&quot; alt=&quot;&quot; title=&quot;GoCD Overview&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-06-13-terraform-gocd-overview-9d01dd45644c395e0e0ee560450bece043935d87beb8baa70988f75b25d2d96f.png&quot; alt=&quot;&quot; title=&quot;GoCD Overview&quot; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;packercommit-stage&quot;&gt;PackerCommit Stage&lt;/h4&gt;
 
 &lt;p&gt;Packer file &lt;code class=&quot;highlighter-rouge&quot;&gt;nginx.json&lt;/code&gt; defines a single builder:&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &quot;variables&quot;: {
-    &quot;build_label&quot;: &quot;&quot;
+    &quot;build_label&quot;: &quot;{{ env `BUILD_LABEL`}}&quot;
   },
   &quot;builders&quot;: [
     {
@@ -418,7 +418,7 @@ done
       &quot;source_ami&quot;: &quot;ami-81cefcfd&quot;,
       &quot;instance_type&quot;: &quot;t2.micro&quot;,
       &quot;ssh_username&quot;: &quot;ubuntu&quot;,
-      &quot;ami_name&quot;: &quot;nginx-terraform-pipeline-&quot;
+      &quot;ami_name&quot;: &quot;nginx-terraform-pipeline-{{user `build_label`}}&quot;
     }
   ]
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -523,7 +523,7 @@ done
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;terraform-pipeline-config&lt;/code&gt; repository file layout:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-config-organization-2dc7c64d639c2615fa691a58fe1a3173542360e9d79b7fbf960c6103df649fdc.png&quot; alt=&quot;&quot; title=&quot;terraform-pipeline-config Organization&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-06-13-terraform-config-organization-2dc7c64d639c2615fa691a58fe1a3173542360e9d79b7fbf960c6103df649fdc.png&quot; alt=&quot;&quot; title=&quot;terraform-pipeline-config Organization&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The files are stored according to the environments that they belong to. Each environment has 2 files:&lt;/p&gt;
 
@@ -561,11 +561,11 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;p&gt;If everything goes smoothly, we will see something like this in the build log for the first time build. It correctly identifies that a new EC2 server is to be created.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-staging-log-1491e49cd28fdcdc1a766e74f3b97a638a5389090cdaf027253edb5ddd1a9f9f.png&quot; alt=&quot;&quot; title=&quot;TerraformStaging first build log&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-06-13-terraform-staging-log-1491e49cd28fdcdc1a766e74f3b97a638a5389090cdaf027253edb5ddd1a9f9f.png&quot; alt=&quot;&quot; title=&quot;TerraformStaging first build log&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Browsing to the public IP gives us this result:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-staging-nginx-aac2ffc2d041c2f8690f8c07c286cb7b6f98f4fc28696975cfea2cb40dcb0f94.png&quot; alt=&quot;&quot; title=&quot;TerraformStaging Nginx output&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-06-13-terraform-staging-nginx-aac2ffc2d041c2f8690f8c07c286cb7b6f98f4fc28696975cfea2cb40dcb0f94.png&quot; alt=&quot;&quot; title=&quot;TerraformStaging Nginx output&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;As we can see, all the tasks in this step is specific to Staging and use only files in &lt;code class=&quot;highlighter-rouge&quot;&gt;staging&lt;/code&gt; folder.&lt;/p&gt;
 
@@ -577,11 +577,11 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;p&gt;As the final demonstration of deploying changes in code to Staging and Production, I update the text in &lt;code class=&quot;highlighter-rouge&quot;&gt;index.html&lt;/code&gt; in &lt;code class=&quot;highlighter-rouge&quot;&gt;terraform-pipeline-packer&lt;/code&gt; repository to &lt;code class=&quot;highlighter-rouge&quot;&gt;Triggered by a Code Change&lt;/code&gt; and make a commit. The whole pipeline is triggered again and Terraform correctly identifies that previous server needs to be teared down and a new server needs to be spinned up for the new change:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-code-change-log-1cb593e39a40f3f516459e1f642c1fe5323b2df6663c5ce5ae7b6b2908f4f95f.png&quot; alt=&quot;&quot; title=&quot;Terraform Code Change output&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-06-13-terraform-code-change-log-1cb593e39a40f3f516459e1f642c1fe5323b2df6663c5ce5ae7b6b2908f4f95f.png&quot; alt=&quot;&quot; title=&quot;Terraform Code Change output&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Visiting the new Public IP gives us this page:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-06-13-terraform-updated-staging-nginx-8578ff7ed3479a78ccd35a3c986323ea640524c214b3cd59d2b97a0a7f6c6b78.png&quot; alt=&quot;&quot; title=&quot;Updated Staging&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-06-13-terraform-updated-staging-nginx-8578ff7ed3479a78ccd35a3c986323ea640524c214b3cd59d2b97a0a7f6c6b78.png&quot; alt=&quot;&quot; title=&quot;Updated Staging&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;summary&quot;&gt;Summary&lt;/h2&gt;
 
@@ -614,7 +614,7 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;p&gt;First, I created a docker-compose file (&lt;a href=&quot;https://github.com/hpcsc/gocd&quot;&gt;https://github.com/hpcsc/gocd&lt;/a&gt;) to easily spin up a GoCD server, 3 agents, 1 local Git repository (Gogs) for demonstration purpose.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-gocd-setup-local-3537c0e4c203c721b81198296e762dd638381bc3a8224e4ec26fbbeb263a52ac.png&quot; alt=&quot;GoCD Setup Local&quot; title=&quot;GoCD Setup Local&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-03-30-gocd-setup-local-3537c0e4c203c721b81198296e762dd638381bc3a8224e4ec26fbbeb263a52ac.png&quot; alt=&quot;GoCD Setup Local&quot; title=&quot;GoCD Setup Local&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Also note that the 3 agents have docker installed and share docker socket with host machine, so any image/container created by the agents will be available in the host machine.&lt;/p&gt;
 
@@ -634,7 +634,7 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;p&gt;And below is overview of the Value Stream Map that I created for demonstration. This Value Stream Map is designed to be as close as possible to the current build pipeline used at my client.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-gocd-sample-pipeline-41fc71f8654017a70afd69410ca6a5d449b92b71e84b1e83f36068dd0c66a273.png&quot; alt=&quot;&quot; title=&quot;GoCD Sample Pipeline&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-03-30-gocd-sample-pipeline-41fc71f8654017a70afd69410ca6a5d449b92b71e84b1e83f36068dd0c66a273.png&quot; alt=&quot;&quot; title=&quot;GoCD Sample Pipeline&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;It contains 3 Git materials:&lt;/p&gt;
 
@@ -646,7 +646,7 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;p&gt;Each repository has similar structure:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-backend-repo-organization-2831fbb82734260d998a95d724fda2029f714f6334c7485c8b5949fd9a0349c8.png&quot; alt=&quot;&quot; title=&quot;Backend Repository Organization&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-03-30-backend-repo-organization-2831fbb82734260d998a95d724fda2029f714f6334c7485c8b5949fd9a0349c8.png&quot; alt=&quot;&quot; title=&quot;Backend Repository Organization&quot; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;gocd-pipelines&lt;/code&gt;: GoCD pipeline as code (to be explained later)&lt;/li&gt;
@@ -670,7 +670,7 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;p&gt;When all dev deployments are done, &lt;code class=&quot;highlighter-rouge&quot;&gt;SystemTests&lt;/code&gt; pipeline is triggered. In a real world pipeline, this will pull system tests tool and scripts from &lt;code class=&quot;highlighter-rouge&quot;&gt;system-tests&lt;/code&gt; repo, start backend, start mobile and run system tests against mobile which in turn hit backend server. The last stage of this pipeline is &lt;code class=&quot;highlighter-rouge&quot;&gt;Approve&lt;/code&gt; stage, which can only be triggered manually. This is to simulate a real scenario where the decision to deploy to UAT is decided by some business user.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-system-tests-pipeline-1a73ac15f081e149440fa5ec340279574f408a725c335f7239fcd84afe6c15a1.png&quot; alt=&quot;&quot; title=&quot;System Tests Pipeline&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-03-30-system-tests-pipeline-1a73ac15f081e149440fa5ec340279574f408a725c335f7239fcd84afe6c15a1.png&quot; alt=&quot;&quot; title=&quot;System Tests Pipeline&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Once pipeline is approved, it will run 3 pipelines in parallel: &lt;code class=&quot;highlighter-rouge&quot;&gt;MobileUATDeploymentAndroid&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;MobileUATDeploymentIOS&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;MobileUATDeploymentBackend&lt;/code&gt;. Note that these pipelines use the same scripts as in Dev deployment pipelines, only differ by parameters passing to the scripts.&lt;/p&gt;
 
@@ -680,7 +680,7 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;p&gt;In this sample, I’m going to define the backend commit pipeline using YAML:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-sample-pipeline-as-code-b53257f35e63d1614ea5645cbb7dad390ebb8bae00988aa7a782b2903f5ec0f8.png&quot; alt=&quot;&quot; title=&quot;Sample Pipeline as Code&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-03-30-sample-pipeline-as-code-b53257f35e63d1614ea5645cbb7dad390ebb8bae00988aa7a782b2903f5ec0f8.png&quot; alt=&quot;&quot; title=&quot;Sample Pipeline as Code&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I have highlighted in the screenshot the relevant places where pipeline, stage, job, and task are defined. It should be straightforward to read the remaining definition of the pipeline.&lt;/p&gt;
 
@@ -703,13 +703,13 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;p&gt;That’s all for the technical part. After playing with GoCD for a while, I find GoCD quite pleasant to use. Its UI and interaction flow are carefully considered to maximize user experience. One example of that is when clicking in a pipeline, I’m presented with a history of that pipeline instances, with stages that it contains and ability to rerun any stage in a single click:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-pipeline-history-ddc925b0f892c86cb8ffaf0aa8e429c0e419677142e026312e256923c4a5cb5d.png&quot; alt=&quot;&quot; title=&quot;GoCD Pipeline History&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-03-30-pipeline-history-ddc925b0f892c86cb8ffaf0aa8e429c0e419677142e026312e256923c4a5cb5d.png&quot; alt=&quot;&quot; title=&quot;GoCD Pipeline History&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;For me, this is a big plus compared to Bamboo, where you need to click into individual build to see which stage fails, and you can only re-run failed stage or re-run the whole build, not re-run any stage like GoCD.&lt;/p&gt;
 
 &lt;p&gt;Another nice feature of GoCD is Value Stream Map, which is the full end-to-end view across pipelines. It allows you to quickly see upstream dependencies, downstream pipelines for a pipeline instance.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-03-30-value-stream-map-6429a935ee00e7e460ff00b6338a1704cd71ff0b25abeeec12265729a19b4bd4.png&quot; alt=&quot;&quot; title=&quot;GoCD Value Stream Map&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-03-30-value-stream-map-6429a935ee00e7e460ff00b6338a1704cd71ff0b25abeeec12265729a19b4bd4.png&quot; alt=&quot;&quot; title=&quot;GoCD Value Stream Map&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;In summary, GoCD is a powerful tool with rich feature set built in that allows you to easily model any complicated pipeline. I highly recommend it for projects of any size.&lt;/p&gt;
 </description>
@@ -738,7 +738,7 @@ echo yes | terraform apply -var &quot;packer_build_number=${PACKER_BUILD_NO}&quo
 
 &lt;p&gt;Below is an overview of the pipeline:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/2018-03-12-github-page-pipeline-4fec520df481e044fa871c0364acbffec1c5b1f37d4f9e4dff9cea18174974de.png&quot; alt=&quot;Github Page Pipeline&quot; title=&quot;Github Page Pipeline&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;www.example.com/assets/2018-03-12-github-page-pipeline-4fec520df481e044fa871c0364acbffec1c5b1f37d4f9e4dff9cea18174974de.png&quot; alt=&quot;Github Page Pipeline&quot; title=&quot;Github Page Pipeline&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;There are 2 Github repositories involved:&lt;/p&gt;
 

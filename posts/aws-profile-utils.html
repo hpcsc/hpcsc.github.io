@@ -8,12 +8,13 @@
 
   <link rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
-  <link type="text/css" rel="stylesheet" href="/assets/main-45e55f15b77a84cbbc74a0dbb8a0975cafea38030cc80bcf80cdc808f0095c8f.css" integrity="sha384-VTIR5KjWTcy87K8hx5rJYyWXhSWzz4DipNxJWxJUlRryPTTrnvqz24GVxGuds+gx" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="www.example.com/assets/main-45e55f15b77a84cbbc74a0dbb8a0975cafea38030cc80bcf80cdc808f0095c8f.css" integrity="sha384-VTIR5KjWTcy87K8hx5rJYyWXhSWzz4DipNxJWxJUlRryPTTrnvqz24GVxGuds+gx" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
   <link rel="canonical" href="https://pnguyen.io/posts/aws-profile-utils">
   <link rel="alternate" type="application/rss+xml" title="David Nguyen" href="https://pnguyen.io/feed.xml">
 
+  
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125420743-1"></script>
   <script>
@@ -23,6 +24,7 @@
 
     gtag('config', 'UA-125420743-1');
   </script>
+  
 
 </head>
 
@@ -35,14 +37,31 @@
                 <h1 class="post-title" itemprop="name headline">An utility to switch AWS profiles</h1>
                 <p class="post-meta"><time datetime="{`2018-09-13T09:00:00+08:00`}" itemprop="datePublished">Sep 13, 2018</time></p>
             </header>
-            <div class="post-content" itemprop="articleBody"><pre>
+            <div class="post-content" itemprop="articleBody"><ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#introduction">Introduction</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#first-attempt">First attempt</a></li>
+<li class="toc-entry toc-h3"><a href="#second-attempt">Second Attempt</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#code-structure">Code Structure</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#gethandler">GetHandler</a></li>
+<li class="toc-entry toc-h3"><a href="#sethandler">SetHandler</a></li>
+<li class="toc-entry toc-h3"><a href="#versionhandler">VersionHandler</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#build-process">Build Process</a></li>
+<li class="toc-entry toc-h2"><a href="#conclusion">Conclusion</a></li>
+</ul><pre>
 <b>TLDR</b>
 
 I created a tool to switch among multiple AWS profiles.
 Installation and usage instruction are at <a href="https://github.com/hpcsc/aws-profile-utils">GitHub repo</a>
 </pre>
 
-<h2 id="introduction">Introduction</h2>
+<h2 id="introduction">
+<a class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
 
 <p>If you are working with AWS frequently enough, you should be aware of AWS CLI and its 2 related configuration files:</p>
 
@@ -60,7 +79,8 @@ Let’s go through some of the common ways to manage current AWS profile as high
   <li>CLI configuration file/AWS credentials file: need to manually edit those files, copy the credentials of the profile that you want to switch to and set to default profile credentials. This is tedious and repetitive.</li>
 </ul>
 
-<h3 id="first-attempt">First attempt</h3>
+<h3 id="first-attempt">
+<a class="anchor" href="#first-attempt" aria-hidden="true"><span class="octicon octicon-link"></span></a>First attempt</h3>
 
 <p>I wrote a small shell script that uses fzf to switch among profiles:</p>
 
@@ -71,19 +91,21 @@ eval "export AWS_DEFAULT_PROFILE=$selected_profile"
 
 <p>What it does is just grepping all profile names in credentials file, pipe that to fzf for interactive selection and export <code class="highlighter-rouge">AWS_DEFAULT_PROFILE</code> variable. This works but has the limitation of environment variable approach above (only last for current terminal session). This also doesn’t handle the case of assuming role in AWS.</p>
 
-<h3 id="second-attempt">Second Attempt</h3>
+<h3 id="second-attempt">
+<a class="anchor" href="#second-attempt" aria-hidden="true"><span class="octicon octicon-link"></span></a>Second Attempt</h3>
 
 <p>I then looked for librarys/tools that can parse ini file format (that credentials and config files use) but not many options for shell script. So I wrote a python script that manipulates directly the credentials/config files instead of just setting the environment variable. It works but significantly slower compared to the shell script (I can notice a few seconds delay after selecting a profile).</p>
 
 <p>So that’s how I ended up with writing a CLI program in Golang to manage AWS profile. Coincidentally I also wanted to try writing something in Golang since I’m new to this language.</p>
 
-<h2 id="code-structure">Code Structure</h2>
+<h2 id="code-structure">
+<a class="anchor" href="#code-structure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Code Structure</h2>
 
 <p>Source code: <a href="https://github.com/hpcsc/aws-profile-utils">https://github.com/hpcsc/aws-profile-utils</a></p>
 
 <p>Example Usage:</p>
 
-<p><img src="https://raw.githubusercontent.com/hpcsc/aws-profile-utils/master/aws-profile-utils.gif" alt="" title="demo" /></p>
+<p><img src="https://raw.githubusercontent.com/hpcsc/aws-profile-utils/master/aws-profile-utils.gif" alt="" title="demo"></p>
 
 <p>Disclaimer: I’m a total noob in Golang</p>
 
@@ -115,7 +137,8 @@ eval "export AWS_DEFAULT_PROFILE=$selected_profile"
 
 <p>There are only 2 main commands and their handlers: <code class="highlighter-rouge">GetHandler</code> and <code class="highlighter-rouge">SetHandler</code></p>
 
-<h3 id="gethandler">GetHandler</h3>
+<h3 id="gethandler">
+<a class="anchor" href="#gethandler" aria-hidden="true"><span class="octicon octicon-link"></span></a>GetHandler</h3>
 
 <p>This handler does a few things:</p>
 <ul>
@@ -162,7 +185,8 @@ for _, section := range configFile.Sections() {
 
 <p>Logic for <code class="highlighter-rouge">credentials</code> is similar but it looks for <code class="highlighter-rouge">aws_access_key_id</code> instead.</p>
 
-<h3 id="sethandler">SetHandler</h3>
+<h3 id="sethandler">
+<a class="anchor" href="#sethandler" aria-hidden="true"><span class="octicon octicon-link"></span></a>SetHandler</h3>
 
 <p>This handler does a bit more work:</p>
 <ul>
@@ -191,7 +215,8 @@ for _, section := range configFile.Sections() {
   <li>
     <p>The handler used to print the output message right in the <code class="highlighter-rouge">Handle()</code> function after processing. But I find it difficult to test that so the handler now returns a tuple of boolean and string, indicating whether the operation is successful (and should exit with exit code 0) and what message it wants to display. The main function is the one that does the actual printing of the message. By this way I can invoke the handler in the test and verify the expected message easily:</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>success, message := handler.Handle()
+    <div class="highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>success, message := handler.Handle()
 if !strings.EqualFold(message, "") {
   fmt.Println(message)
 }
@@ -206,7 +231,8 @@ if success {
   <li>
     <p>There are a few places that the handler causes side-effect like invoking fzf in a shell process and writing the updated config to file system. Again this is not so straightforward to test. I find mocking in Golang confusing and verbal so I tried to find alternative approach instead. I did a few searches on whether Golang has something like IO Monad like Haskell but unfortunately it doesn’t have. So in the end I settle with extracting those side-effect logic to functions and let constructor take in functions with those signature:</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func NewSetHandler(app *kingpin.Application, selectProfileFn SelectProfileFn, writeToFileFn WriteToFileFn) SetHandler {
+    <div class="highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>func NewSetHandler(app *kingpin.Application, selectProfileFn SelectProfileFn, writeToFileFn WriteToFileFn) SetHandler {
   // omitted
 
   finalSelectProfileFn := selectProfileByFzf
@@ -229,7 +255,8 @@ if success {
 
 <p>I’m not entirely satisfied with this approach because the 2 function parameters are not used anywhere else except for the tests. And Golang doesn’t support function overloading or default parameter so all the clients that use this constructor function needs to pass in the value <code class="highlighter-rouge">nil</code> if it doesn’t want to override the behavior of those functions.</p>
 
-<h3 id="versionhandler">VersionHandler</h3>
+<h3 id="versionhandler">
+<a class="anchor" href="#versionhandler" aria-hidden="true"><span class="octicon octicon-link"></span></a>VersionHandler</h3>
 
 <p>This handler is very simple. It just prints out a string with formatted <code class="highlighter-rouge">version</code> variable. This <code class="highlighter-rouge">version</code> variable is set to the string “undefined” by default and will be overwritten by Golang compiler during the build process</p>
 
@@ -240,7 +267,8 @@ func (handler VersionHandler) Handle() (bool, string) {
 }
 </code></pre></div></div>
 
-<h2 id="build-process">Build Process</h2>
+<h2 id="build-process">
+<a class="anchor" href="#build-process" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build Process</h2>
 
 <p>This project is hosted in github and uses travis for build and release. The build for master branch and tags are slightly different.</p>
 
@@ -261,7 +289,8 @@ func (handler VersionHandler) Handle() (bool, string) {
   <li>Modify github release created in the 1st step to include binaries generated in the last step.</li>
 </ul>
 
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">
+<a class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h2>
 
 <p>Some personal reflection after writing the program:</p>
 
