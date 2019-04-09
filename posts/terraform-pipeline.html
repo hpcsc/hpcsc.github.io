@@ -8,7 +8,7 @@
 
   <link rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
-  <link type="text/css" rel="stylesheet" href="www.example.com/assets/main-45e55f15b77a84cbbc74a0dbb8a0975cafea38030cc80bcf80cdc808f0095c8f.css" integrity="sha384-VTIR5KjWTcy87K8hx5rJYyWXhSWzz4DipNxJWxJUlRryPTTrnvqz24GVxGuds+gx" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="/assets/main-45e55f15b77a84cbbc74a0dbb8a0975cafea38030cc80bcf80cdc808f0095c8f.css" integrity="sha384-VTIR5KjWTcy87K8hx5rJYyWXhSWzz4DipNxJWxJUlRryPTTrnvqz24GVxGuds+gx" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
   <link rel="canonical" href="https://pnguyen.io/posts/terraform-pipeline">
@@ -90,7 +90,7 @@
 
 <p>Here’s an overview of the pipeline:</p>
 
-<p><img src="www.example.com/assets/2018-06-13-terraform-pipeline-10a10a34151226b01c11ec2123b878272b1ed206591dcfff5070a4243e8488f4.png" alt="" title="Terraform Pipeline"></p>
+<p><img src="/assets/2018-06-13-terraform-pipeline-10a10a34151226b01c11ec2123b878272b1ed206591dcfff5070a4243e8488f4.png" alt="" title="Terraform Pipeline"></p>
 
 <p>The purpose of this pipeline is to setup 2 environments (Staging and Production) using Terraform. Each environment has 1 EC2 instance, with Nginx installed and displays a custom HTML page.</p>
 
@@ -111,7 +111,7 @@
 
 <p>This is how they look in GoCD overview page:</p>
 
-<p><img src="www.example.com/assets/2018-06-13-terraform-gocd-overview-9d01dd45644c395e0e0ee560450bece043935d87beb8baa70988f75b25d2d96f.png" alt="" title="GoCD Overview"></p>
+<p><img src="/assets/2018-06-13-terraform-gocd-overview-9d01dd45644c395e0e0ee560450bece043935d87beb8baa70988f75b25d2d96f.png" alt="" title="GoCD Overview"></p>
 
 <h4 id="packercommit-stage">
 <a class="anchor" href="#packercommit-stage" aria-hidden="true"><span class="octicon octicon-link"></span></a>PackerCommit Stage</h4>
@@ -235,7 +235,7 @@
 
 <p><code class="highlighter-rouge">terraform-pipeline-config</code> repository file layout:</p>
 
-<p><img src="www.example.com/assets/2018-06-13-terraform-config-organization-2dc7c64d639c2615fa691a58fe1a3173542360e9d79b7fbf960c6103df649fdc.png" alt="" title="terraform-pipeline-config Organization"></p>
+<p><img src="/assets/2018-06-13-terraform-config-organization-2dc7c64d639c2615fa691a58fe1a3173542360e9d79b7fbf960c6103df649fdc.png" alt="" title="terraform-pipeline-config Organization"></p>
 
 <p>The files are stored according to the environments that they belong to. Each environment has 2 files:</p>
 
@@ -278,11 +278,11 @@ echo yes | terraform apply -var "packer_build_number=${PACKER_BUILD_NO}"
 
 <p>If everything goes smoothly, we will see something like this in the build log for the first time build. It correctly identifies that a new EC2 server is to be created.</p>
 
-<p><img src="www.example.com/assets/2018-06-13-terraform-staging-log-1491e49cd28fdcdc1a766e74f3b97a638a5389090cdaf027253edb5ddd1a9f9f.png" alt="" title="TerraformStaging first build log"></p>
+<p><img src="/assets/2018-06-13-terraform-staging-log-1491e49cd28fdcdc1a766e74f3b97a638a5389090cdaf027253edb5ddd1a9f9f.png" alt="" title="TerraformStaging first build log"></p>
 
 <p>Browsing to the public IP gives us this result:</p>
 
-<p><img src="www.example.com/assets/2018-06-13-terraform-staging-nginx-aac2ffc2d041c2f8690f8c07c286cb7b6f98f4fc28696975cfea2cb40dcb0f94.png" alt="" title="TerraformStaging Nginx output"></p>
+<p><img src="/assets/2018-06-13-terraform-staging-nginx-aac2ffc2d041c2f8690f8c07c286cb7b6f98f4fc28696975cfea2cb40dcb0f94.png" alt="" title="TerraformStaging Nginx output"></p>
 
 <p>As we can see, all the tasks in this step is specific to Staging and use only files in <code class="highlighter-rouge">staging</code> folder.</p>
 
@@ -295,11 +295,11 @@ echo yes | terraform apply -var "packer_build_number=${PACKER_BUILD_NO}"
 
 <p>As the final demonstration of deploying changes in code to Staging and Production, I update the text in <code class="highlighter-rouge">index.html</code> in <code class="highlighter-rouge">terraform-pipeline-packer</code> repository to <code class="highlighter-rouge">Triggered by a Code Change</code> and make a commit. The whole pipeline is triggered again and Terraform correctly identifies that previous server needs to be teared down and a new server needs to be spinned up for the new change:</p>
 
-<p><img src="www.example.com/assets/2018-06-13-terraform-code-change-log-1cb593e39a40f3f516459e1f642c1fe5323b2df6663c5ce5ae7b6b2908f4f95f.png" alt="" title="Terraform Code Change output"></p>
+<p><img src="/assets/2018-06-13-terraform-code-change-log-1cb593e39a40f3f516459e1f642c1fe5323b2df6663c5ce5ae7b6b2908f4f95f.png" alt="" title="Terraform Code Change output"></p>
 
 <p>Visiting the new Public IP gives us this page:</p>
 
-<p><img src="www.example.com/assets/2018-06-13-terraform-updated-staging-nginx-8578ff7ed3479a78ccd35a3c986323ea640524c214b3cd59d2b97a0a7f6c6b78.png" alt="" title="Updated Staging"></p>
+<p><img src="/assets/2018-06-13-terraform-updated-staging-nginx-8578ff7ed3479a78ccd35a3c986323ea640524c214b3cd59d2b97a0a7f6c6b78.png" alt="" title="Updated Staging"></p>
 
 <h2 id="summary">
 <a class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>

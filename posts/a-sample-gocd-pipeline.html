@@ -8,7 +8,7 @@
 
   <link rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
-  <link type="text/css" rel="stylesheet" href="www.example.com/assets/main-45e55f15b77a84cbbc74a0dbb8a0975cafea38030cc80bcf80cdc808f0095c8f.css" integrity="sha384-VTIR5KjWTcy87K8hx5rJYyWXhSWzz4DipNxJWxJUlRryPTTrnvqz24GVxGuds+gx" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="/assets/main-45e55f15b77a84cbbc74a0dbb8a0975cafea38030cc80bcf80cdc808f0095c8f.css" integrity="sha384-VTIR5KjWTcy87K8hx5rJYyWXhSWzz4DipNxJWxJUlRryPTTrnvqz24GVxGuds+gx" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
   <link rel="canonical" href="https://pnguyen.io/posts/a-sample-gocd-pipeline">
@@ -41,7 +41,7 @@
 
 <p>First, I created a docker-compose file (<a href="https://github.com/hpcsc/gocd">https://github.com/hpcsc/gocd</a>) to easily spin up a GoCD server, 3 agents, 1 local Git repository (Gogs) for demonstration purpose.</p>
 
-<p><img src="www.example.com/assets/2018-03-30-gocd-setup-local-3537c0e4c203c721b81198296e762dd638381bc3a8224e4ec26fbbeb263a52ac.png" alt="GoCD Setup Local" title="GoCD Setup Local" /></p>
+<p><img src="/assets/2018-03-30-gocd-setup-local-3537c0e4c203c721b81198296e762dd638381bc3a8224e4ec26fbbeb263a52ac.png" alt="GoCD Setup Local" title="GoCD Setup Local" /></p>
 
 <p>Also note that the 3 agents have docker installed and share docker socket with host machine, so any image/container created by the agents will be available in the host machine.</p>
 
@@ -61,7 +61,7 @@
 
 <p>And below is overview of the Value Stream Map that I created for demonstration. This Value Stream Map is designed to be as close as possible to the current build pipeline used at my client.</p>
 
-<p><img src="www.example.com/assets/2018-03-30-gocd-sample-pipeline-41fc71f8654017a70afd69410ca6a5d449b92b71e84b1e83f36068dd0c66a273.png" alt="" title="GoCD Sample Pipeline" /></p>
+<p><img src="/assets/2018-03-30-gocd-sample-pipeline-41fc71f8654017a70afd69410ca6a5d449b92b71e84b1e83f36068dd0c66a273.png" alt="" title="GoCD Sample Pipeline" /></p>
 
 <p>It contains 3 Git materials:</p>
 
@@ -73,7 +73,7 @@
 
 <p>Each repository has similar structure:</p>
 
-<p><img src="www.example.com/assets/2018-03-30-backend-repo-organization-2831fbb82734260d998a95d724fda2029f714f6334c7485c8b5949fd9a0349c8.png" alt="" title="Backend Repository Organization" /></p>
+<p><img src="/assets/2018-03-30-backend-repo-organization-2831fbb82734260d998a95d724fda2029f714f6334c7485c8b5949fd9a0349c8.png" alt="" title="Backend Repository Organization" /></p>
 
 <ul>
   <li><code class="highlighter-rouge">gocd-pipelines</code>: GoCD pipeline as code (to be explained later)</li>
@@ -97,7 +97,7 @@
 
 <p>When all dev deployments are done, <code class="highlighter-rouge">SystemTests</code> pipeline is triggered. In a real world pipeline, this will pull system tests tool and scripts from <code class="highlighter-rouge">system-tests</code> repo, start backend, start mobile and run system tests against mobile which in turn hit backend server. The last stage of this pipeline is <code class="highlighter-rouge">Approve</code> stage, which can only be triggered manually. This is to simulate a real scenario where the decision to deploy to UAT is decided by some business user.</p>
 
-<p><img src="www.example.com/assets/2018-03-30-system-tests-pipeline-1a73ac15f081e149440fa5ec340279574f408a725c335f7239fcd84afe6c15a1.png" alt="" title="System Tests Pipeline" /></p>
+<p><img src="/assets/2018-03-30-system-tests-pipeline-1a73ac15f081e149440fa5ec340279574f408a725c335f7239fcd84afe6c15a1.png" alt="" title="System Tests Pipeline" /></p>
 
 <p>Once pipeline is approved, it will run 3 pipelines in parallel: <code class="highlighter-rouge">MobileUATDeploymentAndroid</code>, <code class="highlighter-rouge">MobileUATDeploymentIOS</code> and <code class="highlighter-rouge">MobileUATDeploymentBackend</code>. Note that these pipelines use the same scripts as in Dev deployment pipelines, only differ by parameters passing to the scripts.</p>
 
@@ -107,7 +107,7 @@
 
 <p>In this sample, I’m going to define the backend commit pipeline using YAML:</p>
 
-<p><img src="www.example.com/assets/2018-03-30-sample-pipeline-as-code-b53257f35e63d1614ea5645cbb7dad390ebb8bae00988aa7a782b2903f5ec0f8.png" alt="" title="Sample Pipeline as Code" /></p>
+<p><img src="/assets/2018-03-30-sample-pipeline-as-code-b53257f35e63d1614ea5645cbb7dad390ebb8bae00988aa7a782b2903f5ec0f8.png" alt="" title="Sample Pipeline as Code" /></p>
 
 <p>I have highlighted in the screenshot the relevant places where pipeline, stage, job, and task are defined. It should be straightforward to read the remaining definition of the pipeline.</p>
 
@@ -130,13 +130,13 @@
 
 <p>That’s all for the technical part. After playing with GoCD for a while, I find GoCD quite pleasant to use. Its UI and interaction flow are carefully considered to maximize user experience. One example of that is when clicking in a pipeline, I’m presented with a history of that pipeline instances, with stages that it contains and ability to rerun any stage in a single click:</p>
 
-<p><img src="www.example.com/assets/2018-03-30-pipeline-history-ddc925b0f892c86cb8ffaf0aa8e429c0e419677142e026312e256923c4a5cb5d.png" alt="" title="GoCD Pipeline History" /></p>
+<p><img src="/assets/2018-03-30-pipeline-history-ddc925b0f892c86cb8ffaf0aa8e429c0e419677142e026312e256923c4a5cb5d.png" alt="" title="GoCD Pipeline History" /></p>
 
 <p>For me, this is a big plus compared to Bamboo, where you need to click into individual build to see which stage fails, and you can only re-run failed stage or re-run the whole build, not re-run any stage like GoCD.</p>
 
 <p>Another nice feature of GoCD is Value Stream Map, which is the full end-to-end view across pipelines. It allows you to quickly see upstream dependencies, downstream pipelines for a pipeline instance.</p>
 
-<p><img src="www.example.com/assets/2018-03-30-value-stream-map-6429a935ee00e7e460ff00b6338a1704cd71ff0b25abeeec12265729a19b4bd4.png" alt="" title="GoCD Value Stream Map" /></p>
+<p><img src="/assets/2018-03-30-value-stream-map-6429a935ee00e7e460ff00b6338a1704cd71ff0b25abeeec12265729a19b4bd4.png" alt="" title="GoCD Value Stream Map" /></p>
 
 <p>In summary, GoCD is a powerful tool with rich feature set built in that allows you to easily model any complicated pipeline. I highly recommend it for projects of any size.</p>
 </div>
