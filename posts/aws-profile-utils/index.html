@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<title>
+	An utility to switch AWS profiles
+</title>
+		<style>
+	body {
+		display: block;
+		--colorBG: "#40e0d0, #ff8c00, #ff0080";
+		
+			background: linear-gradient(to right, var(--colorBG)) !important;
+		
+	}
+
+	body, body.pushable {
+		background-repeat: no-repeat;
+	  	background-attachment: fixed;
+	  	background-size: cover !important;
+	}
+</style>
+
+		<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+	
+	
+	
+	<meta name="author" content="David Nguyen" />
+	<meta name="description" content="An utility to switch AWS profiles" />
+
+
+
+<meta name="generator" content="Hugo 0.55.0" />
+
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+
+
+
+		
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+<script
+	src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+
+ <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Inconsolata" rel="stylesheet"> 
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/site.css">
+
+
+
+
+
+
+	
+		<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/UtkarshVerma/hugo-dream-plus/ae11561d/exampleSite/static/css/highlight.css">
+	
+
+
+
+<style>
+	body.pushable {
+		display: block;
+		
+			background: linear-gradient(to right, var(--colorBG)) !important;
+		 ;
+	}
+</style>
+
+
+
+<script>
+	var colorBG =  true 
+	
+	var isMobile = ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) )
+	console.log("The client device is a "+(isMobile?"mobile":"PC")+".")
+</script>
+
+	</head>
+
+	<body>
+		<script>
+var prevBgIndex = 0;
+var bodyBgSwitchIndex = 0;
+
+
+
+
+
+
+	var gradients = [
+	  [],
+	  ['#40e0d0', '#ff8c00', '#ff0080'], 
+	  ['#3e5151', '#decba4'], 
+	  ['#11998e', '#38ef7d'], 
+	  ['#108dc7', '#ef8e38'], 
+	  ['#fc5c7d', '#6a82fb'], 
+	  ['#fc466b', '#3f5efb'], 
+	  ['#c94b4b', '#4b134f'], 
+	  ['#23074d', '#cc5333'] 
+	];
+	document.body.style.setProperty('--colorBG', connect(gradients[getRandomInt(0, gradients.length)]));
+
+
+	function getRandomInt(min, max) {
+	  min = Math.ceil(min);
+	  max = Math.floor(max);
+	  var random;
+	  while (1) {
+	    random = Math.floor(Math.random() * (max - min)) + min;
+	    if (random !== prevBgIndex) {
+	      prevBgIndex = random;
+	      break;
+	    }
+	  }
+	  return random;
+	}
+
+	function connect(arr) {
+	  var str = '';
+	  for (var i = 0; i < arr.length; i++) {
+	    if (i !== arr.length - 1) {
+	      str += arr[i] + ', ';
+	    } else {
+	      str += arr[i];
+	    }
+	  }
+	  return str;
+	}
+</script>
+
+
+
+
+		<div id="sidebar" class="ui sidebar inverted vertical menu">
+	
+	<section id="author" class="ui top attached center aligned inverted segment">
+		
+<div class="ui small circular image">
+	
+		<img src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062">
+	
+</div>
+
+
+<h3 class="ui header">
+	David Nguyen
+	<div class="sub header"></div>
+</h3>
+
+	</section>
+
+	
+	
+		<section class="ui attached center aligned inverted segment sidebar-dream-tags">
+			
+			
+			
+			
+
+
+
+
+	
+	
+		
+			
+			<a class="ui label yellow " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+		
+			
+			<a class="ui label blue " href="/tags/deployment" title="deployment">deployment</a>
+		
+			
+			<a class="ui label red " href="/tags/gocd" title="gocd">gocd</a>
+		
+			
+			<a class="ui label yellow " href="/tags/pipeline" title="pipeline">pipeline</a>
+		
+			
+			<a class="ui label yellow " href="/tags/aws" title="aws">aws</a>
+		
+			
+			<a class="ui label olive " href="/tags/golang" title="golang">golang</a>
+		
+			
+			<a class="ui label teal " href="/tags/performance" title="performance">performance</a>
+		
+			
+			<a class="ui label orange " href="/tags/prezto" title="prezto">prezto</a>
+		
+	
+
+
+		</section>
+	
+
+	
+	
+		<section class="ui attached inverted segment sidebar-dream-categories both flexbox">
+			<div class="ui inverted accordion">
+				
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/infrastructure">infrastructure</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile-utils/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/terraform-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Terraform Pipeline</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/a-sample-gocd-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>A Sample GoCD Pipeline</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/misc">misc</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/programming">programming</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile-utils/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/tips">tips</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+
+			</div>
+		</section>
+	
+
+	
+	<section id="footer" class="ui bottom attached center aligned inverted segment">
+		
+
+	<p>© 2018 - 2019 David Nguyen&#39;s Personal Blog</p>
+
+
+<p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with <a href="https://github.com/UtkarshVerma/hugo-dream-plus" target="_blank">Dream Plus</a> theme.</p>
+
+	</section>
+</div>
+
+
+		<div class="pusher">
+			<div class="flipper">
+				<div class="front">
+					
+	<nav class="ui top secondary menu bar">
+	
+	<div class="item">
+		<i class="inverted big link bullseye icon dream-flip-toggle" title="About Me"></i>
+	</div>
+
+	
+	
+		<div class="item">
+			<a href="/">
+				<i class="inverted big link home icon" title="Home"></i>
+			</a>
+		</div>
+	
+
+	
+	
+
+	
+	
+		<div class="item">
+			<a href="/tags">
+				<i class="inverted big link tags icon" title="All Tags"></i>
+			</a>
+		</div>
+	
+
+	
+	
+		<div class="item">
+			<a href="/categories">
+				<i class="inverted big link cubes icon" title="All Categories"></i>
+			</a>
+    	</div>
+	
+
+	
+	
+
+	
+	
+		<div class="ui container tablet computer only grid">
+			<div class="item" onClick="$('.ui.sidebar').sidebar('setting', 'transition', 'overlay').sidebar('toggle');">
+				<i class="inverted big link sidebar icon" title="Show Sidebar"></i>
+			</div>
+		</div>
+	
+
+	
+	
+		<div class="item right">
+			<a href="/posts/index.xml">
+				<i class="inverted big link rss icon" title="RSS Feed"></i>
+			</a>
+		</div>
+	
+</nav>
+
+
+	<div class="ui centered grid">
+		
+		<div class="sixteen wide mobile only column">
+				<div class="ui inverted accordion">
+	<div id="header" class="ui inverted segment column box">		
+		
+		<header id="author" class="ui top attached center aligned inverted segment">
+			
+<div class="ui small circular image">
+	
+		<img src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062">
+	
+</div>
+
+
+<h3 class="ui header">
+	David Nguyen
+	<div class="sub header"></div>
+</h3>
+
+		</header>
+
+		
+		<div class=" title header-title">
+			
+				<div id="tag-category-pop" class="ui red right corner label">
+					<i class="hand point icon down" title="Show/hide tags and categories"></i>
+				</div>
+			
+		</div>
+		
+		
+		<div id="tag-category" class=" content">
+			
+				<section class="ui attached center aligned inverted segment dream-tags none flexbox">
+					
+					
+					
+
+
+
+
+	
+	
+		
+			
+			<a class="ui label brown " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+		
+			
+			<a class="ui label brown " href="/tags/deployment" title="deployment">deployment</a>
+		
+			
+			<a class="ui label violet " href="/tags/gocd" title="gocd">gocd</a>
+		
+			
+			<a class="ui label brown " href="/tags/pipeline" title="pipeline">pipeline</a>
+		
+			
+			<a class="ui label olive " href="/tags/aws" title="aws">aws</a>
+		
+			
+			<a class="ui label red " href="/tags/golang" title="golang">golang</a>
+		
+			
+			<a class="ui label blue " href="/tags/performance" title="performance">performance</a>
+		
+			
+			<a class="ui label red " href="/tags/prezto" title="prezto">prezto</a>
+		
+	
+
+
+				</section>
+			
+
+			
+				<section class="ui attached inverted segment dream-categories both flexbox">
+					<div class="inverted accordion">
+						
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/infrastructure">infrastructure</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile-utils/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/terraform-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Terraform Pipeline</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/a-sample-gocd-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>A Sample GoCD Pipeline</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/misc">misc</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/programming">programming</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile-utils/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/tips">tips</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+
+					</div>
+				</section>
+			
+		</div>
+
+		
+		<footer class="ui bottom attached center aligned inverted segment">
+			
+
+	<p>© 2018 - 2019 David Nguyen&#39;s Personal Blog</p>
+
+
+<p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with <a href="https://github.com/UtkarshVerma/hugo-dream-plus" target="_blank">Dream Plus</a> theme.</p>
+
+		</footer>
+	</div>
+</div>
+
+		</div>
+
+		<div class="sixteen wide mobile fifteen wide tablet twelve wide computer column post-list">
+			
+			<section class="ui secondary top attached black segment post-head">
+				<h1 class="post-title">
+					An utility to switch AWS profiles
+				</h1>
+
+				<div class="sub header">
+					<div><span><i class="calendar outline icon"></i>Sep 13, 2018</span></div>
+					
+					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/aws-profile-utils/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="57aea32d196126e400918d9aff211b4d"></a></span></div>
+					<div><span><i class="clock outline icon"></i>0 min read</span></div>
+					<div><span><i class="angle double up icon"></i>Last updated on Sep 13, 2018</span></div>
+				</div>
+				<hr>
+
+				
+					<div class="toc">
+						<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#introduction">Introduction</a>
+<ul>
+<li><a href="#first-attempt">First attempt</a></li>
+<li><a href="#second-attempt">Second Attempt</a></li>
+</ul></li>
+<li><a href="#code-structure">Code Structure</a>
+<ul>
+<li><a href="#gethandler">GetHandler</a></li>
+<li><a href="#sethandler">SetHandler</a></li>
+<li><a href="#versionhandler">VersionHandler</a></li>
+</ul></li>
+<li><a href="#build-process">Build Process</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul></li>
+</ul>
+</nav>
+					</div>
+				
+
+				<article class="post-content twemoji">
+					
+
+<pre>
+<b>TLDR</b>
+
+I created a tool to switch among multiple AWS profiles.
+Installation and usage instruction are at <a href="https://github.com/hpcsc/aws-profile-utils">GitHub repo</a>
+</pre>
+
+<h2 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h2>
+
+<p>If you are working with AWS frequently enough, you should be aware of AWS CLI and its 2 related configuration files:</p>
+
+<ul>
+<li>credentials file (default location is at <code>~/.aws/credentials</code>): store credentials for different aws profiles</li>
+<li>config file (default location is at <code>~/.aws/config</code>): store additional settings like region or more importantly the information about the AWS role that you can assume</li>
+</ul>
+
+<p>For people that need to switch back and forth among several AWS profiles like me (there are times when I have up to 10 profiles in credentials file), managing which account is the current one is a nightmare.
+Let&rsquo;s go through some of the common ways to manage current AWS profile as highlighted in <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#config-settings-and-precedence">https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#config-settings-and-precedence</a></p>
+
+<ul>
+<li>Command line options: I don&rsquo;t want to specify the profile in every command that I invoke</li>
+<li>Setting of environment variables (AWS_PROFILE, AWS_DEFAULT_PROFILE, etc): this approach only works with current terminal session. Once you open a new tab or re-open your terminal, you need to set it again. You can export it in your shell startup script (<code>.bashrc</code>, <code>.zshrc</code> etc) but changing profile is troublesome (edit startup script and re-source it)</li>
+<li>CLI configuration file/AWS credentials file: need to manually edit those files, copy the credentials of the profile that you want to switch to and set to default profile credentials. This is tedious and repetitive.</li>
+</ul>
+
+<h3 id="first-attempt">First attempt&nbsp;<a class="anchor" href="#first-attempt"><i class="small linkify icon"></i></a> </h3>
+
+<p>I wrote a small shell script that uses fzf to switch among profiles:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">local</span> <span class="nv">pattern</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="si">}</span>
+<span class="nb">local</span> <span class="nv">selected_profile</span><span class="o">=</span><span class="k">$(</span>cat ~/.aws/credentials <span class="p">|</span> awk <span class="s1">&#39;/\[.+\]/{ print substr($0, 2, length($0) - 2) }&#39;</span> <span class="p">|</span> fzf-tmux --height <span class="m">30</span>% --reverse -1 -0 --header <span class="s1">&#39;Select AWS profile&#39;</span> --query <span class="s2">&#34;</span><span class="nv">$pattern</span><span class="s2">&#34;</span><span class="k">)</span>
+<span class="nb">eval</span> <span class="s2">&#34;export AWS_DEFAULT_PROFILE=</span><span class="nv">$selected_profile</span><span class="s2">&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>What it does is just grepping all profile names in credentials file, pipe that to fzf for interactive selection and export <code>AWS_DEFAULT_PROFILE</code> variable. This works but has the limitation of environment variable approach above (only last for current terminal session). This also doesn&rsquo;t handle the case of assuming role in AWS.</p>
+
+<h3 id="second-attempt">Second Attempt&nbsp;<a class="anchor" href="#second-attempt"><i class="small linkify icon"></i></a> </h3>
+
+<p>I then looked for librarys/tools that can parse ini file format (that credentials and config files use) but not many options for shell script. So I wrote a python script that manipulates directly the credentials/config files instead of just setting the environment variable. It works but significantly slower compared to the shell script (I can notice a few seconds delay after selecting a profile).</p>
+
+<p>So that&rsquo;s how I ended up with writing a CLI program in Golang to manage AWS profile. Coincidentally I also wanted to try writing something in Golang since I&rsquo;m new to this language.</p>
+
+<h2 id="code-structure">Code Structure&nbsp;<a class="anchor" href="#code-structure"><i class="small linkify icon"></i></a> </h2>
+
+<p>Source code: <a href="https://github.com/hpcsc/aws-profile-utils">https://github.com/hpcsc/aws-profile-utils</a></p>
+
+<p>Example Usage:</p>
+
+<p><img src="https://raw.githubusercontent.com/hpcsc/aws-profile-utils/master/aws-profile-utils.gif" alt="" title="demo" /></p>
+
+<p>Disclaimer: I&rsquo;m a total noob in Golang</p>
+
+<p>The application is pretty simple. Starting from <code>main.go</code>, I created a map/dictionary of handlers, with the key is the command name (like <code>get</code>, <code>set</code>) and the value is an instance of Handler interface:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Handler</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Handle</span><span class="p">()</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Each handler defines its own arguments (using <code>kingpin</code>) and what to do when it&rsquo;s invoked.</p>
+
+<p>This is the function to create the handler map:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">createHandlerMap</span><span class="p">(</span><span class="nx">app</span> <span class="o">*</span><span class="nx">kingpin</span><span class="p">.</span><span class="nx">Application</span><span class="p">)</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">handlers</span><span class="p">.</span><span class="nx">Handler</span><span class="p">{</span>
+	<span class="nx">getHandler</span> <span class="o">:=</span> <span class="nx">handlers</span><span class="p">.</span><span class="nf">NewGetHandler</span><span class="p">(</span><span class="nx">app</span><span class="p">)</span>
+	<span class="nx">setHandler</span> <span class="o">:=</span> <span class="nx">handlers</span><span class="p">.</span><span class="nf">NewSetHandler</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+	<span class="nx">versionHandler</span> <span class="o">:=</span> <span class="nx">handlers</span><span class="p">.</span><span class="nf">NewVersionHandler</span><span class="p">(</span><span class="nx">app</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">handlers</span><span class="p">.</span><span class="nx">Handler</span> <span class="p">{</span>
+		<span class="nx">getHandler</span><span class="p">.</span><span class="nx">SubCommand</span><span class="p">.</span><span class="nf">FullCommand</span><span class="p">():</span> <span class="nx">getHandler</span><span class="p">,</span>
+		<span class="nx">setHandler</span><span class="p">.</span><span class="nx">SubCommand</span><span class="p">.</span><span class="nf">FullCommand</span><span class="p">():</span> <span class="nx">setHandler</span><span class="p">,</span>
+		<span class="nx">versionHandler</span><span class="p">.</span><span class="nx">SubCommand</span><span class="p">.</span><span class="nf">FullCommand</span><span class="p">():</span> <span class="nx">versionHandler</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>When the application is invoked with any command, the main function just needs to lookup the map based on command name and invoke the <code>Handle()</code> function.</p>
+
+<p>There are only 2 main commands and their handlers: <code>GetHandler</code> and <code>SetHandler</code></p>
+
+<h3 id="gethandler">GetHandler&nbsp;<a class="anchor" href="#gethandler"><i class="small linkify icon"></i></a> </h3>
+
+<p>This handler does a few things:
+- inspects <code>config</code> file, look for <code>default</code> section, compare the values in that <code>default</code> section with the values in other profiles in the same file
+- if there is a matching, return that value as current profile
+- if not, inspects <code>credentials</code> file and do the same things</p>
+
+<p>The reason it needs to look info <code>config</code> file before <code>credentials</code> file is because <code>config</code> file store configuration to assume a role and that will take precedence over <code>credentials</code> setting.</p>
+
+<p>The constructor function of <code>GetHandler</code> just defines command name, flags that it supports and returns a struct with all necessary information for processing later:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">NewGetHandler</span><span class="p">(</span><span class="nx">app</span> <span class="o">*</span><span class="nx">kingpin</span><span class="p">.</span><span class="nx">Application</span><span class="p">)</span> <span class="nx">GetHandler</span> <span class="p">{</span>
+	<span class="nx">subCommand</span> <span class="o">:=</span> <span class="nx">app</span><span class="p">.</span><span class="nf">Command</span><span class="p">(</span><span class="s">&#34;get&#34;</span><span class="p">,</span> <span class="s">&#34;get current AWS profile (that is set to default profile)&#34;</span><span class="p">)</span>
+
+	<span class="nx">credentialsFilePath</span> <span class="o">:=</span> <span class="nx">subCommand</span><span class="p">.</span><span class="nf">Flag</span><span class="p">(</span><span class="s">&#34;credentials-path&#34;</span><span class="p">,</span> <span class="s">&#34;Path to AWS Credentials file&#34;</span><span class="p">).</span><span class="nf">Default</span><span class="p">(</span><span class="s">&#34;~/.aws/credentials&#34;</span><span class="p">).</span><span class="nf">String</span><span class="p">()</span>
+	<span class="nx">configFilePath</span> <span class="o">:=</span> <span class="nx">subCommand</span><span class="p">.</span><span class="nf">Flag</span><span class="p">(</span><span class="s">&#34;config-path&#34;</span><span class="p">,</span> <span class="s">&#34;Path to AWS Config file&#34;</span><span class="p">).</span><span class="nf">Default</span><span class="p">(</span><span class="s">&#34;~/.aws/config&#34;</span><span class="p">).</span><span class="nf">String</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="nx">GetHandler</span><span class="p">{</span>
+		<span class="nx">SubCommand</span><span class="p">:</span> <span class="nx">subCommand</span><span class="p">,</span>
+		<span class="nx">Arguments</span><span class="p">:</span>   <span class="nx">GetHandlerArguments</span><span class="p">{</span>
+			<span class="nx">CredentialsFilePath</span><span class="p">:</span> <span class="nx">credentialsFilePath</span><span class="p">,</span>
+			<span class="nx">ConfigFilePath</span><span class="p">:</span> <span class="nx">configFilePath</span><span class="p">,</span>
+		<span class="p">},</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>When <code>GetHandler.Handle()</code> is invoked, the handler parses the <code>config</code> and <code>credentials</code> files to Golang ini files, iterates and compares values as mentioned above. Here&rsquo;s snippet for <code>config</code> file processing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">defaultRoleArn</span> <span class="o">:=</span> <span class="nx">configDefaultSection</span><span class="p">.</span><span class="nf">Key</span><span class="p">(</span><span class="s">&#34;role_arn&#34;</span><span class="p">).</span><span class="nf">Value</span><span class="p">()</span>
+<span class="nx">defaultSourceProfile</span> <span class="o">:=</span> <span class="nx">configDefaultSection</span><span class="p">.</span><span class="nf">Key</span><span class="p">(</span><span class="s">&#34;source_profile&#34;</span><span class="p">).</span><span class="nf">Value</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">section</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">configFile</span><span class="p">.</span><span class="nf">Sections</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">Compare</span><span class="p">(</span><span class="nx">section</span><span class="p">.</span><span class="nf">Name</span><span class="p">(),</span> <span class="s">&#34;default&#34;</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+    <span class="nx">section</span><span class="p">.</span><span class="nf">Haskey</span><span class="p">(</span><span class="s">&#34;role_arn&#34;</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+    <span class="nx">section</span><span class="p">.</span><span class="nf">HasKey</span><span class="p">(</span><span class="s">&#34;source_profile&#34;</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+    <span class="nx">strings</span><span class="p">.</span><span class="nf">Compare</span><span class="p">(</span><span class="nx">section</span><span class="p">.</span><span class="nf">Key</span><span class="p">(</span><span class="s">&#34;role_arn&#34;</span><span class="p">).</span><span class="nf">Value</span><span class="p">(),</span> <span class="nx">defaultRoleArn</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+    <span class="nx">strings</span><span class="p">.</span><span class="nf">Compare</span><span class="p">(</span><span class="nx">section</span><span class="p">.</span><span class="nf">Key</span><span class="p">(</span><span class="s">&#34;source_profile&#34;</span><span class="p">).</span><span class="nf">Value</span><span class="p">(),</span> <span class="nx">defaultSourceProfile</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;assuming %s\n&#34;</span><span class="p">,</span> <span class="nx">section</span><span class="p">.</span><span class="nf">Name</span><span class="p">())</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Logic for <code>credentials</code> is similar but it looks for <code>aws_access_key_id</code> instead.</p>
+
+<h3 id="sethandler">SetHandler&nbsp;<a class="anchor" href="#sethandler"><i class="small linkify icon"></i></a> </h3>
+
+<p>This handler does a bit more work:
+- get all profile names from both <code>credentials</code> and <code>config</code> files
+- pipe those profile names to fzf (invoked as a shell process) for user selection
+- once a profile is selected:
+  - if the selected profile is from credentials file:
+    - set the default profile in credentials file with the credentials from selected profile
+    - clear the default profile in config file (if have)
+  - if the selected profile is from config file:
+    - set the default profile in config file with <code>role_arn</code> and <code>source_profile</code> values of selected profile</p>
+
+<p>The code is straightforward, only a few things to highlight:</p>
+
+<ul>
+<li>The handler used to print the output message right in the <code>Handle()</code> function after processing. But I find it difficult to test that so the handler now returns a tuple of boolean and string, indicating whether the operation is successful (and should exit with exit code 0) and what message it wants to display. The main function is the one that does the actual printing of the message. By this way I can invoke the handler in the test and verify the expected message easily:</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">  <span class="nx">success</span><span class="p">,</span> <span class="nx">message</span> <span class="o">:=</span> <span class="nx">handler</span><span class="p">.</span><span class="nf">Handle</span><span class="p">()</span>
+  <span class="k">if</span> <span class="p">!</span><span class="nx">strings</span><span class="p">.</span><span class="nf">EqualFold</span><span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="nx">success</span> <span class="p">{</span>
+    <span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+  <span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>There are a few places that the handler causes side-effect like invoking fzf in a shell process and writing the updated config to file system. Again this is not so straightforward to test. I find mocking in Golang confusing and verbal so I tried to find alternative approach instead. I did a few searches on whether Golang has something like IO Monad like Haskell but unfortunately it doesn&rsquo;t have. So in the end I settle with extracting those side-effect logic to functions and let constructor take in functions with those signature:</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">  <span class="kd">func</span> <span class="nf">NewSetHandler</span><span class="p">(</span><span class="nx">app</span> <span class="o">*</span><span class="nx">kingpin</span><span class="p">.</span><span class="nx">Application</span><span class="p">,</span> <span class="nx">selectProfileFn</span> <span class="nx">SelectProfileFn</span><span class="p">,</span> <span class="nx">writeToFileFn</span> <span class="nx">WriteToFileFn</span><span class="p">)</span> <span class="nx">SetHandler</span> <span class="p">{</span>
+    <span class="c1">// omitted
+</span><span class="c1"></span>
+    <span class="nx">finalSelectProfileFn</span> <span class="o">:=</span> <span class="nx">selectProfileByFzf</span>
+    <span class="k">if</span> <span class="nx">selectProfileFn</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+      <span class="nx">finalSelectProfileFn</span> <span class="p">=</span> <span class="nx">selectProfileFn</span>
+    <span class="p">}</span>
+
+    <span class="nx">finalWriteToFileFn</span> <span class="o">:=</span> <span class="nx">writeToFile</span>
+    <span class="k">if</span> <span class="nx">writeToFileFn</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+      <span class="nx">finalWriteToFileFn</span> <span class="p">=</span> <span class="nx">writeToFileFn</span>
+    <span class="p">}</span>
+
+    <span class="c1">// omitted
+</span><span class="c1"></span>  <span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Here the constructor takes in 2 function parameters: one is used when fzf is invoked, the other is used when config is written to file system. If no arguments are provided for those functions, default functions (<code>selectProfileByFzf</code> and <code>writeToFile</code>) are used instead.</p>
+
+<p>I&rsquo;m not entirely satisfied with this approach because the 2 function parameters are not used anywhere else except for the tests. And Golang doesn&rsquo;t support function overloading or default parameter so all the clients that use this constructor function needs to pass in the value <code>nil</code> if it doesn&rsquo;t want to override the behavior of those functions.</p>
+
+<h3 id="versionhandler">VersionHandler&nbsp;<a class="anchor" href="#versionhandler"><i class="small linkify icon"></i></a> </h3>
+
+<p>This handler is very simple. It just prints out a string with formatted <code>version</code> variable. This <code>version</code> variable is set to the string &ldquo;undefined&rdquo; by default and will be overwritten by Golang compiler during the build process</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">version</span> <span class="p">=</span> <span class="s">&#34;undefined&#34;</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">handler</span> <span class="nx">VersionHandler</span><span class="p">)</span> <span class="nf">Handle</span><span class="p">()</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;aws-profile-utils (%s)&#34;</span><span class="p">,</span> <span class="nx">version</span><span class="p">)</span>
+	<span class="k">return</span> <span class="kc">true</span><span class="p">,</span> <span class="s">&#34;&#34;</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="build-process">Build Process&nbsp;<a class="anchor" href="#build-process"><i class="small linkify icon"></i></a> </h2>
+
+<p>This project is hosted in github and uses travis for build and release. The build for master branch and tags are slightly different.</p>
+
+<p>For commit to master branch:</p>
+
+<ul>
+<li>Travis picks up the commit, builds and tests</li>
+<li>If successful, rename the output binary (<code>aws-profile-utils</code>) to include OS type (<code>linux</code> or <code>osx</code>) and build number.</li>
+<li>Upload above binaries to Google Cloud Storage. I choose GCS because it has always-free tier.</li>
+</ul>
+
+<p>For a new tag that is pushed to github:</p>
+
+<ul>
+<li>New tag that is pushed to github will create a release with the name that is same with tag name</li>
+<li>Travis picks up the commit, builds and tests</li>
+<li>If successful, rename the output binary (<code>aws-profile-utils</code>) to include OS type (<code>linux</code> or <code>osx</code>)</li>
+<li>Modify github release created in the 1st step to include binaries generated in the last step.</li>
+</ul>
+
+<h2 id="conclusion">Conclusion&nbsp;<a class="anchor" href="#conclusion"><i class="small linkify icon"></i></a> </h2>
+
+<p>Some personal reflection after writing the program:</p>
+
+<ul>
+<li>Golang is easy to get started.</li>
+<li>I feel Golang lacks many constructs to have the code as concise and elegant as other languages, .e.g. it doesn&rsquo;t have built-in way to filter or map a slice, something that is very common and available in most other languages. It&rsquo;s true that filtering logic is very trivial to implement in Golang but if it&rsquo;s not provided by the language itself, developers will need to keep writing it over and over again. And for this reason, I feel Golang is quite verbose.</li>
+<li>Testing in Golang is also unnatural and verbose. Even though I already used <code>testify</code> library for helping with assertion and mocking, I still feel mocking requires a lot of setup.</li>
+</ul>
+
+<p>I may have a different opinion about above points if I have chance to play around more with Golang in the future.</p>
+
+				</article>				
+			</section>
+
+			
+			<section class="ui secondary attached segment dream-tags">
+				
+					
+
+
+
+
+	
+		<a class="ui label teal " href="/tags/programming" title="programming">programming</a>
+	
+		<a class="ui label blue " href="/tags/golang" title="golang">golang</a>
+	
+		<a class="ui label olive " href="/tags/aws" title="aws">aws</a>
+	
+		<a class="ui label pink " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+	
+
+
+				
+			</section>
+
+			
+			
+				<section class="ui secondary  attached segment share row box">
+					
+
+
+
+
+
+
+
+
+<div class="author">
+	
+	<img class="avatar" src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062">
+	
+</div>
+<div class="info grow flexbox">
+	
+	<p class="name">David Nguyen</p>
+	
+	<p class="desc"></p>
+</div>
+
+
+<section class="buttons row box">
+	<div class="facebook none flexbox" href="#" onclick="window.open(
+			'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+			'facebook-share-dialog',
+			'width=626,height=436'); return false;">
+		<button class="ui facebook button"><i class="facebook icon"></i>Share</button>
+	</div>
+	<div class="twitter none flexbox" onclick="window.open('https://twitter.com/intent/tweet?text=Read &quot;An utility to switch AWS profiles  https:\/\/pnguyen.io\/posts\/aws-profile-utils\/','_self')">
+		<button class="ui twitter button"><i class="twitter icon"></i>Tweet</button>
+	</div>
+</section>
+
+				</section>
+			
+
+			
+			
+			
+
+			
+			
+				<div class="ui secondary bottom attached stacked segment disqus">
+					
+<div id="disqus_thread"></div>
+<script>
+	var disqus_config = function () {
+		this.page.url = 'https:\/\/pnguyen.io\/posts\/aws-profile-utils\/';
+		this.page.identifier = '57aea32d196126e400918d9aff211b4d';
+	};
+	(function() {
+   	var d = document, s = d.createElement('script');
+   	s.src = 'https://' + 'pnguyen' + '.disqus.com/embed.js';
+   	s.setAttribute('data-timestamp', +new Date());
+   	(d.head || d.body).appendChild(s);
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+				</div>
+			
+		</div>
+	</div>
+
+				</div>
+				<div class="back">
+					
+<nav class="ui top secondary menu bar">
+	<div class="item">
+		<i class="inverted big link bullseye icon dream-flip-toggle" title="About Me"></i>
+	</div>
+	
+		
+	
+		
+	
+
+	
+	
+	
+	
+	
+	
+	
+		
+		
+			<div class="item">
+				<a href="https://github.com/hpcsc" target="	_blank">
+					<i id="ico" class="inverted big link github icon" title="GitHub"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+			<div class="item">
+				<a href="https://www.linkedin.com/in/nguyenhungphuong" target="	_blank">
+					<i id="ico" class="inverted big link linkedin icon" title="LinkedIn"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+</nav>
+
+
+
+<div class="ui centered grid about">
+	<div class="sixteen wide mobile fifteen wide tablet fifteen wide computer column about">
+		<section class="ui stacked segments">
+			<div class="ui inverted segment">
+				<article class="twemoji">
+					<h1>So, Who Am I?</h1>
+
+<hr />
+
+<p><br></p>
+
+<ul>
+<li>Software Developer at ThoughtWorks Singapore</li>
+<li>Interested in clean code, object oriented design, scalable software systems</li>
+<li>Hobbies: Martial Arts (Karate, Muay Thai, Boxing&hellip;)</li>
+</ul>
+				</article>
+			</div>
+		</section>
+	</div>
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+	
+	
+		<script id="dsq-count-scr" src="//pnguyen.disqus.com/count.js" async></script>
+	
+
+		
+
+<script src="/js/site.js"></script>
+
+
+
+	<script src="https://twemoji.maxcdn.com/2/twemoji.min.js?2.6"></script>
+
+
+
+
+
+
+
+
+	
+	<script>
+		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+		ga('create', 'UA-125420743-1', 'auto');
+		ga('send', 'pageview');
+	</script>
+	<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+		
+
+
+		
+
+	<script>
+		(function () {
+		  console.log("Twemoji up and making stuff colourful!");
+		  for (var b = document.getElementsByClassName("twemoji"), a = 0; a < b.length; a++) {
+			twemoji.parse(b[a]);
+		  }
+		})();
+	</script>
+
+
+	</body>
+</html>

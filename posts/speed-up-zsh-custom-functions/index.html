@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en-us">
 	<head>
-		<title>David Nguyen&#39;s Personal Blog</title>
+		<title>
+	Speed up ZSH loading of custom functions
+</title>
 		<style>
 	body {
 		display: block;
@@ -24,8 +26,10 @@
 
 
 	
+	
+	
 	<meta name="author" content="David Nguyen" />
-	<meta name="description" content="" />
+	<meta name="description" content="Speed up ZSH loading of custom functions" />
 
 
 
@@ -35,8 +39,6 @@
 <link rel="shortcut icon" href="images/favicon.ico">
 
 
-
-    <link rel="alternate" type="application/rss+xml" href="https://pnguyen.io/index.xml" title="David Nguyen's Personal Blog" />
 
 
 		
@@ -173,28 +175,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label brown " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label orange " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label pink " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label orange " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label red " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label orange " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label blue " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label pink " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 			
 			<a class="ui label red " href="/tags/aws" title="aws">aws</a>
 		
 			
-			<a class="ui label teal " href="/tags/golang" title="golang">golang</a>
+			<a class="ui label brown " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label brown " href="/tags/performance" title="performance">performance</a>
+			<a class="ui label teal " href="/tags/performance" title="performance">performance</a>
 		
 			
-			<a class="ui label olive " href="/tags/prezto" title="prezto">prezto</a>
+			<a class="ui label violet " href="/tags/prezto" title="prezto">prezto</a>
 		
 	
 
@@ -315,9 +317,6 @@ var bodyBgSwitchIndex = 0;
 			<div class="flipper">
 				<div class="front">
 					
-	
-	
-	
 	<nav class="ui top secondary menu bar">
 	
 	<div class="item">
@@ -326,14 +325,14 @@ var bodyBgSwitchIndex = 0;
 
 	
 	
-
-	
-	
 		<div class="item">
-			<a href="/posts">
-				<i class="inverted big link archive icon" title="Archive"></i>
+			<a href="/">
+				<i class="inverted big link home icon" title="Home"></i>
 			</a>
 		</div>
+	
+
+	
 	
 
 	
@@ -356,16 +355,14 @@ var bodyBgSwitchIndex = 0;
 
 	
 	
-		
-		<div class="item">
-			
-			</div>
-		<div class="item">
-			
-		</div>
-	
 
 	
+	
+		<div class="ui container tablet computer only grid">
+			<div class="item" onClick="$('.ui.sidebar').sidebar('setting', 'transition', 'overlay').sidebar('toggle');">
+				<i class="inverted big link sidebar icon" title="Show Sidebar"></i>
+			</div>
+		</div>
 	
 
 	
@@ -381,8 +378,8 @@ var bodyBgSwitchIndex = 0;
 
 	<div class="ui centered grid">
 		
-		<div class="fifteen wide mobile fifteen wide tablet four wide computer column">
-			<div class="ui inverted accordion">
+		<div class="sixteen wide mobile only column">
+				<div class="ui inverted accordion">
 	<div id="header" class="ui inverted segment column box">		
 		
 		<header id="author" class="ui top attached center aligned inverted segment">
@@ -402,16 +399,16 @@ var bodyBgSwitchIndex = 0;
 		</header>
 
 		
-		<div class="active title header-title">
+		<div class=" title header-title">
 			
 				<div id="tag-category-pop" class="ui red right corner label">
-					<i class="hand point icon up" title="Show/hide tags and categories"></i>
+					<i class="hand point icon down" title="Show/hide tags and categories"></i>
 				</div>
 			
 		</div>
 		
 		
-		<div id="tag-category" class="active content">
+		<div id="tag-category" class=" content">
 			
 				<section class="ui attached center aligned inverted segment dream-tags none flexbox">
 					
@@ -425,28 +422,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label brown " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label teal " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label brown " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label pink " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label orange " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label violet " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label violet " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label pink " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 			
-			<a class="ui label yellow " href="/tags/aws" title="aws">aws</a>
+			<a class="ui label green " href="/tags/aws" title="aws">aws</a>
 		
 			
-			<a class="ui label violet " href="/tags/golang" title="golang">golang</a>
+			<a class="ui label pink " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label blue " href="/tags/performance" title="performance">performance</a>
+			<a class="ui label yellow " href="/tags/performance" title="performance">performance</a>
 		
 			
-			<a class="ui label teal " href="/tags/prezto" title="prezto">prezto</a>
+			<a class="ui label yellow " href="/tags/prezto" title="prezto">prezto</a>
 		
 	
 
@@ -565,143 +562,198 @@ var bodyBgSwitchIndex = 0;
 
 		</div>
 
-		
-		<div class="fifteen wide mobile fifteen wide tablet eleven wide computer column post-list">
-			<div class="cards row box">
+		<div class="sixteen wide mobile fifteen wide tablet twelve wide computer column post-list">
+			
+			<section class="ui secondary top attached black segment post-head">
+				<h1 class="post-title">
+					Speed up ZSH loading of custom functions
+				</h1>
+
+				<div class="sub header">
+					<div><span><i class="calendar outline icon"></i>Jul 11, 2018</span></div>
+					
+					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="50cc7159b033bbd0dcc500ad5cfd49e6"></a></span></div>
+					<div><span><i class="clock outline icon"></i>3 min read</span></div>
+					<div><span><i class="angle double up icon"></i>Last updated on Jul 11, 2018</span></div>
+				</div>
+				<hr>
+
+				
+
+				<article class="post-content twemoji">
+					<p>I have been using zsh with Prezto for a few years and have always been conscious about what stuffs to put in my shell profile files like <code>.zshrc</code> so that a new shell can start as fast as it can.</p>
+
+<p>If comparing the startup time of my shell to shell startup time of most other people who I have worked with, my current startup time is not bad:</p>
+
+<p><img src="images/zsh-startup-before.png" alt="&quot;zsh startup time before&quot;" /></p>
+
+<p>In average, it takes around 0.5s to start.</p>
+
+<p>However today I manage to speed it up even further, using zsh autoloading of custom functions. The idea comes from this SOF answer: <a href="https://unix.stackexchange.com/a/33898">https://unix.stackexchange.com/a/33898</a>. In short, when you use <code>autoload</code> command with a file name, zsh will mark it to be loaded automatically upon its first reference. The content of the file is going to be function body and name of the file will be function name. <code>fpath</code> variable contains the search path for files that can be marked to be loaded automatically upon first usage.</p>
+
+<p>This feature can help to speed up my zsh startup time because I have quite a number of custom shell functions defined in a custom folder. Before this change, my <code>.zshrc</code> sourced all these files when starting up, even though I may not use it in current shell session:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="k">for</span> func_def in ~/.functions/*<span class="p">;</span> <span class="k">do</span>
+    <span class="nb">source</span> <span class="s2">&#34;</span><span class="nv">$func_def</span><span class="s2">&#34;</span>
+<span class="k">done</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>With autoloading feature, I can &ldquo;lazy load&rdquo; those custom functions and only load a function from the definition file whenever I use it for the first time. My <code>.zshrc</code> calls <code>autoload</code> to mark the custom functions to be loaded automatically (this call is not loading the actual files so will be much faster than using <code>source</code>)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">fpath</span><span class="o">=(</span><span class="nv">$fpath</span> ~/.functions<span class="o">)</span>
+autoload -Uz ~/.functions/**/*</code></pre></td></tr></table>
+</div>
+</div>
+<p>Here&rsquo;s the resutl after using <code>autoload</code>:</p>
+
+<p><img src="images/zsh-startup-after.png" alt="" title="zsh startup time after" /></p>
+
+<p>It takes 0.3s now, that&rsquo;s 40% faster than before.</p>
+
+<p>However this change also introduces a difficulty to my dotfiles installation script. Before this change, I just need to source and export files containing those custom functions at the beginning of the installation script, the remaining of the script can use those exported functions easily. With <code>autoloading</code>, each file now is expected to contain body of a function. Sourcing those files will execute those body immediately at sourcing time, which is not what I want. So I need to come up with an ugly trick to load these custom functions at the beginning of my dotfiles installation script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">autoload_functions</span><span class="o">=(</span>
+  execute
+  echo_with_color
+  is_macos
+  is_ubuntu
+  distro_name
+  <span class="c1">#...</span>
+<span class="o">)</span>
+
+<span class="k">for</span> f in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">autoload_functions</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="k">do</span>
+  <span class="nb">eval</span> <span class="s2">&#34;
+</span><span class="s2">    function </span><span class="nv">$f</span><span class="s2">() {
+</span><span class="s2">      </span><span class="k">$(</span>cat ./link/common/zsh/.functions/misc/<span class="nv">$f</span><span class="k">)</span><span class="s2">
+</span><span class="s2">    }
+</span><span class="s2">  &#34;</span>
+<span class="k">done</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>This script basically <code>cat</code> function body from those <code>autoload</code> files, and uses <code>eval</code> to define a function with the same name with the file</p>
+
+				</article>				
+			</section>
+
+			
+			<section class="ui secondary attached segment dream-tags">
 				
 					
 
 
-	
 
-
-
-<article class="blog-card none flexbox">
-	
-	<img class="image" src="/images/card-default-cover.png"></img>
-	<div class="title-content twemoji">
-		<h3><a class="title" href=https://pnguyen.io/posts/aws-profile-utils/>An utility to switch AWS profiles</a></h3>
-		<div class="intro twemoji">
-			
-				An utility to switch AWS profiles
-			
-		</div>
-	</div>
 
 	
-	<div class="utility-info">
-		<ul class="utility-list">
-			
-				<div><i class="comment icon"></i><span class="disqus-comment-count" data-disqus-identifier="57aea32d196126e400918d9aff211b4d"></span></div>
-			
-			<div><span><i class="calendar icon"></i>Sep 13, 2018</span></div>
-			<div><span><i class="clock icon"></i>0 min read</span></div>
-		</ul>
-	</div>
-	<div class="color-overlay"></div>
-</article>
+		<a class="ui label pink " href="/tags/shell" title="shell">shell</a>
+	
+		<a class="ui label purple " href="/tags/zsh" title="zsh">zsh</a>
+	
+		<a class="ui label orange " href="/tags/prezto" title="prezto">prezto</a>
+	
+		<a class="ui label violet " href="/tags/performance" title="performance">performance</a>
+	
+
 
 				
+			</section>
+
+			
+			
+				<section class="ui secondary  attached segment share row box">
 					
 
 
+
+
+
+
+
+
+<div class="author">
 	
-
-
-
-<article class="blog-card none flexbox">
+	<img class="avatar" src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062">
 	
-	<img class="image" src="/images/card-default-cover.png"></img>
-	<div class="title-content twemoji">
-		<h3><a class="title" href=https://pnguyen.io/posts/speed-up-zsh-custom-functions/>Speed up ZSH loading of custom functions</a></h3>
-		<div class="intro twemoji">
-			
-				Speed up ZSH loading of custom functions
-			
-		</div>
+</div>
+<div class="info grow flexbox">
+	
+	<p class="name">David Nguyen</p>
+	
+	<p class="desc"></p>
+</div>
+
+
+<section class="buttons row box">
+	<div class="facebook none flexbox" href="#" onclick="window.open(
+			'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+			'facebook-share-dialog',
+			'width=626,height=436'); return false;">
+		<button class="ui facebook button"><i class="facebook icon"></i>Share</button>
 	</div>
-
-	
-	<div class="utility-info">
-		<ul class="utility-list">
-			
-				<div><i class="comment icon"></i><span class="disqus-comment-count" data-disqus-identifier="50cc7159b033bbd0dcc500ad5cfd49e6"></span></div>
-			
-			<div><span><i class="calendar icon"></i>Jul 11, 2018</span></div>
-			<div><span><i class="clock icon"></i>3 min read</span></div>
-		</ul>
+	<div class="twitter none flexbox" onclick="window.open('https://twitter.com/intent/tweet?text=Read &quot;Speed up ZSH loading of custom functions  https:\/\/pnguyen.io\/posts\/speed-up-zsh-custom-functions\/','_self')">
+		<button class="ui twitter button"><i class="twitter icon"></i>Tweet</button>
 	</div>
-	<div class="color-overlay"></div>
-</article>
+</section>
 
-				
+				</section>
+			
+
+			
+			
+			
+
+			
+			
+				<div class="ui secondary bottom attached stacked segment disqus">
 					
+<div id="disqus_thread"></div>
+<script>
+	var disqus_config = function () {
+		this.page.url = 'https:\/\/pnguyen.io\/posts\/speed-up-zsh-custom-functions\/';
+		this.page.identifier = '50cc7159b033bbd0dcc500ad5cfd49e6';
+	};
+	(function() {
+   	var d = document, s = d.createElement('script');
+   	s.src = 'https://' + 'pnguyen' + '.disqus.com/embed.js';
+   	s.setAttribute('data-timestamp', +new Date());
+   	(d.head || d.body).appendChild(s);
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
-
-	
-
-
-
-<article class="blog-card none flexbox">
-	
-	<img class="image" src="/images/card-default-cover.png"></img>
-	<div class="title-content twemoji">
-		<h3><a class="title" href=https://pnguyen.io/posts/terraform-pipeline/>Terraform Pipeline</a></h3>
-		<div class="intro twemoji">
+				</div>
 			
-				Terraform Pipeline
-			
-		</div>
-	</div>
-
-	
-	<div class="utility-info">
-		<ul class="utility-list">
-			
-				<div><i class="comment icon"></i><span class="disqus-comment-count" data-disqus-identifier="2096263a26b328c48f47b3552a098b38"></span></div>
-			
-			<div><span><i class="calendar icon"></i>Jun 13, 2018</span></div>
-			<div><span><i class="clock icon"></i>9 min read</span></div>
-		</ul>
-	</div>
-	<div class="color-overlay"></div>
-</article>
-
-				
-					
-
-
-	
-
-
-
-<article class="blog-card none flexbox">
-	
-	<img class="image" src="/images/card-default-cover.png"></img>
-	<div class="title-content twemoji">
-		<h3><a class="title" href=https://pnguyen.io/posts/a-sample-gocd-pipeline/>A Sample GoCD Pipeline</a></h3>
-		<div class="intro twemoji">
-			
-				A Sample GoCD Pipeline
-			
-		</div>
-	</div>
-
-	
-	<div class="utility-info">
-		<ul class="utility-list">
-			
-				<div><i class="comment icon"></i><span class="disqus-comment-count" data-disqus-identifier="6d61faced519c8f7d23e15025affcbd6"></span></div>
-			
-			<div><span><i class="calendar icon"></i>Mar 30, 2018</span></div>
-			<div><span><i class="clock icon"></i>6 min read</span></div>
-		</ul>
-	</div>
-	<div class="color-overlay"></div>
-</article>
-
-				
-			</div>
 		</div>
 	</div>
 
@@ -796,9 +848,7 @@ var bodyBgSwitchIndex = 0;
 		
 	
 	
-		
-			<script id="dsq-count-scr" src="//pnguyen.disqus.com/count.js" async></script>
-		
+		<script id="dsq-count-scr" src="//pnguyen.disqus.com/count.js" async></script>
 	
 
 		

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>David Nguyen&#39;s Personal Blog</title>
+    <link>https://pnguyen.io/</link>
+    <description>Recent content on David Nguyen&#39;s Personal Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 13 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://pnguyen.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>An utility to switch AWS profiles</title>
+      <link>https://pnguyen.io/posts/aws-profile-utils/</link>
+      <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/aws-profile-utils/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Speed up ZSH loading of custom functions</title>
+      <link>https://pnguyen.io/posts/speed-up-zsh-custom-functions/</link>
+      <pubDate>Wed, 11 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/speed-up-zsh-custom-functions/</guid>
+      <description>I have been using zsh with Prezto for a few years and have always been conscious about what stuffs to put in my shell profile files like .zshrc so that a new shell can start as fast as it can.
+If comparing the startup time of my shell to shell startup time of most other people who I have worked with, my current startup time is not bad:
+In average, it takes around 0.</description>
+    </item>
+    
+    <item>
+      <title>Terraform Pipeline</title>
+      <link>https://pnguyen.io/posts/terraform-pipeline/</link>
+      <pubDate>Wed, 13 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/terraform-pipeline/</guid>
+      <description>Introduction In my current project, I have a chance to use Terraform and Packer to automate the process of setting up a new testing environment in AWS. However I always feel something is not right. Terraform is a tool that promotes infrastructure as code, immutable infrastructure, but what we do in this project doesn&amp;rsquo;t align to those principles:
+ after the servers are created using Terraform, they are maintained manually (.</description>
+    </item>
+    
+    <item>
+      <title>A Sample GoCD Pipeline</title>
+      <link>https://pnguyen.io/posts/a-sample-gocd-pipeline/</link>
+      <pubDate>Fri, 30 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/a-sample-gocd-pipeline/</guid>
+      <description>As a software developer at ThoughtWorks, I had always wanted to try out GoCD (an open source Continuous Integration and Continuous Delivery system originally developed by ThoughtWorks) but couldn&amp;rsquo;t find a chance until early of this week. My client team is currently using Bamboo from Atlassian as their CI server. Having played with Bamboo for the past one year at the client side, I feel the tool can do the job, but sometimes quite limited (.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pnguyen.io/404/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/404/</guid>
+      <description> Error 404: Page Not Found It seems that the page that you&amp;rsquo;re trying to access doesn&amp;rsquo;t exist. 😟 If you&amp;rsquo;re sure that it exists, chances are it might have been moved to a new link! You may search for it on the home page. </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pnguyen.io/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/about/</guid>
+      <description> So, Who Am I? ---- - Software Developer at ThoughtWorks Singapore - Interested in clean code, object oriented design, scalable software systems - Hobbies: Martial Arts (Karate, Muay Thai, Boxing...) </description>
+    </item>
+    
+  </channel>
+</rss>

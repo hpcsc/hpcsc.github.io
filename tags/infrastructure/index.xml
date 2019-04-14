@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>infrastructure on David Nguyen&#39;s Personal Blog</title>
+    <link>https://pnguyen.io/tags/infrastructure/</link>
+    <description>Recent content in infrastructure on David Nguyen&#39;s Personal Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 13 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://pnguyen.io/tags/infrastructure/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>An utility to switch AWS profiles</title>
+      <link>https://pnguyen.io/posts/aws-profile-utils/</link>
+      <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/aws-profile-utils/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Terraform Pipeline</title>
+      <link>https://pnguyen.io/posts/terraform-pipeline/</link>
+      <pubDate>Wed, 13 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/terraform-pipeline/</guid>
+      <description>Introduction In my current project, I have a chance to use Terraform and Packer to automate the process of setting up a new testing environment in AWS. However I always feel something is not right. Terraform is a tool that promotes infrastructure as code, immutable infrastructure, but what we do in this project doesn&amp;rsquo;t align to those principles:
+ after the servers are created using Terraform, they are maintained manually (.</description>
+    </item>
+    
+    <item>
+      <title>A Sample GoCD Pipeline</title>
+      <link>https://pnguyen.io/posts/a-sample-gocd-pipeline/</link>
+      <pubDate>Fri, 30 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/a-sample-gocd-pipeline/</guid>
+      <description>As a software developer at ThoughtWorks, I had always wanted to try out GoCD (an open source Continuous Integration and Continuous Delivery system originally developed by ThoughtWorks) but couldn&amp;rsquo;t find a chance until early of this week. My client team is currently using Bamboo from Atlassian as their CI server. Having played with Bamboo for the past one year at the client side, I feel the tool can do the job, but sometimes quite limited (.</description>
+    </item>
+    
+  </channel>
+</rss>
