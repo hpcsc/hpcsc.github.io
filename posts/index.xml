@@ -5,10 +5,19 @@
     <description>Recent content in Posts on David Nguyen&#39;s Personal Blog</description>
     <meta name="generator" content="Hugo 0.55.1" />
     <language>en-us</language>
-    <lastBuildDate>Thu, 13 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Apr 2019 20:44:12 +0800</lastBuildDate>
     
         <atom:link href="https://pnguyen.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>launchd service management in MacOS</title>
+      <link>https://pnguyen.io/posts/launchd-service-management/</link>
+      <pubDate>Sun, 14 Apr 2019 20:44:12 +0800</pubDate>
+      
+      <guid>https://pnguyen.io/posts/launchd-service-management/</guid>
+      <description>Using launchd to manage/schedule background processes in MacOS</description>
+    </item>
     
     <item>
       <title>An utility to switch AWS profiles</title>

@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<title>
+	launchd service management in MacOS
+</title>
+		<style>
+	body {
+		display: block;
+		--colorBG: "#40e0d0, #ff8c00, #ff0080";
+		
+			background: linear-gradient(to right, var(--colorBG)) !important;
+		
+	}
+
+	body, body.pushable {
+		background-repeat: no-repeat;
+	  	background-attachment: fixed;
+	  	background-size: cover !important;
+	}
+</style>
+
+		<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+	
+	
+	
+	<meta name="author" content="David Nguyen" />
+	<meta name="description" content="Using launchd to manage/schedule background processes in MacOS" />
+
+
+
+<meta name="generator" content="Hugo 0.55.1" />
+
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+
+
+
+		
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+<script
+	src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+
+ <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Inconsolata" rel="stylesheet"> 
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/site.css">
+
+
+
+
+
+
+	
+		<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/UtkarshVerma/hugo-dream-plus/ae11561d/exampleSite/static/css/highlight.css">
+	
+
+
+
+<style>
+	body.pushable {
+		display: block;
+		
+			background: linear-gradient(to right, var(--colorBG)) !important;
+		 ;
+	}
+</style>
+
+
+
+<script>
+	var colorBG =  true 
+	
+	var isMobile = ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) )
+	console.log("The client device is a "+(isMobile?"mobile":"PC")+".")
+</script>
+
+	</head>
+
+	<body>
+		<script>
+var prevBgIndex = 0;
+var bodyBgSwitchIndex = 0;
+
+
+
+
+
+
+	var gradients = [
+	  [],
+	  ['#40e0d0', '#ff8c00', '#ff0080'], 
+	  ['#3e5151', '#decba4'], 
+	  ['#11998e', '#38ef7d'], 
+	  ['#108dc7', '#ef8e38'], 
+	  ['#fc5c7d', '#6a82fb'], 
+	  ['#fc466b', '#3f5efb'], 
+	  ['#c94b4b', '#4b134f'], 
+	  ['#23074d', '#cc5333'] 
+	];
+	document.body.style.setProperty('--colorBG', connect(gradients[getRandomInt(0, gradients.length)]));
+
+
+	function getRandomInt(min, max) {
+	  min = Math.ceil(min);
+	  max = Math.floor(max);
+	  var random;
+	  while (1) {
+	    random = Math.floor(Math.random() * (max - min)) + min;
+	    if (random !== prevBgIndex) {
+	      prevBgIndex = random;
+	      break;
+	    }
+	  }
+	  return random;
+	}
+
+	function connect(arr) {
+	  var str = '';
+	  for (var i = 0; i < arr.length; i++) {
+	    if (i !== arr.length - 1) {
+	      str += arr[i] + ', ';
+	    } else {
+	      str += arr[i];
+	    }
+	  }
+	  return str;
+	}
+</script>
+
+
+
+
+		<div id="sidebar" class="ui sidebar inverted vertical menu">
+	
+	<section id="author" class="ui top attached center aligned inverted segment">
+		
+<div class="ui small circular image">
+	
+		<img src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062">
+	
+</div>
+
+
+<h3 class="ui header">
+	David Nguyen
+	<div class="sub header">Developer &amp; Karateka</div>
+</h3>
+
+	</section>
+
+	
+	
+		<section class="ui attached center aligned inverted segment sidebar-dream-tags">
+			
+			
+			
+			
+
+
+
+
+	
+	
+		
+			
+			<a class="ui label green " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+		
+			
+			<a class="ui label teal " href="/tags/deployment" title="deployment">deployment</a>
+		
+			
+			<a class="ui label olive " href="/tags/gocd" title="gocd">gocd</a>
+		
+			
+			<a class="ui label teal " href="/tags/pipeline" title="pipeline">pipeline</a>
+		
+			
+			<a class="ui label violet " href="/tags/aws" title="aws">aws</a>
+		
+			
+			<a class="ui label violet " href="/tags/golang" title="golang">golang</a>
+		
+			
+			<a class="ui label teal " href="/tags/launchd" title="launchd">launchd</a>
+		
+			
+			<a class="ui label brown " href="/tags/macos" title="macos">macos</a>
+		
+	
+
+
+		</section>
+	
+
+	
+	
+		<section class="ui attached inverted segment sidebar-dream-categories both flexbox">
+			<div class="ui inverted accordion">
+				
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/infrastructure">infrastructure</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile-utils/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/terraform-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Terraform Pipeline</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/a-sample-gocd-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>A Sample GoCD Pipeline</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/misc">misc</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>launchd service management in MacOS</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/programming">programming</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile-utils/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/tips">tips</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>launchd service management in MacOS</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+
+			</div>
+		</section>
+	
+
+	
+	<section id="footer" class="ui bottom attached center aligned inverted segment">
+		
+
+	<p>© 2018 - 2019 David Nguyen&#39;s Personal Blog</p>
+
+
+<p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with <a href="https://github.com/UtkarshVerma/hugo-dream-plus" target="_blank">Dream Plus</a> theme.</p>
+
+	</section>
+</div>
+
+
+		<div class="pusher">
+			<div class="flipper">
+				<div class="front">
+					
+	<nav class="ui top secondary menu bar">
+	
+	<div class="item">
+		<i class="inverted big link bullseye icon dream-flip-toggle" title="About Me"></i>
+	</div>
+
+	
+	
+		<div class="item">
+			<a href="/">
+				<i class="inverted big link home icon" title="Home"></i>
+			</a>
+		</div>
+	
+
+	
+	
+
+	
+	
+		<div class="item">
+			<a href="/tags">
+				<i class="inverted big link tags icon" title="All Tags"></i>
+			</a>
+		</div>
+	
+
+	
+	
+		<div class="item">
+			<a href="/categories">
+				<i class="inverted big link cubes icon" title="All Categories"></i>
+			</a>
+    	</div>
+	
+
+	
+	
+
+	
+	
+		<div class="ui container tablet computer only grid">
+			<div class="item" onClick="$('.ui.sidebar').sidebar('setting', 'transition', 'overlay').sidebar('toggle');">
+				<i class="inverted big link sidebar icon" title="Show Sidebar"></i>
+			</div>
+		</div>
+	
+
+	
+	
+		<div class="item right">
+			<a href="/posts/index.xml">
+				<i class="inverted big link rss icon" title="RSS Feed"></i>
+			</a>
+		</div>
+	
+</nav>
+
+
+	<div class="ui centered grid">
+		
+		<div class="sixteen wide mobile only column">
+				<div class="ui inverted accordion">
+	<div id="header" class="ui inverted segment column box">		
+		
+		<header id="author" class="ui top attached center aligned inverted segment">
+			
+<div class="ui small circular image">
+	
+		<img src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062">
+	
+</div>
+
+
+<h3 class="ui header">
+	David Nguyen
+	<div class="sub header">Developer &amp; Karateka</div>
+</h3>
+
+		</header>
+
+		
+		<div class=" title header-title">
+			
+				<div id="tag-category-pop" class="ui red right corner label">
+					<i class="hand point icon down" title="Show/hide tags and categories"></i>
+				</div>
+			
+		</div>
+		
+		
+		<div id="tag-category" class=" content">
+			
+				<section class="ui attached center aligned inverted segment dream-tags none flexbox">
+					
+					
+					
+
+
+
+
+	
+	
+		
+			
+			<a class="ui label green " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+		
+			
+			<a class="ui label purple " href="/tags/deployment" title="deployment">deployment</a>
+		
+			
+			<a class="ui label teal " href="/tags/gocd" title="gocd">gocd</a>
+		
+			
+			<a class="ui label purple " href="/tags/pipeline" title="pipeline">pipeline</a>
+		
+			
+			<a class="ui label yellow " href="/tags/aws" title="aws">aws</a>
+		
+			
+			<a class="ui label green " href="/tags/golang" title="golang">golang</a>
+		
+			
+			<a class="ui label orange " href="/tags/launchd" title="launchd">launchd</a>
+		
+			
+			<a class="ui label orange " href="/tags/macos" title="macos">macos</a>
+		
+	
+
+
+				</section>
+			
+
+			
+				<section class="ui attached inverted segment dream-categories both flexbox">
+					<div class="inverted accordion">
+						
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/infrastructure">infrastructure</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile-utils/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/terraform-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Terraform Pipeline</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/a-sample-gocd-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>A Sample GoCD Pipeline</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/misc">misc</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>launchd service management in MacOS</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/programming">programming</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile-utils/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<a class="link" href="/categories/tips">tips</a>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>launchd service management in MacOS</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+
+					</div>
+				</section>
+			
+		</div>
+
+		
+		<footer class="ui bottom attached center aligned inverted segment">
+			
+
+	<p>© 2018 - 2019 David Nguyen&#39;s Personal Blog</p>
+
+
+<p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with <a href="https://github.com/UtkarshVerma/hugo-dream-plus" target="_blank">Dream Plus</a> theme.</p>
+
+		</footer>
+	</div>
+</div>
+
+		</div>
+
+		<div class="sixteen wide mobile fifteen wide tablet twelve wide computer column post-list">
+			
+			<section class="ui secondary top attached black segment post-head">
+				<h1 class="post-title">
+					launchd service management in MacOS
+				</h1>
+
+				<div class="sub header">
+					<div><span><i class="calendar outline icon"></i>Apr 14, 2019</span></div>
+					
+					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/launchd-service-management/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="7e1a6c8036d5d1382199458ed012d5f9"></a></span></div>
+					<div><span><i class="clock outline icon"></i>6 min read</span></div>
+					<div><span><i class="angle double up icon"></i>Last updated on Apr 14, 2019</span></div>
+				</div>
+				<hr>
+
+				
+					<div class="toc">
+						<nav id="TableOfContents">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#manage-bamboo-ci-agent">Manage Bamboo CI Agent</a></li>
+<li><a href="#play-standup-song">Play Standup Song</a></li>
+</ul>
+</nav>
+					</div>
+				
+
+				<article class="post-content twemoji">
+					
+
+<h1 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h1>
+
+<p>In MacOS, <code>launchd</code> and <code>launchctl</code> are equivalent tools of <code>systemd</code> and <code>systemctl</code> in Linux. Basically <code>launchd</code> manages (start/stop/restart) daemons, applications and processes in MacOS. There are already several excellent tutorials online on <code>launchd</code>, for example:</p>
+
+<ul>
+<li><a href="http://www.launchd.info/">http://www.launchd.info/</a></li>
+<li><a href="https://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs">https://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs</a></li>
+</ul>
+
+<p>so I&rsquo;m not going to go through its concepts again. Instead this post is going to share 2 scenarios where I use <code>launchd</code> in my current actual project.</p>
+
+<h1 id="manage-bamboo-ci-agent">Manage Bamboo CI Agent&nbsp;<a class="anchor" href="#manage-bamboo-ci-agent"><i class="small linkify icon"></i></a> </h1>
+
+<p>In my current project, we use Bamboo from Atlassian as our CI server. We have a physical iMac where we setup 2 remote Bamboo agents to build our ios/android applications. From time to time, the agents died (due to various reasons such as process out of memory, etc) and we only realized that when the builds were scheduled for a long time but not picked up by the agents. A quick workaround that we thought of is to use <code>launchd</code> to automatically restart the agents when they die (of course we also created a card to inspect the real reason why the agents died).</p>
+
+<p>Bamboo Online Knowledge Base already has a post on setting up this at <a href="https://confluence.atlassian.com/bamkb/configuring-bamboo-to-start-automatically-on-startup-on-mac-os-x-302812729.html">https://confluence.atlassian.com/bamkb/configuring-bamboo-to-start-automatically-on-startup-on-mac-os-x-302812729.html</a> so the setup is quite straightforward for us. But to make the updating/maintaining of <code>launchd</code> configuration easier/repeatable in the future, we created a Bamboo playbook/role just for this purpose. Here&rsquo;s the structure of the Bamboo agent role:</p>
+
+<p><img src="images/ansible-bamboo-role-structure.png" alt="" title="Ansible Bamboo Role Structure" /></p>
+
+<p><code>vars/main.yml</code> only defines single variable <code>bamboo_home</code> which is the location of the Bamboo working directory at the remote machine.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml">bamboo_home: /path/to/bamboo/working/directory</code></pre></td></tr></table>
+</div>
+</div>
+<p><code>templates/com.atlassian.bamboo.plist</code> is the <code>launchd</code> plist file to describe the job that we want to run.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span class="cp">&lt;!DOCTYPE plist PUBLIC &#34;-//Apple//DTD PLIST 1.0//EN&#34; &#34;http://www.apple.com/DTDs/PropertyList-1.0.dtd&#34;&gt;</span>
+<span class="nt">&lt;plist</span> <span class="na">version=</span><span class="s">&#34;1.0&#34;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;dict&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>com.atlassian.bamboo.{{ agent_name }}<span class="nt">&lt;/string&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>UserName<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>{{ remote_user }}<span class="nt">&lt;/string&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>EnvironmentVariables<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;dict&gt;</span>
+            <span class="nt">&lt;key&gt;</span>LC_CTYPE<span class="nt">&lt;/key&gt;</span>
+            <span class="nt">&lt;string&gt;</span>UTF-8<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;/dict&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;array&gt;</span>
+            <span class="nt">&lt;string&gt;</span>zsh<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;string&gt;</span>--login<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;string&gt;</span>-c<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;string&gt;</span>java -jar -Dbamboo.home={{ bamboo_home }}/{{ agent_name }} {{ bamboo_home}}/atlassian-bamboo-agent-installer-6.4.0.jar https://bamboo.server.com/agentServer/<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;/array&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>{{ bamboo_home }}/{{ agent_name }}.log<span class="nt">&lt;/string&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>{{ bamboo_home }}/{{ agent_name }}.log<span class="nt">&lt;/string&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>SessionCreate<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;true/&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>RunAtLoad<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;true/&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>KeepAlive<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;true/&gt;</span>
+    <span class="nt">&lt;/dict&gt;</span>
+<span class="nt">&lt;/plist&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>This is an Ansible template file so that we can substitute some information on <code>bamboo_home</code>, <code>agent_name</code> (since the same role can be used to run multiple agents, we need <code>agent_name</code> to differentiate between agents. This variable is passed in when the role is applied in the playbook). Most of the keys are self-explanatory, only 2 things that are important to remember:</p>
+
+<ul>
+<li>We use zsh to execute the entrypoint command for Bamboo agent since we want the agent process to inherit some of the settings/environment variables set in <code>.zshrc</code> (.e.g. <code>PATH</code>). Admittedly this is not very nice since it makes Bamboo agent process to be dependent on the content of <code>.zshrc</code> at the time of starting up. To make it more reliable, we can set all the environment variables that we need in this plist file before running the Bamboo agent entrypoint command but that can be a maintenance headache in the future. So for now we are still ok with using <code>.zshrc</code>.</li>
+<li>We explicitly set <code>LC_CTYPE</code> variable to <code>UTF-8</code> here to make sure Bamboo agent is able to display Unicode characters properly. Before moving to <code>launchd</code>, we just started the agents manually in iTerm and apparently iTerm setups this variable correctly for you. This caused us quite a bit of trouble at the beginning.</li>
+</ul>
+
+<p>Lastly is the <code>tasks/main.yml</code> which defines the tasks to run:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yml" data-lang="yml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yml" data-lang="yml">-<span class="w"> </span>name<span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Check plist file exists&#34;</span><span class="w">
+</span><span class="w">  </span>stat<span class="p">:</span><span class="w">
+</span><span class="w">    </span>path<span class="p">:</span><span class="w"> </span>/Library/LaunchDaemons/com.atlassian.bamboo.{{<span class="w"> </span>agent_name<span class="w"> </span>}}.plist<span class="w">
+</span><span class="w">  </span>register<span class="p">:</span><span class="w"> </span>plist_file<span class="w">
+</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span>name<span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Unload launchd service&#34;</span><span class="w">
+</span><span class="w">  </span>become<span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span>command<span class="p">:</span><span class="w"> </span><span class="s2">&#34;launchctl unload /Library/LaunchDaemons/com.atlassian.bamboo.{{ agent_name }}.plist&#34;</span><span class="w">
+</span><span class="w">  </span>when<span class="p">:</span><span class="w"> </span>plist_file.stat.exists<span class="w"> </span>==<span class="w"> </span>True<span class="w">
+</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span>name<span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Copy bamboo plist&#34;</span><span class="w">
+</span><span class="w">  </span>become<span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span>template<span class="p">:</span><span class="w">
+</span><span class="w">    </span>src<span class="p">:</span><span class="w"> </span><span class="s2">&#34;com.atlassian.bamboo.plist&#34;</span><span class="w">
+</span><span class="w">    </span>dest<span class="p">:</span><span class="w"> </span><span class="s2">&#34;/Library/LaunchDaemons/com.atlassian.bamboo.{{ agent_name }}.plist&#34;</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span>name<span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Load launchd service&#34;</span><span class="w">
+</span><span class="w">  </span>become<span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span>command<span class="p">:</span><span class="w"> </span><span class="s2">&#34;launchctl load /Library/LaunchDaemons/com.atlassian.bamboo.{{ agent_name }}.plist&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>First, it checks whether the plist file exists at target location. There&rsquo;s 1 plist file for each agent. If plist file exists, it will try to unload the service, copy over the new plist file and reload it.</p>
+
+<p>And here&rsquo;s how this Ansible role is used in the playbook:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yml" data-lang="yml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yml" data-lang="yml">roles<span class="p">:</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span>role<span class="p">:</span><span class="w"> </span>bamboo<span class="w">
+</span><span class="w">  </span>agent_name<span class="p">:</span><span class="w"> </span>agent1<span class="w">
+</span><span class="w"></span>-<span class="w"> </span>role<span class="p">:</span><span class="w"> </span>bamboo<span class="w">
+</span><span class="w">  </span>agent_name<span class="p">:</span><span class="w"> </span>agent2</code></pre></td></tr></table>
+</div>
+</div>
+<p>Since we setup this mechanism, we haven&rsquo;t encountered the issue of Bamboo agents die randomly again. As a side benefit, whenever the iMac is restarted, the agents are also started automatically.</p>
+
+<p>Also as a note: <code>launchd</code> is only able to monitor and restart processes that exitted unexpectedly. It&rsquo;s not able to determine whether a process hangs or is unresponsive.</p>
+
+<h1 id="play-standup-song">Play Standup Song&nbsp;<a class="anchor" href="#play-standup-song"><i class="small linkify icon"></i></a> </h1>
+
+<p>Our team has standup every morning at 10AM. To alert everyone when it&rsquo;s standup time, we use the same iMac above to play a short and catchy song at exactly 10AM.</p>
+
+<p>In the beginning, we setup recurring calendar invite and let it run an AppleScript to turn on volume and play song when the event is reached. This is working fine but we don&rsquo;t like the idea of cluttering the calendar for this purpose, so we turn to <code>launchd</code> to schedule this recurring task. Apparently <code>launchd</code> has support for recurring task scheduling with similar capability as cron (although its syntax is much more verbal and less powerful than cron syntax)</p>
+
+<p>This is almost the same process like the Bamboo agent job above so we also use Ansible to setup:</p>
+
+<p><img src="images/ansible-standup-alert-role-structure.png" alt="" title="Ansible Standup Alert Role Structure" /></p>
+
+<p>The structure is the same with Bamboo agent role. One thing of interest is <code>play-standup-songs.sh</code> script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="cp">#!/bin/bash
+</span><span class="cp"></span>
+<span class="nb">set</span> -e
+
+osascript -e <span class="s2">&#34;set Volume 5&#34;</span>
+afplay ~/workspace/standup/standup.mp3
+
+osascript -e <span class="s2">&#34;set Volume 4&#34;</span>
+afplay ~/workspace/standup/standup1.mp3
+
+osascript -e <span class="s2">&#34;set Volume 0&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>This script uses AppleScript to set volume to maximum, play 1st audio file, reduce volume a little and play 2nd audio file before muting the volume</p>
+
+<p>And here&rsquo;s the content of plist file</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span class="cp">&lt;!DOCTYPE plist PUBLIC &#34;-//Apple//DTD PLIST 1.0//EN&#34; &#34;http://www.apple.com/DTDs/PropertyList-1.0.dtd&#34;&gt;</span>
+<span class="nt">&lt;plist</span> <span class="na">version=</span><span class="s">&#34;1.0&#34;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;dict&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>{{ plist_file_name }}<span class="nt">&lt;/string&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>UserName<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>{{ remote_user }}<span class="nt">&lt;/string&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;array&gt;</span>
+            <span class="nt">&lt;string&gt;</span>{{ standup_dir }}/play-standup-songs.sh<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;/array&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>{{ standup_dir }}/standup.log<span class="nt">&lt;/string&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>{{ standup_dir }}/standup.log<span class="nt">&lt;/string&gt;</span>
+
+        <span class="nt">&lt;key&gt;</span>StartCalendarInterval<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;array&gt;</span>
+            {% for weekday in range(1, 6) %}
+            <span class="nt">&lt;dict&gt;</span>
+                <span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
+                <span class="nt">&lt;integer&gt;</span>10<span class="nt">&lt;/integer&gt;</span>
+                <span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
+                <span class="nt">&lt;integer&gt;</span>00<span class="nt">&lt;/integer&gt;</span>
+                <span class="nt">&lt;key&gt;</span>Weekday<span class="nt">&lt;/key&gt;</span>
+                <span class="nt">&lt;integer&gt;</span>{{ weekday }}<span class="nt">&lt;/integer&gt;</span>
+            <span class="nt">&lt;/dict&gt;</span>
+            {% endfor %}
+        <span class="nt">&lt;/array&gt;</span>
+    <span class="nt">&lt;/dict&gt;</span>
+<span class="nt">&lt;/plist&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Notice the <code>StartCalendarInterval</code> key. This is the equivalent of cron expression in <code>launchd</code>. <code>StartCalendarInterval</code> has quite a verbal way of specifying an event happening multiple days per week: 1 <code>dict</code> in the array for each day. Fortunately I can use Python for loop to create multiple <code>dict</code> in Ansible template. The ending result will look something like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;key&gt;</span>StartCalendarInterval<span class="nt">&lt;/key&gt;</span>
+<span class="nt">&lt;array&gt;</span>
+    <span class="nt">&lt;dict&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>10<span class="nt">&lt;/integer&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>00<span class="nt">&lt;/integer&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Weekday<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>1<span class="nt">&lt;/integer&gt;</span>
+    <span class="nt">&lt;/dict&gt;</span>
+    <span class="nt">&lt;dict&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>10<span class="nt">&lt;/integer&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>00<span class="nt">&lt;/integer&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Weekday<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>2<span class="nt">&lt;/integer&gt;</span>
+    <span class="nt">&lt;/dict&gt;</span>
+    <span class="nt">&lt;dict&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>10<span class="nt">&lt;/integer&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>00<span class="nt">&lt;/integer&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Weekday<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>3<span class="nt">&lt;/integer&gt;</span>
+    <span class="nt">&lt;/dict&gt;</span>
+    <span class="nt">&lt;dict&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>10<span class="nt">&lt;/integer&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>00<span class="nt">&lt;/integer&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Weekday<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>4<span class="nt">&lt;/integer&gt;</span>
+    <span class="nt">&lt;/dict&gt;</span>
+    <span class="nt">&lt;dict&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>10<span class="nt">&lt;/integer&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>00<span class="nt">&lt;/integer&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Weekday<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;integer&gt;</span>5<span class="nt">&lt;/integer&gt;</span>
+    <span class="nt">&lt;/dict&gt;</span>
+<span class="nt">&lt;/array&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+				</article>				
+			</section>
+
+			
+			<section class="ui secondary attached segment dream-tags">
+				
+					
+
+
+
+
+	
+		<a class="ui label olive " href="/tags/macos" title="macos">macos</a>
+	
+		<a class="ui label pink " href="/tags/launchd" title="launchd">launchd</a>
+	
+
+
+				
+			</section>
+
+			
+			
+				<section class="ui secondary  attached segment share row box">
+					
+
+
+
+
+
+
+
+
+<div class="author">
+	
+	<img class="avatar" src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062">
+	
+</div>
+<div class="info grow flexbox">
+	
+	<p class="name">David Nguyen</p>
+	
+	<p class="desc">Developer &amp; Karateka</p>
+</div>
+
+
+<section class="buttons row box">
+	<div class="facebook none flexbox" href="#" onclick="window.open(
+			'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+			'facebook-share-dialog',
+			'width=626,height=436'); return false;">
+		<button class="ui facebook button"><i class="facebook icon"></i>Share</button>
+	</div>
+	<div class="twitter none flexbox" onclick="window.open('https://twitter.com/intent/tweet?text=Read &quot;launchd service management in MacOS  https:\/\/pnguyen.io\/posts\/launchd-service-management\/','_self')">
+		<button class="ui twitter button"><i class="twitter icon"></i>Tweet</button>
+	</div>
+</section>
+
+				</section>
+			
+
+			
+			
+			
+
+			
+			
+				<div class="ui secondary bottom attached stacked segment disqus">
+					
+<div id="disqus_thread"></div>
+<script>
+	var disqus_config = function () {
+		this.page.url = 'https:\/\/pnguyen.io\/posts\/launchd-service-management\/';
+		this.page.identifier = '7e1a6c8036d5d1382199458ed012d5f9';
+	};
+	(function() {
+   	var d = document, s = d.createElement('script');
+   	s.src = 'https://' + 'pnguyen' + '.disqus.com/embed.js';
+   	s.setAttribute('data-timestamp', +new Date());
+   	(d.head || d.body).appendChild(s);
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+				</div>
+			
+		</div>
+	</div>
+
+				</div>
+				<div class="back">
+					
+<nav class="ui top secondary menu bar">
+	<div class="item">
+		<i class="inverted big link bullseye icon dream-flip-toggle" title="About Me"></i>
+	</div>
+	
+		
+	
+		
+	
+
+	
+	
+	
+	
+	
+	
+	
+		
+		
+			<div class="item">
+				<a href="https://github.com/hpcsc" target="	_blank">
+					<i id="ico" class="inverted big link github icon" title="GitHub"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+			<div class="item">
+				<a href="https://www.linkedin.com/in/nguyenhungphuong" target="	_blank">
+					<i id="ico" class="inverted big link linkedin icon" title="LinkedIn"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+</nav>
+
+
+
+<div class="ui centered grid about">
+	<div class="sixteen wide mobile fifteen wide tablet fifteen wide computer column about">
+		<section class="ui stacked segments">
+			<div class="ui inverted segment">
+				<article class="twemoji">
+					<h1>So, Who Am I?</h1>
+
+<hr />
+
+<p><br></p>
+
+<ul>
+<li>Software Developer at ThoughtWorks Singapore</li>
+<li>Interested in clean code, object oriented design, scalable software systems</li>
+<li>Hobbies: Martial Arts (Karate, Muay Thai, Boxing&hellip;)</li>
+</ul>
+				</article>
+			</div>
+		</section>
+	</div>
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+	
+	
+		<script id="dsq-count-scr" src="//pnguyen.disqus.com/count.js" async></script>
+	
+
+		
+
+<script src="/js/site.js"></script>
+
+
+
+	<script src="https://twemoji.maxcdn.com/2/twemoji.min.js?2.6"></script>
+
+
+
+
+
+
+
+
+	
+	<script>
+		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+		ga('create', 'UA-125420743-1', 'auto');
+		ga('send', 'pageview');
+	</script>
+	<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+		
+
+
+		
+
+	<script>
+		(function () {
+		  console.log("Twemoji up and making stuff colourful!");
+		  for (var b = document.getElementsByClassName("twemoji"), a = 0; a < b.length; a++) {
+			twemoji.parse(b[a]);
+		  }
+		})();
+	</script>
+
+
+	</body>
+</html>

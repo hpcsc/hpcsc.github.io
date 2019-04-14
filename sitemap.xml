@@ -3,32 +3,61 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://pnguyen.io/posts/aws-profile-utils/</loc>
-    <lastmod>2018-09-13T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://pnguyen.io/categories/</loc>
-    <lastmod>2018-09-13T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://pnguyen.io/</loc>
-    <lastmod>2018-09-13T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://pnguyen.io/posts/</loc>
-    <lastmod>2018-09-13T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://pnguyen.io/tags/</loc>
-    <lastmod>2018-09-13T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/launchd/</loc>
+    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/posts/launchd-service-management/</loc>
+    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/macos/</loc>
+    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/categories/misc/</loc>
+    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/categories/tips/</loc>
+    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/posts/aws-profile-utils/</loc>
+    <lastmod>2018-09-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -44,19 +73,13 @@
   </url>
   
   <url>
-    <loc>https://pnguyen.io/tags/infrastructure/</loc>
-    <lastmod>2018-09-13T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://pnguyen.io/categories/infrastructure/</loc>
     <lastmod>2018-09-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://pnguyen.io/tags/programming/</loc>
+    <loc>https://pnguyen.io/tags/infrastructure/</loc>
     <lastmod>2018-09-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -68,14 +91,14 @@
   </url>
   
   <url>
-    <loc>https://pnguyen.io/posts/speed-up-zsh-custom-functions/</loc>
-    <lastmod>2018-07-11T00:00:00+00:00</lastmod>
+    <loc>https://pnguyen.io/tags/programming/</loc>
+    <lastmod>2018-09-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://pnguyen.io/categories/misc/</loc>
+    <loc>https://pnguyen.io/posts/speed-up-zsh-custom-functions/</loc>
     <lastmod>2018-07-11T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -92,12 +115,6 @@
   
   <url>
     <loc>https://pnguyen.io/tags/shell/</loc>
-    <lastmod>2018-07-11T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/categories/tips/</loc>
     <lastmod>2018-07-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

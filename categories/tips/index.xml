@@ -6,10 +6,21 @@
     <description>Recent content in tips on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 11 Jul 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Apr 2019 20:44:12 +0800</lastBuildDate>
     
 	<atom:link href="https://pnguyen.io/categories/tips/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>launchd service management in MacOS</title>
+      <link>https://pnguyen.io/posts/launchd-service-management/</link>
+      <pubDate>Sun, 14 Apr 2019 20:44:12 +0800</pubDate>
+      
+      <guid>https://pnguyen.io/posts/launchd-service-management/</guid>
+      <description>Introduction In MacOS, launchd and launchctl are equivalent tools of systemd and systemctl in Linux. Basically launchd manages (start/stop/restart) daemons, applications and processes in MacOS. There are already several excellent tutorials online on launchd, for example:
+ http://www.launchd.info/ https://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs  so I&amp;rsquo;m not going to go through its concepts again. Instead this post is going to share 2 scenarios where I use launchd in my current actual project.
+Manage Bamboo CI Agent In my current project, we use Bamboo from Atlassian as our CI server.</description>
+    </item>
     
     <item>
       <title>Speed up ZSH loading of custom functions</title>

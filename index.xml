@@ -6,10 +6,21 @@
     <description>Recent content on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 13 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Apr 2019 20:44:12 +0800</lastBuildDate>
     
 	<atom:link href="https://pnguyen.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>launchd service management in MacOS</title>
+      <link>https://pnguyen.io/posts/launchd-service-management/</link>
+      <pubDate>Sun, 14 Apr 2019 20:44:12 +0800</pubDate>
+      
+      <guid>https://pnguyen.io/posts/launchd-service-management/</guid>
+      <description>Introduction In MacOS, launchd and launchctl are equivalent tools of systemd and systemctl in Linux. Basically launchd manages (start/stop/restart) daemons, applications and processes in MacOS. There are already several excellent tutorials online on launchd, for example:
+ http://www.launchd.info/ https://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs  so I&amp;rsquo;m not going to go through its concepts again. Instead this post is going to share 2 scenarios where I use launchd in my current actual project.
+Manage Bamboo CI Agent In my current project, we use Bamboo from Atlassian as our CI server.</description>
+    </item>
     
     <item>
       <title>An utility to switch AWS profiles</title>
@@ -17,7 +28,8 @@
       <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/posts/aws-profile-utils/</guid>
-      <description></description>
+      <description>TLDR I created a tool to switch among multiple AWS profiles. Installation and usage instruction are at GitHub repo  Introduction If you are working with AWS frequently enough, you should be aware of AWS CLI and its 2 related configuration files:
+ credentials file (default location is at ~/.aws/credentials): store credentials for different aws profiles config file (default location is at ~/.aws/config): store additional settings like region or more importantly the information about the AWS role that you can assume  For people that need to switch back and forth among several AWS profiles like me (there are times when I have up to 10 profiles in credentials file), managing which account is the current one is a nightmare.</description>
     </item>
     
     <item>

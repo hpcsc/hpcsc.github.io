@@ -6,10 +6,28 @@
     <description>Recent content in Categories on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 13 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Apr 2019 20:44:12 +0800</lastBuildDate>
     
 	<atom:link href="https://pnguyen.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>misc</title>
+      <link>https://pnguyen.io/categories/misc/</link>
+      <pubDate>Sun, 14 Apr 2019 20:44:12 +0800</pubDate>
+      
+      <guid>https://pnguyen.io/categories/misc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tips</title>
+      <link>https://pnguyen.io/categories/tips/</link>
+      <pubDate>Sun, 14 Apr 2019 20:44:12 +0800</pubDate>
+      
+      <guid>https://pnguyen.io/categories/tips/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>infrastructure</title>
@@ -26,24 +44,6 @@
       <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/categories/programming/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>misc</title>
-      <link>https://pnguyen.io/categories/misc/</link>
-      <pubDate>Wed, 11 Jul 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://pnguyen.io/categories/misc/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tips</title>
-      <link>https://pnguyen.io/categories/tips/</link>
-      <pubDate>Wed, 11 Jul 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://pnguyen.io/categories/tips/</guid>
       <description></description>
     </item>
     

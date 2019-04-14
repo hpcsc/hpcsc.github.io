@@ -6,10 +6,28 @@
     <description>Recent content in Tags on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 13 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Apr 2019 20:44:12 +0800</lastBuildDate>
     
 	<atom:link href="https://pnguyen.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>launchd</title>
+      <link>https://pnguyen.io/tags/launchd/</link>
+      <pubDate>Sun, 14 Apr 2019 20:44:12 +0800</pubDate>
+      
+      <guid>https://pnguyen.io/tags/launchd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>macos</title>
+      <link>https://pnguyen.io/tags/macos/</link>
+      <pubDate>Sun, 14 Apr 2019 20:44:12 +0800</pubDate>
+      
+      <guid>https://pnguyen.io/tags/macos/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>aws</title>

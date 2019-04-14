@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>misc on David Nguyen&#39;s Personal Blog</title>
-    <link>https://pnguyen.io/categories/misc/</link>
-    <description>Recent content in misc on David Nguyen&#39;s Personal Blog</description>
+    <title>launchd on David Nguyen&#39;s Personal Blog</title>
+    <link>https://pnguyen.io/tags/launchd/</link>
+    <description>Recent content in launchd on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 14 Apr 2019 20:44:12 +0800</lastBuildDate>
     
-	<atom:link href="https://pnguyen.io/categories/misc/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://pnguyen.io/tags/launchd/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -20,17 +20,6 @@
       <description>Introduction In MacOS, launchd and launchctl are equivalent tools of systemd and systemctl in Linux. Basically launchd manages (start/stop/restart) daemons, applications and processes in MacOS. There are already several excellent tutorials online on launchd, for example:
  http://www.launchd.info/ https://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs  so I&amp;rsquo;m not going to go through its concepts again. Instead this post is going to share 2 scenarios where I use launchd in my current actual project.
 Manage Bamboo CI Agent In my current project, we use Bamboo from Atlassian as our CI server.</description>
-    </item>
-    
-    <item>
-      <title>Speed up ZSH loading of custom functions</title>
-      <link>https://pnguyen.io/posts/speed-up-zsh-custom-functions/</link>
-      <pubDate>Wed, 11 Jul 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://pnguyen.io/posts/speed-up-zsh-custom-functions/</guid>
-      <description>I have been using zsh with Prezto for a few years and have always been conscious about what stuffs to put in my shell profile files like .zshrc so that a new shell can start as fast as it can.
-If comparing the startup time of my shell to shell startup time of most other people who I have worked with, my current startup time is not bad:
-In average, it takes around 0.</description>
     </item>
     
   </channel>
