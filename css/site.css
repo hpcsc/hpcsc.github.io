@@ -733,7 +733,6 @@ p > img:not(.emoji), li > img {
 
 #tag-category .dream-categories {
   overflow-x: hidden;
-  max-height: 9em;
 }
 /*Card settings*/
 .blog-card {
