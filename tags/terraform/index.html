@@ -119,188 +119,45 @@ var bodyBgSwitchIndex = 0;
 
 
 
-		<div id="sidebar" class="ui sidebar inverted vertical menu">
+		<div id="sidebar" class="ui labeled icon thin sidebar inverted vertical menu">
 	
-	<section id="author" class="ui top attached center aligned inverted segment">
-		
-<div class="ui small circular image">
-	
-		<img src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062?s=150">
-	
-</div>
-
-
-<h3 class="ui header">
-	David Nguyen
-	<div class="sub header">Developer &amp; Karateka</div>
-</h3>
-
-	</section>
+	<a class="item" href="/" >
+		<i class="inverted big link home icon" title="Home"></i>
+		Home
+	</a>
 
 	
+	<a class="item" href="/about">
+		<i class="inverted big link address card icon" title="About Me"></i>
+		About Me
+	</a>
+
 	
-		<section class="ui attached center aligned inverted segment sidebar-dream-tags">
-			
-			
-			
-			
-
-
-
+	<a class="item" href="/posts">
+		<i class="inverted big link archive icon" title="Archive"></i>
+		Archive
+	</a>
 
 	
 	
-		
-			
-			<a class="ui label brown " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
-		
-			
-			<a class="ui label red " href="/tags/deployment" title="deployment">deployment</a>
-		
-			
-			<a class="ui label blue " href="/tags/gocd" title="gocd">gocd</a>
-		
-			
-			<a class="ui label yellow " href="/tags/pipeline" title="pipeline">pipeline</a>
-		
-			
-			<a class="ui label blue " href="/tags/aws" title="aws">aws</a>
-		
-			
-			<a class="ui label blue " href="/tags/golang" title="golang">golang</a>
-		
-			
-			<a class="ui label violet " href="/tags/launchd" title="launchd">launchd</a>
-		
-			
-			<a class="ui label pink " href="/tags/macos" title="macos">macos</a>
-		
-	
-
-
-		</section>
+	<a class="item" href="/tags">
+		<i class="inverted big link tags icon" title="All Tags"></i>
+		All Tags
+	</a>
 	
 
 	
 	
-		<section class="ui attached inverted segment sidebar-dream-categories both flexbox">
-			<div class="ui inverted accordion">
-				
-	
-	<div class="title">
-		<i class="dropdown icon"></i>
-		<span class="hand dropdown" >infrastructure</span>
-	</div>
-
-	
-	<div class="content">
-		
-			<a class="item" href="https://pnguyen.io/posts/aws-profile-utils/">
-				<div>
-					<i class="cocktail icon"></i>
-					<p>An utility to switch AWS profiles</p>
-				</div>
-			</a>
-		
-			<a class="item" href="https://pnguyen.io/posts/terraform-pipeline/">
-				<div>
-					<i class="cocktail icon"></i>
-					<p>Terraform Pipeline</p>
-				</div>
-			</a>
-		
-			<a class="item" href="https://pnguyen.io/posts/a-sample-gocd-pipeline/">
-				<div>
-					<i class="cocktail icon"></i>
-					<p>A Sample GoCD Pipeline</p>
-				</div>
-			</a>
-		
-	</div>
-
-	
-	<div class="title">
-		<i class="dropdown icon"></i>
-		<span class="hand dropdown" >misc</span>
-	</div>
-
-	
-	<div class="content">
-		
-			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
-				<div>
-					<i class="cocktail icon"></i>
-					<p>launchd service management in MacOS</p>
-				</div>
-			</a>
-		
-			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
-				<div>
-					<i class="cocktail icon"></i>
-					<p>Speed up ZSH loading of custom functions</p>
-				</div>
-			</a>
-		
-	</div>
-
-	
-	<div class="title">
-		<i class="dropdown icon"></i>
-		<span class="hand dropdown" >programming</span>
-	</div>
-
-	
-	<div class="content">
-		
-			<a class="item" href="https://pnguyen.io/posts/aws-profile-utils/">
-				<div>
-					<i class="cocktail icon"></i>
-					<p>An utility to switch AWS profiles</p>
-				</div>
-			</a>
-		
-	</div>
-
-	
-	<div class="title">
-		<i class="dropdown icon"></i>
-		<span class="hand dropdown" >tips</span>
-	</div>
-
-	
-	<div class="content">
-		
-			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
-				<div>
-					<i class="cocktail icon"></i>
-					<p>launchd service management in MacOS</p>
-				</div>
-			</a>
-		
-			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
-				<div>
-					<i class="cocktail icon"></i>
-					<p>Speed up ZSH loading of custom functions</p>
-				</div>
-			</a>
-		
-	</div>
-
-
-			</div>
-		</section>
+	<a class="item" href="/categories">
+		<i class="inverted big link cubes icon" title="All Categories"></i>
+		All Categories
+	</a>
 	
 
-	
-	<section id="footer" class="ui bottom attached center aligned inverted segment">
-		
-
-	<p>© 2018 - 2019 David Nguyen&#39;s Personal Blog</p>
-
-
-<p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with <a href="https://github.com/UtkarshVerma/hugo-dream-plus" target="_blank">Dream Plus</a> theme.</p>
-
-	</section>
+	<a class="item" href="/posts/index.xml">
+		<i class="inverted big link rss icon" title="RSS Feed"></i>
+		RSS Feed
+	</a>
 </div>
 
 
@@ -313,40 +170,63 @@ var bodyBgSwitchIndex = 0;
 	<nav class="ui top secondary menu bar">
 	
 	<div class="item">
-		<i class="inverted big link bullseye icon dream-flip-toggle" title="About Me"></i>
+		<a href="/">
+			<i class="inverted big link home icon" title="Home"></i>
+		</a>
 	</div>
 
 	
 	
-		<div class="item">
-			<a href="/">
-				<i class="inverted big link home icon" title="Home"></i>
-			</a>
-		</div>
+		
+	
+		
 	
 
 	
 	
-		<div class="item">
-			<a href="/posts">
-				<i class="inverted big link archive icon" title="Archive"></i>
-			</a>
-		</div>
-	
-
 	
 	
 
 	
 	
-		<div class="item">
-			<a href="/categories">
-				<i class="inverted big link cubes icon" title="All Categories"></i>
-			</a>
-    	</div>
+		
+		
+			<div class="item">
+				<a href="https://github.com/hpcsc" target="	_blank">
+					<i id="ico" class="inverted big link github icon" title="GitHub"></i>
+				</a>
+			</div>
+		
 	
-
+		
+		
 	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+			<div class="item">
+				<a href="https://www.linkedin.com/in/nguyenhungphuong" target="	_blank">
+					<i id="ico" class="inverted big link linkedin icon" title="LinkedIn"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
 	
 
 	
@@ -355,9 +235,9 @@ var bodyBgSwitchIndex = 0;
 	
 	
 		<div class="item right">
-			<a href="/posts/index.xml">
-				<i class="inverted big link rss icon" title="RSS Feed"></i>
-			</a>
+			<i class="inverted big link sidebar icon"
+			   onClick="$('.ui.sidebar').sidebar('setting', 'transition', 'overlay').sidebar('toggle');"
+			   title="Show Sidebar"></i>
 		</div>
 	
 </nav>
@@ -366,7 +246,7 @@ var bodyBgSwitchIndex = 0;
 	<div class="ui centered grid">
 		<div class="fifteen wide mobile fifteen wide tablet four wide computer column">
 			<div class="ui inverted accordion">
-	<div id="header" class="ui inverted segment column box">		
+	<div id="header" class="ui inverted segment column box">
 		
 		<header id="author" class="ui top attached center aligned inverted segment">
 			
@@ -385,15 +265,6 @@ var bodyBgSwitchIndex = 0;
 		</header>
 
 		
-		<div class="active title header-title">
-			
-				<div id="tag-category-pop" class="ui red right corner label">
-					<i class="hand point icon up" title="Show/hide tags and categories"></i>
-				</div>
-			
-		</div>
-		
-		
 		<div id="tag-category" class="active content">
 			
 				<section class="ui attached center aligned inverted segment dream-tags none flexbox">
@@ -408,28 +279,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label pink " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label red " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label brown " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label purple " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
 			<a class="ui label brown " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label yellow " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label blue " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 			
 			<a class="ui label violet " href="/tags/aws" title="aws">aws</a>
 		
 			
-			<a class="ui label blue " href="/tags/golang" title="golang">golang</a>
+			<a class="ui label olive " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label teal " href="/tags/launchd" title="launchd">launchd</a>
+			<a class="ui label green " href="/tags/launchd" title="launchd">launchd</a>
 		
 			
-			<a class="ui label orange " href="/tags/macos" title="macos">macos</a>
+			<a class="ui label violet " href="/tags/macos" title="macos">macos</a>
 		
 	
 
@@ -601,91 +472,6 @@ var bodyBgSwitchIndex = 0;
 			</div>
 		</div>
 	</div>
-
-				</div>
-				<div class="back">
-					
-<nav class="ui top secondary menu bar">
-	<div class="item">
-		<i class="inverted big link bullseye icon dream-flip-toggle" title="About Me"></i>
-	</div>
-	
-		
-	
-		
-	
-
-	
-	
-	
-	
-	
-	
-	
-		
-		
-			<div class="item">
-				<a href="https://github.com/hpcsc" target="	_blank">
-					<i id="ico" class="inverted big link github icon" title="GitHub"></i>
-				</a>
-			</div>
-		
-	
-		
-		
-	
-		
-		
-	
-		
-		
-	
-		
-		
-	
-		
-		
-			<div class="item">
-				<a href="https://www.linkedin.com/in/nguyenhungphuong" target="	_blank">
-					<i id="ico" class="inverted big link linkedin icon" title="LinkedIn"></i>
-				</a>
-			</div>
-		
-	
-		
-		
-	
-		
-		
-	
-		
-		
-	
-</nav>
-
-
-
-<div class="ui centered grid about">
-	<div class="sixteen wide mobile fifteen wide tablet fifteen wide computer column about">
-		<section class="ui stacked segments">
-			<div class="ui inverted segment">
-				<article class="twemoji">
-					<h1>So, Who Am I?</h1>
-
-<hr />
-
-<p><br></p>
-
-<ul>
-<li>Software Developer at ThoughtWorks Singapore</li>
-<li>Interested in clean code, object oriented design, scalable software systems</li>
-<li>Hobbies: Martial Arts (Karate, Muay Thai, Boxing&hellip;)</li>
-</ul>
-				</article>
-			</div>
-		</section>
-	</div>
-</div>
 
 				</div>
 			</div>
