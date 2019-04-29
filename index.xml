@@ -6,10 +6,20 @@
     <description>Recent content on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 14 Apr 2019 20:44:12 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 29 Apr 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://pnguyen.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Improve productivity with fzf</title>
+      <link>https://pnguyen.io/posts/improve-productivity-with-fzf/</link>
+      <pubDate>Mon, 29 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/improve-productivity-with-fzf/</guid>
+      <description>As a developer, I spend a lot of time on command line and since I found fzf, a command line fuzzy finder, I find my productivity has been improved tremendously by applying fzf in everday commands that I use. Below is the collection of small fzf snippets that I wrote and use a lot myself.
+fnpm: Run npm script Usage Source 1 2 3 4  cat package.json | \  jq -r &amp;#39;.</description>
+    </item>
     
     <item>
       <title>launchd service management in MacOS</title>
@@ -60,15 +70,6 @@ In average, it takes around 0.</description>
       
       <guid>https://pnguyen.io/posts/a-sample-gocd-pipeline/</guid>
       <description>As a software developer at ThoughtWorks, I had always wanted to try out GoCD (an open source Continuous Integration and Continuous Delivery system originally developed by ThoughtWorks) but couldn&amp;rsquo;t find a chance until early of this week. My client team is currently using Bamboo from Atlassian as their CI server. Having played with Bamboo for the past one year at the client side, I feel the tool can do the job, but sometimes quite limited (.</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>https://pnguyen.io/404/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://pnguyen.io/404/</guid>
-      <description> Error 404: Page Not Found It seems that the page that you&amp;rsquo;re trying to access doesn&amp;rsquo;t exist. 😟 If you&amp;rsquo;re sure that it exists, chances are it might have been moved to a new link! You may search for it on the home page. </description>
     </item>
     
     <item>

@@ -4,25 +4,54 @@
   
   <url>
     <loc>https://pnguyen.io/categories/</loc>
-    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
+    <lastmod>2019-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://pnguyen.io/</loc>
-    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
+    <lastmod>2019-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>https://pnguyen.io/posts/improve-productivity-with-fzf/</loc>
+    <lastmod>2019-04-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://pnguyen.io/posts/</loc>
-    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
+    <lastmod>2019-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://pnguyen.io/tags/</loc>
-    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
+    <lastmod>2019-04-29T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/fzf/</loc>
+    <lastmod>2019-04-29T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/categories/misc/</loc>
+    <lastmod>2019-04-29T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/shell/</loc>
+    <lastmod>2019-04-29T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/categories/tips/</loc>
+    <lastmod>2019-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -39,18 +68,6 @@
   
   <url>
     <loc>https://pnguyen.io/tags/macos/</loc>
-    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/categories/misc/</loc>
-    <lastmod>2019-04-14T20:44:12+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/categories/tips/</loc>
     <lastmod>2019-04-14T20:44:12+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -114,12 +131,6 @@
   </url>
   
   <url>
-    <loc>https://pnguyen.io/tags/shell/</loc>
-    <lastmod>2018-07-11T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://pnguyen.io/tags/zsh/</loc>
     <lastmod>2018-07-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -157,11 +168,6 @@
   <url>
     <loc>https://pnguyen.io/posts/a-sample-gocd-pipeline/</loc>
     <lastmod>2018-03-30T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/404/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
