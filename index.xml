@@ -17,8 +17,7 @@
       <pubDate>Mon, 29 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/posts/improve-productivity-with-fzf/</guid>
-      <description>As a developer, I spend a lot of time on command line and since I found fzf, a command line fuzzy finder, I find my productivity has been improved tremendously by applying fzf in everday commands that I use. Below is the collection of small fzf snippets that I wrote and use a lot myself.
-fnpm: Run npm script Usage Source 1 2 3 4  cat package.json | \  jq -r &amp;#39;.</description>
+      <description></description>
     </item>
     
     <item>
@@ -79,7 +78,8 @@ In average, it takes around 0.</description>
       
       <guid>https://pnguyen.io/about/</guid>
       <description>So, Who Am I? 
- Software Developer at ThoughtWorks Singapore Interested in clean code, object oriented design, scalable software systems Hobbies: Martial Arts (Karate, Muay Thai, Boxing&amp;hellip;)  </description>
+  About Me  I&amp;rsquo;m just a regular developer who is interested in technology/programming. I started my career with C#/.NET and sticked with it for the next 5 years (as some people can tell, I still love the language now even though I don&amp;rsquo;t have much chance to use it at work).
+Since joining ThoughtWorks, I have chance to explore a lot more other areas like frontend (React/React Native/Angular 1), backend (Ruby on Rails, NodeJS) or infrastructure and automation (Docker, Kubernetes, Istio, Ansible, Terraform, Packer, Bamboo CI etc).</description>
     </item>
     
   </channel>

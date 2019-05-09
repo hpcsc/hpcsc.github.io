@@ -17,8 +17,7 @@
       <pubDate>Mon, 29 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/posts/improve-productivity-with-fzf/</guid>
-      <description>As a developer, I spend a lot of time on command line and since I found fzf, a command line fuzzy finder, I find my productivity has been improved tremendously by applying fzf in everday commands that I use. Below is the collection of small fzf snippets that I wrote and use a lot myself.
-fnpm: Run npm script Usage Source 1 2 3 4  cat package.json | \  jq -r &amp;#39;.</description>
+      <description></description>
     </item>
     
     <item>
