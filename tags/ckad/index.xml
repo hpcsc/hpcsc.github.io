@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ckad on David Nguyen&#39;s Personal Blog</title>
+    <link>https://pnguyen.io/tags/ckad/</link>
+    <description>Recent content in ckad on David Nguyen&#39;s Personal Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 15 Jul 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://pnguyen.io/tags/ckad/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>A few tips to prepare for your CKAD exam</title>
+      <link>https://pnguyen.io/posts/ckad-tips/</link>
+      <pubDate>Mon, 15 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/ckad-tips/</guid>
+      <description>I just finished CKAD exam a few days ago with a score of 90% (passing score is 66%). It was really a fun and at the same time challenging exam so I thought I should note down a few tips that really helped me prepare for this exam. A few of these tips are already covered in some other blog posts, a few are mine.
+Type fast The exam is really intense and you will need to compete with time in order to finish all 19 questions in 2 hours.</description>
+    </item>
+    
+  </channel>
+</rss>

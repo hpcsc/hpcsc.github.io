@@ -2,7 +2,7 @@
 <html lang="en-us">
 	<head>
 		<title>
-	Speed up ZSH loading of custom functions
+	A few tips to prepare for your CKAD exam
 </title>
 		<style>
 	body {
@@ -29,7 +29,8 @@
 	
 	
 	<meta name="author" content="David Nguyen" />
-	<meta name="description" content="Speed up ZSH loading of custom functions" />
+	<meta name="description" content="I just finished CKAD exam a few days ago with a score of 90% (passing score is 66%). It was really a fun and at the same time challenging exam so I thought I should note down a few tips that really helped me prepare for this exam. A few of these tips are already covered in some other blog posts, a few are mine.
+Type fast The exam is really intense and you will need to compete with time in order to finish all 19 questions in 2 hours." />
 
 
 
@@ -278,25 +279,25 @@ var bodyBgSwitchIndex = 0;
 			<a class="ui label blue " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label pink " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label teal " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label red " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label yellow " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label violet " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label yellow " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 			
-			<a class="ui label olive " href="/tags/shell" title="shell">shell</a>
+			<a class="ui label teal " href="/tags/shell" title="shell">shell</a>
 		
 			
-			<a class="ui label yellow " href="/tags/aws" title="aws">aws</a>
+			<a class="ui label violet " href="/tags/aws" title="aws">aws</a>
 		
 			
-			<a class="ui label violet " href="/tags/ckad" title="ckad">ckad</a>
+			<a class="ui label purple " href="/tags/ckad" title="ckad">ckad</a>
 		
 			
-			<a class="ui label teal " href="/tags/fzf" title="fzf">fzf</a>
+			<a class="ui label orange " href="/tags/fzf" title="fzf">fzf</a>
 		
 	
 
@@ -454,32 +455,104 @@ var bodyBgSwitchIndex = 0;
 			
 			<section class="ui secondary top attached black segment post-head">
 				<h1 class="post-title">
-					Speed up ZSH loading of custom functions
+					A few tips to prepare for your CKAD exam
 				</h1>
 
 				<div class="sub header">
-					<div><span><i class="calendar outline icon"></i>Jul 11, 2018</span></div>
+					<div><span><i class="calendar outline icon"></i>Jul 15, 2019</span></div>
 					
-					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="50cc7159b033bbd0dcc500ad5cfd49e6"></a></span></div>
-					<div><span><i class="clock outline icon"></i>3 min read</span></div>
-					<div><span><i class="angle double up icon"></i>Last updated on Jul 11, 2018</span></div>
+					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/ckad-tips/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="d0bd0ad7a62db8a9af39be28d12c6552"></a></span></div>
+					<div><span><i class="clock outline icon"></i>4 min read</span></div>
+					<div><span><i class="angle double up icon"></i>Last updated on Jul 15, 2019</span></div>
 				</div>
 				<hr>
 
 				
+					<div class="toc">
+						<nav id="TableOfContents">
+<ul>
+<li><a href="#type-fast">Type fast</a></li>
+<li><a href="#know-your-text-editor-well">Know your text editor well</a></li>
+<li><a href="#get-used-to-kubectl-explain">Get used to kubectl explain</a></li>
+<li><a href="#use-dry-run-or-export-to-generate-yaml-files">Use <code>--dry-run</code> or <code>--export</code> to generate YAML files</a></li>
+<li><a href="#always-create-yaml-files-before-creating-resources-in-kubernetes">Always create yaml files before creating resources in Kubernetes</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+</nav>
+					</div>
+				
 
 				<article class="post-content twemoji">
-					<p>I have been using zsh with Prezto for a few years and have always been conscious about what stuffs to put in my shell profile files like <code>.zshrc</code> so that a new shell can start as fast as it can.</p>
+					
 
-<p>If comparing the startup time of my shell to shell startup time of most other people who I have worked with, my current startup time is not bad:</p>
+<p>I just finished CKAD exam a few days ago with a score of 90% (passing score is 66%). It was really a fun and at the same time challenging exam so I thought I should note down a few tips that really helped me prepare for this exam. A few of these tips are already covered in some other blog posts, a few are mine.</p>
 
-<p><img src="images/zsh-startup-before.png" alt="&quot;zsh startup time before&quot;" /></p>
+<h1 id="type-fast">Type fast&nbsp;<a class="anchor" href="#type-fast"><i class="small linkify icon"></i></a> </h1>
 
-<p>In average, it takes around 0.5s to start.</p>
+<p>The exam is really intense and you will need to compete with time in order to finish all 19 questions in 2 hours. The faster you type, the more time you have to think through the problem. So practice your typing skill if you feel your typing speed is not fast enough.</p>
 
-<p>However today I manage to speed it up even further, using zsh autoloading of custom functions. The idea comes from this SOF answer: <a href="https://unix.stackexchange.com/a/33898">https://unix.stackexchange.com/a/33898</a>. In short, when you use <code>autoload</code> command with a file name, zsh will mark it to be loaded automatically upon its first reference. The content of the file is going to be function body and name of the file will be function name. <code>fpath</code> variable contains the search path for files that can be marked to be loaded automatically upon first usage.</p>
+<h1 id="know-your-text-editor-well">Know your text editor well&nbsp;<a class="anchor" href="#know-your-text-editor-well"><i class="small linkify icon"></i></a> </h1>
 
-<p>This feature can help to speed up my zsh startup time because I have quite a number of custom shell functions defined in a custom folder. Before this change, my <code>.zshrc</code> sourced all these files when starting up, even though I may not use it in current shell session:</p>
+<p>The exam is entirely in command line so you will need to use a few editors available in Linux environment like vim or nano. And again, since time is really a scarce resouce, make sure you are able to use the editor of choice comfortably. I&rsquo;m using vim in my daily work so it&rsquo;s not much of a problem for me. Below are a few things that I setup at the beginning of the exam to be more productive:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="s2">&#34; in .vimrc
+</span><span class="s2">autocmd FileType yml,yaml setlocal ts=2 sts=2 sw=2 expandtab
+</span><span class="s2">
+</span><span class="s2">inoremap jk &lt;Esc&gt;
+</span><span class="s2">cnoremap ke kubectl explain</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>The <code>autocmd</code> sets the tab setting for yaml files to be 2 spaces. Without this line, you will find yourself struggling a lot with formatting and indentation of yaml in vim</p>
+
+<p>I also map <code>jk</code> to <code>Esc</code> in insert mode. I use this mapping in my day-to-day vim operation too. You don&rsquo;t need to follow my mapping but it&rsquo;s important to have one mapping for <code>Esc</code> because <code>Esc</code> button is not working as expected in the exam. During the exam, pressing <code>Esc</code> actually loses the focus of the emulator pane instead of exiting insert mode. Alternatively, you can use <code>Ctrl + C</code> in MacOS to quit insert mode but it feels unnatural for me.</p>
+
+<p>The last line map <code>ke</code> to <code>kubectl explain</code> in command mode. You will find yourself typing a lot of <code>kubectl explain</code> in vim so this saves quite a lot of typing.</p>
+
+<p>Additionally, I also map <code>kubectl</code> to <code>k</code> in bash shell:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">alias</span> <span class="nv">k</span><span class="o">=</span>kubectl
+<span class="nb">alias</span> <span class="nv">ka</span><span class="o">=</span><span class="s1">&#39;kubectl apply -f&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h1 id="get-used-to-kubectl-explain">Get used to kubectl explain&nbsp;<a class="anchor" href="#get-used-to-kubectl-explain"><i class="small linkify icon"></i></a> </h1>
+
+<p>Although you are allowed to open one more browser tab to check Kubernetes docs website, I find typing <code>kubectl explain</code> directly from text editors/terminal much faster. There were only 2 times when I found myself switching to Kubernetes docs site: when I wanted to find sample YAML files for <code>PersistentVolume/PersistentVolumeClaim</code> and <code>Service</code>.</p>
+
+<h1 id="use-dry-run-or-export-to-generate-yaml-files">Use <code>--dry-run</code> or <code>--export</code> to generate YAML files&nbsp;<a class="anchor" href="#use-dry-run-or-export-to-generate-yaml-files"><i class="small linkify icon"></i></a> </h1>
+
+<ul>
+<li>Generating YAML files using <code>--dry-run</code>:</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">kubectl run some-deployment-name --image<span class="o">=</span>some-image --dry-run -o yaml &gt; deployment.yml
+kubectl run some-pod-name --restart<span class="o">=</span>Never --image<span class="o">=</span>some-image --dry-run -o yaml &gt; pod.yml
+kubectl run some-job-name --restart<span class="o">=</span>OnFailure --image<span class="o">=</span>some-image --dry-run -o yaml &gt; job.yml
+kubectl run some-cron-name --schedule<span class="o">=</span><span class="s2">&#34;*/1 * * * *&#34;</span> --restart<span class="o">=</span>OnFailure --image<span class="o">=</span>some-image --dry-run -o yaml &gt; cron.yml</code></pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>Exporting existing resources in cluster before editing:</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
@@ -487,70 +560,23 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="k">for</span> func_def in ~/.functions/*<span class="p">;</span> <span class="k">do</span>
-    <span class="nb">source</span> <span class="s2">&#34;</span><span class="nv">$func_def</span><span class="s2">&#34;</span>
-<span class="k">done</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-shell" data-lang="shell">kubectl get deployment some-deployment --export -o yaml &gt; deploy.yml
+vim deploy.yml
+kubectl apply -f deploy.yml</code></pre></td></tr></table>
 </div>
 </div>
-<p>With autoloading feature, I can &ldquo;lazy load&rdquo; those custom functions and only load a function from the definition file whenever I use it for the first time. My <code>.zshrc</code> calls <code>autoload</code> to mark the custom functions to be loaded automatically (this call is not loading the actual files so will be much faster than using <code>source</code>)</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">fpath</span><span class="o">=(</span><span class="nv">$fpath</span> ~/.functions<span class="o">)</span>
-autoload -Uz ~/.functions/**/*</code></pre></td></tr></table>
-</div>
-</div>
-<p>Here&rsquo;s the resutl after using <code>autoload</code>:</p>
+<h1 id="always-create-yaml-files-before-creating-resources-in-kubernetes">Always create yaml files before creating resources in Kubernetes&nbsp;<a class="anchor" href="#always-create-yaml-files-before-creating-resources-in-kubernetes"><i class="small linkify icon"></i></a> </h1>
 
-<p><img src="images/zsh-startup-after.png" alt="" title="zsh startup time after" /></p>
+<p>During the exam, before creating any resource, I created corresponding yaml files (using <code>--dry-run</code> or <code>--export</code> flags) and prefixed those files with question number (.e.g. 4.pod.yml, 6.svc.yml). This helps me quickly get back to the question if I decide to skip that question and returned to it later. There was one instance when I finished question 4, went on with other questions and realized later that the pod in that question 4 was failing after a while. With this approach, I can quickly open <code>4.pod.yml</code> to continue working on that question.</p>
 
-<p>It takes 0.3s now, that&rsquo;s 40% faster than before.</p>
+<h1 id="resources">Resources&nbsp;<a class="anchor" href="#resources"><i class="small linkify icon"></i></a> </h1>
 
-<p>However this change also introduces a difficulty to my dotfiles installation script. Before this change, I just need to source and export files containing those custom functions at the beginning of the installation script, the remaining of the script can use those exported functions easily. With <code>autoloading</code>, each file now is expected to contain body of a function. Sourcing those files will execute those body immediately at sourcing time, which is not what I want. So I need to come up with an ugly trick to load these custom functions at the beginning of my dotfiles installation script:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">autoload_functions</span><span class="o">=(</span>
-  execute
-  echo_with_color
-  is_macos
-  is_ubuntu
-  distro_name
-  <span class="c1">#...</span>
-<span class="o">)</span>
+<ul>
+<li>The classic book <a href="https://www.amazon.com/Kubernetes-Action-Marko-Luksa/dp/1617293725">Kubernetes in Action</a></li>
+<li><a href="https://linuxacademy.com/containers/training/course/name/certified-kubernetes-application-developer-ckad/">LinuxAcademy CKAD course</a>: this course covers all the necessary concepts for the exam. The labs are especially good and can get you familiar with format of exam questions.</li>
+</ul>
 
-<span class="k">for</span> f in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">autoload_functions</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span>
-<span class="k">do</span>
-  <span class="nb">eval</span> <span class="s2">&#34;
-</span><span class="s2">    function </span><span class="nv">$f</span><span class="s2">() {
-</span><span class="s2">      </span><span class="k">$(</span>cat ./link/common/zsh/.functions/misc/<span class="nv">$f</span><span class="k">)</span><span class="s2">
-</span><span class="s2">    }
-</span><span class="s2">  &#34;</span>
-<span class="k">done</span></code></pre></td></tr></table>
-</div>
-</div>
-<p>This script basically <code>cat</code> function body from those <code>autoload</code> files, and uses <code>eval</code> to define a function with the same name with the file</p>
+<p>And of course all the tips above will be useless if you don&rsquo;t know how to solve the problems. So make sure you know the exam syllabus well and have a lot of practice writing YAML files manually.</p>
 
 				</article>				
 			</section>
@@ -564,13 +590,11 @@ autoload -Uz ~/.functions/**/*</code></pre></td></tr></table>
 
 
 	
-		<a class="ui label red " href="/tags/shell" title="shell">shell</a>
+		<a class="ui label olive " href="/tags/ckad" title="ckad">ckad</a>
 	
-		<a class="ui label yellow " href="/tags/zsh" title="zsh">zsh</a>
+		<a class="ui label violet " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 	
-		<a class="ui label violet " href="/tags/prezto" title="prezto">prezto</a>
-	
-		<a class="ui label purple " href="/tags/performance" title="performance">performance</a>
+		<a class="ui label olive " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 	
 
 
@@ -609,7 +633,7 @@ autoload -Uz ~/.functions/**/*</code></pre></td></tr></table>
 			'width=626,height=436'); return false;">
 		<button class="ui facebook button"><i class="facebook icon"></i>Share</button>
 	</div>
-	<div class="twitter none flexbox" onclick="window.open('https://twitter.com/intent/tweet?text=Read &quot;Speed up ZSH loading of custom functions  https:\/\/pnguyen.io\/posts\/speed-up-zsh-custom-functions\/','_self')">
+	<div class="twitter none flexbox" onclick="window.open('https://twitter.com/intent/tweet?text=Read &quot;A few tips to prepare for your CKAD exam  https:\/\/pnguyen.io\/posts\/ckad-tips\/','_self')">
 		<button class="ui twitter button"><i class="twitter icon"></i>Tweet</button>
 	</div>
 </section>
@@ -628,8 +652,8 @@ autoload -Uz ~/.functions/**/*</code></pre></td></tr></table>
 <div id="disqus_thread"></div>
 <script>
 	var disqus_config = function () {
-		this.page.url = 'https:\/\/pnguyen.io\/posts\/speed-up-zsh-custom-functions\/';
-		this.page.identifier = '50cc7159b033bbd0dcc500ad5cfd49e6';
+		this.page.url = 'https:\/\/pnguyen.io\/posts\/ckad-tips\/';
+		this.page.identifier = 'd0bd0ad7a62db8a9af39be28d12c6552';
 	};
 	(function() {
    	var d = document, s = d.createElement('script');

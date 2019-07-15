@@ -6,10 +6,37 @@
     <description>Recent content in Tags on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 29 Apr 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 15 Jul 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://pnguyen.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>ckad</title>
+      <link>https://pnguyen.io/tags/ckad/</link>
+      <pubDate>Mon, 15 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/tags/ckad/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>infrastructure</title>
+      <link>https://pnguyen.io/tags/infrastructure/</link>
+      <pubDate>Mon, 15 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/tags/infrastructure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes</title>
+      <link>https://pnguyen.io/tags/kubernetes/</link>
+      <pubDate>Mon, 15 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>fzf</title>
@@ -62,15 +89,6 @@
       <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/tags/golang/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>infrastructure</title>
-      <link>https://pnguyen.io/tags/infrastructure/</link>
-      <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://pnguyen.io/tags/infrastructure/</guid>
       <description></description>
     </item>
     
