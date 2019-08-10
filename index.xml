@@ -17,8 +17,7 @@
       <pubDate>Mon, 15 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/posts/ckad-tips/</guid>
-      <description>I just finished CKAD exam a few days ago with a score of 90% (passing score is 66%). It was really a fun and at the same time challenging exam so I thought I should note down a few tips that really helped me prepare for this exam. A few of these tips are already covered in some other blog posts, a few are mine.
-Type fast The exam is really intense and you will need to compete with time in order to finish all 19 questions in 2 hours.</description>
+      <description></description>
     </item>
     
     <item>
@@ -28,7 +27,7 @@ Type fast The exam is really intense and you will need to compete with time in o
       
       <guid>https://pnguyen.io/posts/improve-productivity-with-fzf/</guid>
       <description>As a developer, I spend a lot of time on command line and since I found fzf, a command line fuzzy finder, I find my productivity has been improved tremendously by applying fzf in everday commands that I use. Below is the collection of small fzf snippets that I wrote and use a lot myself.
-fnpm: Run npm script Usage Source 1 2 3 4  cat package.json | \  jq -r &amp;#39;.</description>
+fignore: Download .gitignore Usage Source 1 2 3 4  curl -s https://api.github.com/repos/github/gitignore/git/trees/master?recursive=1 | \  jq -r &amp;#39;.</description>
     </item>
     
     <item>

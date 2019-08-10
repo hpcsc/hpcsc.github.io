@@ -278,25 +278,25 @@ var bodyBgSwitchIndex = 0;
 			<a class="ui label red " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label brown " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label purple " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label violet " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label orange " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label olive " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label teal " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 			
-			<a class="ui label green " href="/tags/shell" title="shell">shell</a>
+			<a class="ui label teal " href="/tags/shell" title="shell">shell</a>
 		
 			
-			<a class="ui label violet " href="/tags/aws" title="aws">aws</a>
+			<a class="ui label blue " href="/tags/aws" title="aws">aws</a>
 		
 			
-			<a class="ui label violet " href="/tags/ckad" title="ckad">ckad</a>
+			<a class="ui label orange " href="/tags/ckad" title="ckad">ckad</a>
 		
 			
-			<a class="ui label orange " href="/tags/fzf" title="fzf">fzf</a>
+			<a class="ui label yellow " href="/tags/fzf" title="fzf">fzf</a>
 		
 	
 
@@ -472,20 +472,25 @@ var bodyBgSwitchIndex = 0;
 <ul>
 <li>
 <ul>
-<li><a href="#fnpm-run-npm-script">fnpm: Run npm script</a>
+<li><a href="#fignore-download-gitignore">fignore: Download .gitignore</a>
 <ul>
 <li><a href="#usage">Usage</a></li>
 <li><a href="#source">Source</a></li>
 </ul></li>
-<li><a href="#fsb-switch-git-branch">fsb: Switch git branch</a>
+<li><a href="#fnpm-run-npm-script">fnpm: Run npm script</a>
 <ul>
 <li><a href="#usage-1">Usage</a></li>
 <li><a href="#source-1">Source</a></li>
 </ul></li>
-<li><a href="#zf-switch-directory">zf: Switch directory</a>
+<li><a href="#fsb-switch-git-branch">fsb: Switch git branch</a>
 <ul>
 <li><a href="#usage-2">Usage</a></li>
 <li><a href="#source-2">Source</a></li>
+</ul></li>
+<li><a href="#zf-switch-directory">zf: Switch directory</a>
+<ul>
+<li><a href="#usage-3">Usage</a></li>
+<li><a href="#source-3">Source</a></li>
 </ul></li>
 <li><a href="#android-emulator-related">Android emulator - related</a>
 <ul>
@@ -496,14 +501,14 @@ var bodyBgSwitchIndex = 0;
 <ul>
 <li><a href="#fkrm-delete-kubernetes-resource-in-current-namespace">fkrm: Delete Kubernetes resource in current namespace</a>
 <ul>
-<li><a href="#usage-3">Usage</a></li>
-<li><a href="#source-3">Source</a></li>
+<li><a href="#usage-4">Usage</a></li>
+<li><a href="#source-4">Source</a></li>
 </ul></li>
 <li><a href="#fkl-get-log-of-a-container-in-current-namespace">fkl: Get log of a container in current namespace</a>
 <ul>
-<li><a href="#usage-4">Usage</a></li>
+<li><a href="#usage-5">Usage</a></li>
 </ul></li>
-<li><a href="#source-4">Source</a></li>
+<li><a href="#source-5">Source</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -516,13 +521,36 @@ var bodyBgSwitchIndex = 0;
 
 <p>As a developer, I spend a lot of time on command line and since I found <a href="https://github.com/junegunn/fzf">fzf</a>, a command line fuzzy finder, I find my productivity has been improved tremendously by applying fzf in everday commands that I use. Below is the collection of small fzf snippets that I wrote and use a lot myself.</p>
 
-<h2 id="fnpm-run-npm-script">fnpm: Run npm script&nbsp;<a class="anchor" href="#fnpm-run-npm-script"><i class="small linkify icon"></i></a> </h2>
+<h2 id="fignore-download-gitignore">fignore: Download .gitignore&nbsp;<a class="anchor" href="#fignore-download-gitignore"><i class="small linkify icon"></i></a> </h2>
 
 <h3 id="usage">Usage&nbsp;<a class="anchor" href="#usage"><i class="small linkify icon"></i></a> </h3>
 
-<p><img src="images/fzf-fnpm.gif" alt="" title="fnpm demo" /></p>
+<p><img src="images/fzf-fignore.gif" alt="" title="fignore demo" /></p>
 
 <h3 id="source">Source&nbsp;<a class="anchor" href="#source"><i class="small linkify icon"></i></a> </h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -s https://api.github.com/repos/github/gitignore/git/trees/master?recursive<span class="o">=</span><span class="m">1</span> <span class="p">|</span> <span class="se">\
+</span><span class="se"></span>  jq -r <span class="s1">&#39;.tree | .[] | select(.type == &#34;blob&#34; and (.path | endswith(&#34;.gitignore&#34;))) | .path&#39;</span> <span class="p">|</span> <span class="se">\
+</span><span class="se"></span>  fzf --height <span class="m">30</span>% --reverse --header <span class="s1">&#39;Select .gitignore to download&#39;</span> <span class="p">|</span> <span class="se">\
+</span><span class="se"></span>  xargs -I<span class="o">{}</span> bash -c <span class="s1">&#39;curl -s https://raw.githubusercontent.com/github/gitignore/master/{} -o .gitignore &amp;&amp; echo &#34;Downloaded {} as .gitignore&#34;&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><a href="https://github.com/github/gitignore">github/gitignore</a> contains a good collection of <code>.gitignore</code> template. This script uses github tree api to list all the files ending with .gitignore from that github repository and downloads selected file as <code>.gitignore</code> in the current directory.</p>
+
+<h2 id="fnpm-run-npm-script">fnpm: Run npm script&nbsp;<a class="anchor" href="#fnpm-run-npm-script"><i class="small linkify icon"></i></a> </h2>
+
+<h3 id="usage-1">Usage&nbsp;<a class="anchor" href="#usage-1"><i class="small linkify icon"></i></a> </h3>
+
+<p><img src="images/fzf-fnpm.gif" alt="" title="fnpm demo" /></p>
+
+<h3 id="source-1">Source&nbsp;<a class="anchor" href="#source-1"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
@@ -541,11 +569,11 @@ var bodyBgSwitchIndex = 0;
 
 <h2 id="fsb-switch-git-branch">fsb: Switch git branch&nbsp;<a class="anchor" href="#fsb-switch-git-branch"><i class="small linkify icon"></i></a> </h2>
 
-<h3 id="usage-1">Usage&nbsp;<a class="anchor" href="#usage-1"><i class="small linkify icon"></i></a> </h3>
+<h3 id="usage-2">Usage&nbsp;<a class="anchor" href="#usage-2"><i class="small linkify icon"></i></a> </h3>
 
 <p><img src="images/fzf-fsb.gif" alt="" title="fsb demo" /></p>
 
-<h3 id="source-1">Source&nbsp;<a class="anchor" href="#source-1"><i class="small linkify icon"></i></a> </h3>
+<h3 id="source-2">Source&nbsp;<a class="anchor" href="#source-2"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
@@ -574,11 +602,11 @@ git checkout <span class="k">$(</span><span class="nb">echo</span> <span class="
 
 <h2 id="zf-switch-directory">zf: Switch directory&nbsp;<a class="anchor" href="#zf-switch-directory"><i class="small linkify icon"></i></a> </h2>
 
-<h3 id="usage-2">Usage&nbsp;<a class="anchor" href="#usage-2"><i class="small linkify icon"></i></a> </h3>
+<h3 id="usage-3">Usage&nbsp;<a class="anchor" href="#usage-3"><i class="small linkify icon"></i></a> </h3>
 
 <p><img src="images/fzf-zf.gif" alt="" title="zf demo" /></p>
 
-<h3 id="source-2">Source&nbsp;<a class="anchor" href="#source-2"><i class="small linkify icon"></i></a> </h3>
+<h3 id="source-3">Source&nbsp;<a class="anchor" href="#source-3"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
@@ -619,11 +647,11 @@ git checkout <span class="k">$(</span><span class="nb">echo</span> <span class="
 
 <h3 id="fkrm-delete-kubernetes-resource-in-current-namespace">fkrm: Delete Kubernetes resource in current namespace&nbsp;<a class="anchor" href="#fkrm-delete-kubernetes-resource-in-current-namespace"><i class="small linkify icon"></i></a> </h3>
 
-<h4 id="usage-3">Usage&nbsp;<a class="anchor" href="#usage-3"><i class="small linkify icon"></i></a> </h4>
+<h4 id="usage-4">Usage&nbsp;<a class="anchor" href="#usage-4"><i class="small linkify icon"></i></a> </h4>
 
 <p><img src="images/fzf-fkrm.gif" alt="" title="fkrm demo" /></p>
 
-<h4 id="source-3">Source&nbsp;<a class="anchor" href="#source-3"><i class="small linkify icon"></i></a> </h4>
+<h4 id="source-4">Source&nbsp;<a class="anchor" href="#source-4"><i class="small linkify icon"></i></a> </h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
@@ -662,11 +690,11 @@ kubectl delete <span class="nv">$resource_type</span> <span class="nv">$selected
 
 <h3 id="fkl-get-log-of-a-container-in-current-namespace">fkl: Get log of a container in current namespace&nbsp;<a class="anchor" href="#fkl-get-log-of-a-container-in-current-namespace"><i class="small linkify icon"></i></a> </h3>
 
-<h4 id="usage-4">Usage&nbsp;<a class="anchor" href="#usage-4"><i class="small linkify icon"></i></a> </h4>
+<h4 id="usage-5">Usage&nbsp;<a class="anchor" href="#usage-5"><i class="small linkify icon"></i></a> </h4>
 
 <p><img src="images/fzf-fkl.gif" alt="" title="fkl demo" /></p>
 
-<h3 id="source-4">Source&nbsp;<a class="anchor" href="#source-4"><i class="small linkify icon"></i></a> </h3>
+<h3 id="source-5">Source&nbsp;<a class="anchor" href="#source-5"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
@@ -713,7 +741,7 @@ kubectl logs <span class="nv">$pod</span> -c <span class="nv">$container</span><
 
 
 	
-		<a class="ui label pink " href="/tags/shell" title="shell">shell</a>
+		<a class="ui label blue " href="/tags/shell" title="shell">shell</a>
 	
 		<a class="ui label purple " href="/tags/fzf" title="fzf">fzf</a>
 	
