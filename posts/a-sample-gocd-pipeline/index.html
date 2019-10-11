@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label olive " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label purple " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label orange " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label olive " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label pink " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label blue " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label yellow " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label green " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 			
-			<a class="ui label red " href="/tags/shell" title="shell">shell</a>
+			<a class="ui label purple " href="/tags/shell" title="shell">shell</a>
 		
 			
-			<a class="ui label pink " href="/tags/aws" title="aws">aws</a>
+			<a class="ui label blue " href="/tags/aws" title="aws">aws</a>
 		
 			
-			<a class="ui label purple " href="/tags/ckad" title="ckad">ckad</a>
+			<a class="ui label blue " href="/tags/ckad" title="ckad">ckad</a>
 		
 			
-			<a class="ui label violet " href="/tags/fzf" title="fzf">fzf</a>
+			<a class="ui label pink " href="/tags/fzf" title="fzf">fzf</a>
 		
 	
 
@@ -467,15 +467,36 @@ var bodyBgSwitchIndex = 0;
 				<hr>
 
 				
+					<div class="toc">
+						<nav id="TableOfContents">
+<ul>
+<li><a href="#background">Background</a></li>
+<li><a href="#local-gocd-setup">Local GoCD Setup</a></li>
+<li><a href="#sample-pipelines">Sample Pipelines</a>
+<ul>
+<li><a href="#setup-in-local">Setup in Local</a></li>
+<li><a href="#structure">Structure</a></li>
+</ul></li>
+<li><a href="#final-thoughts">Final Thoughts</a></li>
+</ul>
+</nav>
+					</div>
+				
 
 				<article class="post-content twemoji">
-					<p>As a software developer at ThoughtWorks, I had always wanted to try out GoCD (an open source Continuous Integration and Continuous Delivery system originally developed by ThoughtWorks) but couldn&rsquo;t find a chance until early of this week. My client team is currently using Bamboo from Atlassian as their CI server. Having played with Bamboo for the past one year at the client side, I feel the tool can do the job, but sometimes quite limited (.e.g. in integration among multiple build plans, modelling complicated value stream). My senior suggested me to give the client a Lunch &amp; Learn session on GoCD and how powerful it is compared to Bamboo, and so I spent one whole afternoon setting up a sample pipeline (as code) for the demonstration. I&rsquo;ll go through my setup in this post.</p>
+					
+
+<h1 id="background">Background&nbsp;<a class="anchor" href="#background"><i class="small linkify icon"></i></a> </h1>
+
+<p>As a software developer at ThoughtWorks, I had always wanted to try out GoCD (an open source Continuous Integration and Continuous Delivery system originally developed by ThoughtWorks) but couldn&rsquo;t find a chance until early of this week. My client team is currently using Bamboo from Atlassian as their CI server. Having played with Bamboo for the past one year at the client side, I feel the tool can do the job, but sometimes quite limited (.e.g. in integration among multiple build plans, modelling complicated value stream). My senior suggested me to give the client a Lunch &amp; Learn session on GoCD and how powerful it is compared to Bamboo, and so I spent one whole afternoon setting up a sample pipeline (as code) for the demonstration. I&rsquo;ll go through my setup in this post.</p>
+
+<h1 id="local-gocd-setup">Local GoCD Setup&nbsp;<a class="anchor" href="#local-gocd-setup"><i class="small linkify icon"></i></a> </h1>
 
 <p>First, I created a docker-compose file (<a href="https://github.com/hpcsc/gocd">https://github.com/hpcsc/gocd</a>) to easily spin up a GoCD server, 3 agents, 1 local Git repository (Gogs) for demonstration purpose.</p>
 
 <p><img src="images/gocd-setup-local.png" alt="GoCD Setup Local" title="GoCD Setup Local" /></p>
 
-<p>Also note that the 3 agents have docker installed and share docker socket with host machine, so any image/container created by the agents will be available in the host machine.</p>
+<p>3 agents are created from GoCD <code>gocd-agent-docker-dind</code> image so docker is available within the agents</p>
 
 <p>Before we proceed, we need to clarify a common term that can have different meaning in GoCD, compared to other tools: pipeline. I&rsquo;ll just shamelessly borrow the explaination from <a href="https://www.gocd.org/getting-started/part-3/">GoCD Getting Started Guide</a>:</p>
 
@@ -491,7 +512,38 @@ var bodyBgSwitchIndex = 0;
 
 <p>To follow GoCD terminology, I&rsquo;ll call the whole end-to-end flow is Value Stream Map, which contain multiple GoCD pipelines.</p>
 
-<p>And below is overview of the Value Stream Map that I created for demonstration. This Value Stream Map is designed to be as close as possible to the current build pipeline used at my client.</p>
+<h1 id="sample-pipelines">Sample Pipelines&nbsp;<a class="anchor" href="#sample-pipelines"><i class="small linkify icon"></i></a> </h1>
+
+<h2 id="setup-in-local">Setup in Local&nbsp;<a class="anchor" href="#setup-in-local"><i class="small linkify icon"></i></a> </h2>
+
+<p>If you want to try out the following sample pipelines in your local machine, follow these steps:</p>
+
+<ul>
+<li>Clone and setup GoCD (and Gogs) in your local machine using following repo: <a href="https://github.com/hpcsc/gocd">https://github.com/hpcsc/gocd</a></li>
+<li>Go to <a href="http://localhost:3000">http://localhost:3000</a> (Gogs server), click Register and create a Gogs user with following credentials:</li>
+</ul>
+
+<pre><code>Username: gogs
+Password: password.123
+</code></pre>
+
+<ul>
+<li><p>Make sure your local machine have following tools installed:</p>
+
+<ul>
+<li><code>jq</code></li>
+<li><code>curl</code></li>
+<li>default public key at <code>~/.ssh/id_rsa.pub</code></li>
+</ul></li>
+
+<li><p>Clone sample pipelines repository: <a href="https://github.com/hpcsc/sample-pipeline">https://github.com/hpcsc/sample-pipeline</a> and run script <code>./scripts/setup.sh</code>. This script will setup necessary repositories in local Gogs server and create config repositories in GoCD</p></li>
+
+<li><p>Go to GoCD at <a href="http://localhost:8153">http://localhost:8153</a>, go to Agents tab and enable all 3 agents</p></li>
+</ul>
+
+<h2 id="structure">Structure&nbsp;<a class="anchor" href="#structure"><i class="small linkify icon"></i></a> </h2>
+
+<p>Below is overview of the Value Stream Map that I created for demonstration. This Value Stream Map is designed to be as close as possible to the current build pipeline used at my client.</p>
 
 <p><img src="images/gocd-sample-pipeline.png" alt="" title="GoCD Sample Pipeline" /></p>
 
@@ -584,6 +636,8 @@ sleep <span class="m">5</span>
 </div>
 <p>GoCD YAML plugin will watch these repositories and find all files with <code>.gocd.yaml</code> extension for pipeline definition.</p>
 
+<h1 id="final-thoughts">Final Thoughts&nbsp;<a class="anchor" href="#final-thoughts"><i class="small linkify icon"></i></a> </h1>
+
 <p>That&rsquo;s all for the technical part. After playing with GoCD for a while, I find GoCD quite pleasant to use. Its UI and interaction flow are carefully considered to maximize user experience. One example of that is when clicking in a pipeline, I&rsquo;m presented with a history of that pipeline instances, with stages that it contains and ability to rerun any stage in a single click:</p>
 
 <p><img src="images/pipeline-history.png" alt="" title="GoCD Pipeline History" /></p>
@@ -608,13 +662,13 @@ sleep <span class="m">5</span>
 
 
 	
-		<a class="ui label olive " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+		<a class="ui label pink " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 	
-		<a class="ui label purple " href="/tags/deployment" title="deployment">deployment</a>
+		<a class="ui label violet " href="/tags/deployment" title="deployment">deployment</a>
 	
-		<a class="ui label blue " href="/tags/gocd" title="gocd">gocd</a>
+		<a class="ui label yellow " href="/tags/gocd" title="gocd">gocd</a>
 	
-		<a class="ui label purple " href="/tags/pipeline" title="pipeline">pipeline</a>
+		<a class="ui label orange " href="/tags/pipeline" title="pipeline">pipeline</a>
 	
 
 
