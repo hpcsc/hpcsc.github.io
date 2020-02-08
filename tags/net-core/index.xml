@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>programming on David Nguyen&#39;s Personal Blog</title>
-    <link>https://pnguyen.io/tags/programming/</link>
-    <description>Recent content in programming on David Nguyen&#39;s Personal Blog</description>
+    <title>net-core on David Nguyen&#39;s Personal Blog</title>
+    <link>https://pnguyen.io/tags/net-core/</link>
+    <description>Recent content in net-core on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 08 Feb 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://pnguyen.io/tags/programming/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://pnguyen.io/tags/net-core/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -19,15 +19,6 @@
       <guid>https://pnguyen.io/posts/verify-ilogger-call-in-dotnet-core/</guid>
       <description>Problem In my current project (.NET Core backend), there have been a few times I find myself in the situation of writing tests to verify whether ILogger.Log() method is called with some expected values. Most of the time I find this kind of test brittle (since a slight change in log message can cause the tests to be broken) and not providing any actual values.
 There are still some exceptional cases when the log message provides some important information that you want to make sure it&amp;rsquo;s always there.</description>
-    </item>
-    
-    <item>
-      <title>An utility to switch AWS profiles</title>
-      <link>https://pnguyen.io/posts/aws-profile/</link>
-      <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://pnguyen.io/posts/aws-profile/</guid>
-      <description>TLDR I created a tool to switch among multiple AWS profiles. Installation and usage instruction are at GitHub repo   NOTE: there have been some significant changes to the source code of `aws-profile` tool (you can follow the link above to check the latest source code) so some of the code mentioned below is no longer relevant. I&#39;ll update this blog post to reflect the latest change when I have some time  Introduction If you are working with AWS frequently enough, you should be aware of AWS CLI and its 2 related configuration files:</description>
     </item>
     
   </channel>
