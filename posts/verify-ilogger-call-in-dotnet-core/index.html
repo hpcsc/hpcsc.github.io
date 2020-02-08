@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label teal " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label red " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label olive " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label orange " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label orange " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label pink " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label violet " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label orange " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 			
-			<a class="ui label brown " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label red " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label orange " href="/tags/shell" title="shell">shell</a>
+			<a class="ui label teal " href="/tags/shell" title="shell">shell</a>
 		
 			
-			<a class="ui label red " href="/tags/aws" title="aws">aws</a>
+			<a class="ui label orange " href="/tags/aws" title="aws">aws</a>
 		
 			
-			<a class="ui label violet " href="/tags/ckad" title="ckad">ckad</a>
+			<a class="ui label green " href="/tags/ckad" title="ckad">ckad</a>
 		
 	
 
@@ -468,7 +468,7 @@ var bodyBgSwitchIndex = 0;
 					<div><span><i class="calendar outline icon"></i>Feb 8, 2020</span></div>
 					
 					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/verify-ilogger-call-in-dotnet-core/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="9bd52471e59a90e38cfdaff0fc7767b0"></a></span></div>
-					<div><span><i class="clock outline icon"></i>5 min read</span></div>
+					<div><span><i class="clock outline icon"></i>6 min read</span></div>
 					<div><span><i class="angle double up icon"></i>Last updated on Feb 8, 2020</span></div>
 				</div>
 				<hr>
@@ -501,119 +501,227 @@ var bodyBgSwitchIndex = 0;
 <h2 id="sample-application">Sample Application&nbsp;<a class="anchor" href="#sample-application"><i class="small linkify icon"></i></a> </h2>
 
 <p>To demonstrate the problem, I just modified the weather forecast sample .NET Core Web API project as follow:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">WeatherForecastController</span> <span class="p">:</span> <span class="n">ControllerBase</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">ITellDateTime</span> <span class="n">_dateTimeProvider</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">ILogger</span><span class="p">&lt;</span><span class="n">WeatherForecastController</span><span class="p">&gt;</span> <span class="n">_logger</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IWeatherClient</span> <span class="n">_weatherClient</span><span class="p">;</span>
 
-<pre><code>public class WeatherForecastController : ControllerBase
-{
-    private readonly ITellDateTime _dateTimeProvider;
-    private readonly ILogger&lt;WeatherForecastController&gt; _logger;
-    private readonly IWeatherClient _weatherClient;
-
-    public WeatherForecastController(ITellDateTime dateTimeProvider, ILogger&lt;WeatherForecastController&gt; logger,
-        IWeatherClient weatherClient)
-    {
-        _dateTimeProvider = dateTimeProvider;
-        _logger = logger;
-        _weatherClient = weatherClient;
-    }
-
-    [HttpGet]
-    public IEnumerable&lt;WeatherForecast&gt; Get()
-    {
-        var now = _dateTimeProvider.CurrentTime();
-        return Enumerable.Range(1, 5).Select(index =&gt;
-            {
-                var date = now.AddDays(index);
-                try
-                {
-                    var temp = _weatherClient.GetTemperature(date);
-                    return new WeatherForecast(date, temp);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, $&quot;failed to get weather for date {date:dd/MM/yyyy}&quot;);
-                    return new WeatherForecast(date);
-                }
-            })
-            .ToArray();
-    }
-}
-</code></pre>
-
+    <span class="k">public</span> <span class="n">WeatherForecastController</span><span class="p">(</span><span class="n">ITellDateTime</span> <span class="n">dateTimeProvider</span><span class="p">,</span> <span class="n">ILogger</span><span class="p">&lt;</span><span class="n">WeatherForecastController</span><span class="p">&gt;</span> <span class="n">logger</span><span class="p">,</span>
+        <span class="n">IWeatherClient</span> <span class="n">weatherClient</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">_dateTimeProvider</span> <span class="p">=</span> <span class="n">dateTimeProvider</span><span class="p">;</span>
+        <span class="n">_logger</span> <span class="p">=</span> <span class="n">logger</span><span class="p">;</span>
+        <span class="n">_weatherClient</span> <span class="p">=</span> <span class="n">weatherClient</span><span class="p">;</span>
+    <span class="p">}</span><span class="na">
+</span><span class="na">
+</span><span class="na">    [HttpGet]</span>
+    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">WeatherForecast</span><span class="p">&gt;</span> <span class="n">Get</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">now</span> <span class="p">=</span> <span class="n">_dateTimeProvider</span><span class="p">.</span><span class="n">CurrentTime</span><span class="p">();</span>
+        <span class="k">return</span> <span class="n">Enumerable</span><span class="p">.</span><span class="n">Range</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">).</span><span class="n">Select</span><span class="p">(</span><span class="n">index</span> <span class="p">=&gt;</span>
+            <span class="p">{</span>
+                <span class="kt">var</span> <span class="n">date</span> <span class="p">=</span> <span class="n">now</span><span class="p">.</span><span class="n">AddDays</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+                <span class="k">try</span>
+                <span class="p">{</span>
+                    <span class="kt">var</span> <span class="n">temp</span> <span class="p">=</span> <span class="n">_weatherClient</span><span class="p">.</span><span class="n">GetTemperature</span><span class="p">(</span><span class="n">date</span><span class="p">);</span>
+                    <span class="k">return</span> <span class="k">new</span> <span class="n">WeatherForecast</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">temp</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">_logger</span><span class="p">.</span><span class="n">LogError</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s">$&#34;failed to get weather for date {date:dd/MM/yyyy}&#34;</span><span class="p">);</span>
+                    <span class="k">return</span> <span class="k">new</span> <span class="n">WeatherForecast</span><span class="p">(</span><span class="n">date</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">})</span>
+            <span class="p">.</span><span class="n">ToArray</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
 <p>The behavior of <code>Get()</code> method is slightly different from the sample provided by .NET Core: it now invokes <code>GetTemperature()</code> from an instance of <code>IWeatherClient</code> to get temperature for a specific date. And if there&rsquo;s anything wrong when getting temperature from weather client, it just logs the error and continue with the next day.</p>
 
 <p><code>ITellDateTime</code> is just an interface to wrap around .NET <code>DateTime</code> so that we can deterministically stub it in tests.</p>
 
 <p>This is the implementation of <code>InMemoryWeatherClient</code> if you are interested. This class is not our main concern in this post.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">InMemoryWeatherClient</span> <span class="p">:</span> <span class="n">IWeatherClient</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">Random</span> <span class="n">_random</span><span class="p">;</span>
 
-<pre><code>public class InMemoryWeatherClient : IWeatherClient
-{
-    private readonly Random _random;
+    <span class="k">public</span> <span class="n">InMemoryWeatherClient</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">_random</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Random</span><span class="p">();</span>
+    <span class="p">}</span>
 
-    public InMemoryWeatherClient()
-    {
-        _random = new Random();
-    }
-
-    public int GetTemperature(DateTime date)
-    {
-        return _random.Next(-20, 55);
-    }
-}
-</code></pre>
-
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">GetTemperature</span><span class="p">(</span><span class="n">DateTime</span> <span class="n">date</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">_random</span><span class="p">.</span><span class="n">Next</span><span class="p">(-</span><span class="m">20</span><span class="p">,</span> <span class="m">55</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
 <h2 id="using-moq-to-verify-ilogger-call">Using Moq to verify ILogger call&nbsp;<a class="anchor" href="#using-moq-to-verify-ilogger-call"><i class="small linkify icon"></i></a> </h2>
 
 <p>Since the application can fail when getting temperature for any day, we probably want to write a test to make sure that the application logs the specific date when it fails to get the temperature. The test will look something like this when using Moq:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="n">Get_WithMoq_WhenWeatherClientThrowsException_ShouldLogErrorWithFailedInput</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">mockLogger</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Mock</span><span class="p">&lt;</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">WeatherForecastController</span><span class="p">&gt;&gt;();</span>
 
-<pre><code>[Fact]
-public void Get_WithMoq_WhenWeatherClientThrowsException_ShouldLogErrorWithFailedInput()
-{
-    var mockLogger = new Mock&lt;ILogger&lt;WeatherForecastController&gt;&gt;();
+    <span class="kt">var</span> <span class="n">current</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="p">(</span><span class="m">2020</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">15</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span>
+    <span class="kt">var</span> <span class="n">mockDateTimeProvider</span> <span class="p">=</span> <span class="n">MockDateTimeProvider</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
 
-    var current = new DateTime(2020, 1, 15, 0, 0, 0);
-    var mockDateTimeProvider = MockDateTimeProvider(current);
+    <span class="kt">var</span> <span class="n">exception</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Exception</span><span class="p">(</span><span class="s">&#34;some exception&#34;</span><span class="p">);</span>
+    <span class="kt">var</span> <span class="n">dayCausingException</span> <span class="p">=</span> <span class="m">17</span><span class="p">;</span>
+    <span class="kt">var</span> <span class="n">mockClient</span> <span class="p">=</span> <span class="n">MockClientThrowingException</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="n">dayCausingException</span><span class="p">);</span>
 
-    var exception = new Exception(&quot;some exception&quot;);
-    var dayCausingException = 17;
-    var mockClient = MockClientThrowingException(exception, dayCausingException);
+    <span class="kt">var</span> <span class="n">controller</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WeatherForecastController</span><span class="p">(</span><span class="n">mockDateTimeProvider</span><span class="p">.</span><span class="n">Object</span><span class="p">,</span> <span class="n">mockLogger</span><span class="p">.</span><span class="n">Object</span><span class="p">,</span> <span class="n">mockClient</span><span class="p">.</span><span class="n">Object</span><span class="p">);</span>
 
-    var controller = new WeatherForecastController(mockDateTimeProvider.Object, mockLogger.Object, mockClient.Object);
+    <span class="n">controller</span><span class="p">.</span><span class="n">Get</span><span class="p">();</span>
 
-    controller.Get();
+    <span class="n">mockLogger</span><span class="p">.</span><span class="n">Verify</span><span class="p">(</span><span class="n">l</span> <span class="p">=&gt;</span>
+        <span class="n">l</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span>
+            <span class="n">LogLevel</span><span class="p">.</span><span class="n">Error</span><span class="p">,</span>
+            <span class="n">It</span><span class="p">.</span><span class="n">IsAny</span><span class="p">&lt;</span><span class="n">EventId</span><span class="p">&gt;(),</span>
+            <span class="n">It</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">It</span><span class="p">.</span><span class="n">IsAnyType</span><span class="p">&gt;((</span><span class="n">state</span><span class="p">,</span> <span class="n">type</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">state</span><span class="p">.</span><span class="n">ToString</span><span class="p">().</span><span class="n">Contains</span><span class="p">(</span><span class="s">&#34;date 17/01/2020&#34;</span><span class="p">)),</span>
+            <span class="n">exception</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">Func</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;)</span><span class="n">It</span><span class="p">.</span><span class="n">IsAny</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;()</span>
+            <span class="p">));</span>
 
-    mockLogger.Verify(l =&gt;
-        l.Log(
-            LogLevel.Error,
-            It.IsAny&lt;EventId&gt;(),
-            It.Is&lt;It.IsAnyType&gt;((state, type) =&gt; state.ToString().Contains(&quot;date 17/01/2020&quot;)),
-            exception,
-            (Func&lt;object, Exception, string&gt;)It.IsAny&lt;object&gt;()
-            ));
-
-}
-</code></pre>
-
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
 <p>and some helper methods to stub dependencies:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="k">private</span> <span class="k">static</span> <span class="n">Mock</span><span class="p">&lt;</span><span class="n">ITellDateTime</span><span class="p">&gt;</span> <span class="n">MockDateTimeProvider</span><span class="p">(</span><span class="n">DateTime</span> <span class="n">current</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">mockDateTimeProvider</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Mock</span><span class="p">&lt;</span><span class="n">ITellDateTime</span><span class="p">&gt;();</span>
+    <span class="n">mockDateTimeProvider</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Mock</span><span class="p">&lt;</span><span class="n">ITellDateTime</span><span class="p">&gt;();</span>
+    <span class="n">mockDateTimeProvider</span><span class="p">.</span><span class="n">Setup</span><span class="p">(</span><span class="n">p</span> <span class="p">=&gt;</span> <span class="n">p</span><span class="p">.</span><span class="n">CurrentTime</span><span class="p">()).</span><span class="n">Returns</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">mockDateTimeProvider</span><span class="p">;</span>
+<span class="p">}</span>
 
-<pre><code>private static Mock&lt;ITellDateTime&gt; MockDateTimeProvider(DateTime current)
-{
-    var mockDateTimeProvider = new Mock&lt;ITellDateTime&gt;();
-    mockDateTimeProvider = new Mock&lt;ITellDateTime&gt;();
-    mockDateTimeProvider.Setup(p =&gt; p.CurrentTime()).Returns(current);
-    return mockDateTimeProvider;
-}
-
-private static Mock&lt;IWeatherClient&gt; MockClientThrowingException(Exception exception, int onDay = 17)
-{
-    var failedDate = new DateTime(2020, 1, onDay, 0, 0, 0);
-    var mockClient = new Mock&lt;IWeatherClient&gt;();
-    mockClient.Setup(c =&gt; c.GetTemperature(It.IsNotIn(failedDate))).Returns(3);
-    mockClient.Setup(c =&gt; c.GetTemperature(failedDate))
-        .Throws(exception);
-    return mockClient;
-}
-</code></pre>
-
+<span class="k">private</span> <span class="k">static</span> <span class="n">Mock</span><span class="p">&lt;</span><span class="n">IWeatherClient</span><span class="p">&gt;</span> <span class="n">MockClientThrowingException</span><span class="p">(</span><span class="n">Exception</span> <span class="n">exception</span><span class="p">,</span> <span class="kt">int</span> <span class="n">onDay</span> <span class="p">=</span> <span class="m">17</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">failedDate</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="p">(</span><span class="m">2020</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="n">onDay</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span>
+    <span class="kt">var</span> <span class="n">mockClient</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Mock</span><span class="p">&lt;</span><span class="n">IWeatherClient</span><span class="p">&gt;();</span>
+    <span class="n">mockClient</span><span class="p">.</span><span class="n">Setup</span><span class="p">(</span><span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">GetTemperature</span><span class="p">(</span><span class="n">It</span><span class="p">.</span><span class="n">IsNotIn</span><span class="p">(</span><span class="n">failedDate</span><span class="p">))).</span><span class="n">Returns</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
+    <span class="n">mockClient</span><span class="p">.</span><span class="n">Setup</span><span class="p">(</span><span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">GetTemperature</span><span class="p">(</span><span class="n">failedDate</span><span class="p">))</span>
+        <span class="p">.</span><span class="n">Throws</span><span class="p">(</span><span class="n">exception</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">mockClient</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
 <p>you might say: &ldquo;it doesn&rsquo;t look so bad. What&rsquo;s the problem with this?&rdquo;</p>
 
 <p>The problem is: in order to come up with correct <code>Verify()</code> call, I needed to trace through 4 extension methods in .NET Core source code to know what is the correct parameters that I should expect. The reason I need to do this is because the application is using <code>ILogger.LogError()</code>. This method is an extension method to <code>ILogger</code> and therefore a static method, which Moq is not able to mock/verify. This also makes the test misleading because it verifies <code>Log()</code> method which is not visible anywhere in actual implementation.</p>
@@ -623,71 +731,137 @@ private static Mock&lt;IWeatherClient&gt; MockClientThrowingException(Exception 
 <h2 id="using-handwritten-mock">Using handwritten mock&nbsp;<a class="anchor" href="#using-handwritten-mock"><i class="small linkify icon"></i></a> </h2>
 
 <p>To solve the problem above, I use a handwritten implementation of <code>ILogger</code> that keeps log message/error in in-memory for verification:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">InMemoryFakeLogger</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">ILogger</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="n">LogLevel</span> <span class="n">Level</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">private</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">Exception</span> <span class="n">Ex</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">private</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Message</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">private</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 
-<pre><code>public class InMemoryFakeLogger&lt;T&gt; : ILogger&lt;T&gt;
-{
-    public LogLevel Level { get; private set; }
-    public Exception Ex { get; private set; }
-    public string Message { get; private set; }
+    <span class="k">public</span> <span class="n">IDisposable</span> <span class="n">BeginScope</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">&gt;(</span><span class="n">TState</span> <span class="n">state</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">NullScope</span><span class="p">.</span><span class="n">Instance</span><span class="p">;</span>
+    <span class="p">}</span>
 
-    public IDisposable BeginScope&lt;TState&gt;(TState state)
-    {
-        return NullScope.Instance;
-    }
+    <span class="k">public</span> <span class="kt">bool</span> <span class="n">IsEnabled</span><span class="p">(</span><span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+    <span class="p">}</span>
 
-    public bool IsEnabled(LogLevel logLevel)
-    {
-        return true;
-    }
+    <span class="k">public</span> <span class="k">void</span> <span class="n">Log</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">&gt;(</span><span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">,</span> <span class="n">EventId</span> <span class="n">eventId</span><span class="p">,</span> <span class="n">TState</span> <span class="n">state</span><span class="p">,</span> <span class="n">Exception</span> <span class="n">exception</span><span class="p">,</span> <span class="n">Func</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">formatter</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Level</span> <span class="p">=</span> <span class="n">logLevel</span><span class="p">;</span>
+        <span class="n">Message</span> <span class="p">=</span> <span class="n">state</span><span class="p">.</span><span class="n">ToString</span><span class="p">();</span>
+        <span class="n">Ex</span> <span class="p">=</span> <span class="n">exception</span><span class="p">;</span>
+    <span class="p">}</span>
 
-    public void Log&lt;TState&gt;(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func&lt;TState, Exception, string&gt; formatter)
-    {
-        Level = logLevel;
-        Message = state.ToString();
-        Ex = exception;
-    }
+    <span class="c1">/// &lt;summary&gt;
+</span><span class="c1"></span>    <span class="c1">/// Reference: https://github.com/aspnet/Logging/blob/master/src/Microsoft.Extensions.Logging.Abstractions/Internal/NullScope.cs
+</span><span class="c1"></span>    <span class="c1">/// &lt;/summary&gt;
+</span><span class="c1"></span>    <span class="k">public</span> <span class="k">class</span> <span class="nc">NullScope</span> <span class="p">:</span> <span class="n">IDisposable</span>
+    <span class="p">{</span>
+        <span class="k">public</span> <span class="k">static</span> <span class="n">NullScope</span> <span class="n">Instance</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span> <span class="p">=</span> <span class="k">new</span> <span class="n">NullScope</span><span class="p">();</span>
 
-    /// &lt;summary&gt;
-    /// Reference: https://github.com/aspnet/Logging/blob/master/src/Microsoft.Extensions.Logging.Abstractions/Internal/NullScope.cs
-    /// &lt;/summary&gt;
-    public class NullScope : IDisposable
-    {
-        public static NullScope Instance { get; } = new NullScope();
+        <span class="k">private</span> <span class="n">NullScope</span><span class="p">()</span>
+        <span class="p">{</span>
+        <span class="p">}</span>
 
-        private NullScope()
-        {
-        }
-
-        public void Dispose()
-        {
-        }
-    }
-}
-</code></pre>
-
+        <span class="k">public</span> <span class="k">void</span> <span class="n">Dispose</span><span class="p">()</span>
+        <span class="p">{</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
 <p>To use this in-memory logger in tests:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="n">Get_WhenWeatherClientThrowsException_ShouldLogErrorWithFailedInput</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="k">new</span> <span class="n">InMemoryFakeLogger</span><span class="p">&lt;</span><span class="n">WeatherForecastController</span><span class="p">&gt;();</span>
 
-<pre><code>[Fact]
-public void Get_WhenWeatherClientThrowsException_ShouldLogErrorWithFailedInput()
-{
-    var logger = new InMemoryFakeLogger&lt;WeatherForecastController&gt;();
+    <span class="kt">var</span> <span class="n">current</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="p">(</span><span class="m">2020</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">15</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">);</span>
+    <span class="kt">var</span> <span class="n">mockDateTimeProvider</span> <span class="p">=</span> <span class="n">MockDateTimeProvider</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
 
-    var current = new DateTime(2020, 1, 15, 0, 0, 0);
-    var mockDateTimeProvider = MockDateTimeProvider(current);
+    <span class="kt">var</span> <span class="n">exception</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Exception</span><span class="p">(</span><span class="s">&#34;some exception&#34;</span><span class="p">);</span>
+    <span class="kt">var</span> <span class="n">dayCausingException</span> <span class="p">=</span> <span class="m">17</span><span class="p">;</span>
+    <span class="kt">var</span> <span class="n">mockClient</span> <span class="p">=</span> <span class="n">MockClientThrowingException</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="n">dayCausingException</span><span class="p">);</span>
 
-    var exception = new Exception(&quot;some exception&quot;);
-    var dayCausingException = 17;
-    var mockClient = MockClientThrowingException(exception, dayCausingException);
+    <span class="kt">var</span> <span class="n">controller</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WeatherForecastController</span><span class="p">(</span><span class="n">mockDateTimeProvider</span><span class="p">.</span><span class="n">Object</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">mockClient</span><span class="p">.</span><span class="n">Object</span><span class="p">);</span>
 
-    var controller = new WeatherForecastController(mockDateTimeProvider.Object, logger, mockClient.Object);
+    <span class="n">controller</span><span class="p">.</span><span class="n">Get</span><span class="p">();</span>
 
-    controller.Get();
-
-    Assert.Contains(&quot;date 17/01/2020&quot;, logger.Message);
-    Assert.StrictEqual(exception, logger.Ex);
-}
-</code></pre>
-
+    <span class="n">Assert</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&#34;date 17/01/2020&#34;</span><span class="p">,</span> <span class="n">logger</span><span class="p">.</span><span class="n">Message</span><span class="p">);</span>
+    <span class="n">Assert</span><span class="p">.</span><span class="n">StrictEqual</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="n">logger</span><span class="p">.</span><span class="n">Ex</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
 <p>As you can see, instead of verifying whether the <code>Log()</code> method is called with correct parameters, now I just need to assert whether the recorded message/exception in the logger are correct. The test is much simpler and easier to understand.</p>
 
 <p>This technique is not new, pretty trivial to implement but the result is quite pleasant. All I did is to convert communication-based testing to state-based testing (.i.e. instead of verifying communication among dependencies, I verify state of dependency instead).</p>
@@ -704,11 +878,11 @@ public void Get_WhenWeatherClientThrowsException_ShouldLogErrorWithFailedInput()
 
 
 	
-		<a class="ui label teal " href="/tags/programming" title="programming">programming</a>
+		<a class="ui label yellow " href="/tags/programming" title="programming">programming</a>
 	
-		<a class="ui label teal " href="/tags/net-core" title="net-core">net-core</a>
+		<a class="ui label green " href="/tags/net-core" title="net-core">net-core</a>
 	
-		<a class="ui label purple " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+		<a class="ui label brown " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 	
 
 
