@@ -6,10 +6,20 @@
     <description>Recent content in infrastructure on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 15 Jul 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 25 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://pnguyen.io/categories/infrastructure/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>EKS IAM Roles for Service Accounts</title>
+      <link>https://pnguyen.io/posts/eks-iam-roles-for-service-accounts/</link>
+      <pubDate>Sat, 25 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/eks-iam-roles-for-service-accounts/</guid>
+      <description>At my current client, we recently switched from Kiam to a recently introduced feature from AWS to associate IAM roles with Kubernetes service accounts: EKS IAM Roles for Service Accounts. Although the switch was pretty straight forward, many things from EKS Roles for Service Accounts seem pretty magic to me, so I dediced to dig a little bit deeper to understand what is going on behind the screen.
+Disclaimer: a lot of the things described here are from my own research through different sources and may not be exactly how they are implemented.</description>
+    </item>
     
     <item>
       <title>A few tips to prepare for your CKAD exam</title>
