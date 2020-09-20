@@ -4,54 +4,31 @@
   
   <url>
     <loc>https://pnguyen.io/categories/</loc>
-    <lastmod>2020-09-20T00:00:00+00:00</lastmod>
+    <lastmod>2020-04-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://pnguyen.io/</loc>
-    <lastmod>2020-09-20T00:00:00+00:00</lastmod>
+    <lastmod>2020-04-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/posts/</loc>
-    <lastmod>2020-09-20T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/tags/</loc>
-    <lastmod>2020-09-20T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/tags/net-core/</loc>
-    <lastmod>2020-09-20T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/categories/programming/</loc>
-    <lastmod>2020-09-20T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/tags/programming/</loc>
-    <lastmod>2020-09-20T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/posts/virtual-new-override-csharp/</loc>
-    <lastmod>2020-09-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://pnguyen.io/posts/eks-iam-roles-for-service-accounts/</loc>
     <lastmod>2020-04-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/posts/</loc>
+    <lastmod>2020-04-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/</loc>
+    <lastmod>2020-04-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -75,6 +52,24 @@
   <url>
     <loc>https://pnguyen.io/posts/verify-ilogger-call-in-dotnet-core/</loc>
     <lastmod>2020-02-08T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/net-core/</loc>
+    <lastmod>2020-02-08T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/categories/programming/</loc>
+    <lastmod>2020-02-08T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/programming/</loc>
+    <lastmod>2020-02-08T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
