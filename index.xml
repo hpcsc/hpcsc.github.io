@@ -6,10 +6,20 @@
     <description>Recent content on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 20 Sep 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://pnguyen.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>virtual, new and override in C#</title>
+      <link>https://pnguyen.io/posts/virtual-new-override-csharp/</link>
+      <pubDate>Sun, 20 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/virtual-new-override-csharp/</guid>
+      <description>Overview This is a fundamental concept in C# but I find it difficult to find explanation that really goes into details of how it’s implemented in C#, so I decided to write a post to document what I understand about this.
+In C#, base class can use virtual modifier for a method to indicate that that method can be overridden by sub class. Different from Java, C# doesn’t enable method overriding by default, so the base class must use this modifier to allow base class method to be overridden.</description>
+    </item>
     
     <item>
       <title>EKS IAM Roles for Service Accounts</title>
