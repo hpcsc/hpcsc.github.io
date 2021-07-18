@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label green " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label pink " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label pink " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label red " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+			<a class="ui label red " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
-			<a class="ui label green " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label pink " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label red " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label orange " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label brown " href="/tags/golang" title="golang">golang</a>
+			<a class="ui label green " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label purple " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label violet " href="/tags/net-core" title="net-core">net-core</a>
 		
 			
-			<a class="ui label green " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label olive " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 	
 
@@ -628,7 +628,7 @@ operator-sdk init --domain pnguyen.io --repo github.com/hpcsc/github-repository-
 
 <h2 id="add-fake-github-api">Add fake Github API&nbsp;<a class="anchor" href="#add-fake-github-api"><i class="small linkify icon"></i></a> </h2>
 
-<p>The operator needs to interacts with Github API. For quick feedback and safer local development and testing, we should use a fake Github API server that responds to above endpoints. For this, I choose <a href="https://smocker.dev/guide/">smocker</a></p>
+<p>The operator needs to interact with Github API. For quick feedback and safer local development and testing, we should use a fake Github API server that responds to above endpoints. For this, I choose <a href="https://smocker.dev/guide/">smocker</a></p>
 
 <p>Let&rsquo;s add a Make task and script to start smocker docker container in the background:</p>
 <div class="highlight"><div class="chroma">
@@ -762,7 +762,7 @@ docker run -d <span class="se">\
 <span class="nf">Expect</span><span class="p">(</span><span class="nx">k8sClient</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">BeNil</span><span class="p">())</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>The initial code starts <a href="https://sdk.operatorframework.io/docs/building-operators/golang/testing/">EnvTest</a> but doesn&rsquo;t create the controller manager or register our reconciler with any manager. The code above does that and also create a kubernetes client so that we can query kubernetes server.</p>
+<p>The generated code starts <a href="https://sdk.operatorframework.io/docs/building-operators/golang/testing/">EnvTest</a> but doesn&rsquo;t create the controller manager or register our reconciler with any manager. The snippet above does that and also creates a kubernetes client so that we can query kubernetes server.</p>
 
 <p>Now the setup and teardown are propertly wired up, let&rsquo;s add the first test:</p>
 <div class="highlight"><div class="chroma">
@@ -980,9 +980,9 @@ docker run -d <span class="se">\
 
 <p>Ideally the new package name should be <code>github</code>, but it&rsquo;s taken by <code>go-github</code> library above, so let&rsquo;s call the new package <code>githubapi</code></p>
 
-<p>Tests for this new package are going to be integration tests. Integration is an overloaded term. Different people have their own definition of integration tests. For me, integration tests verify the interaction at the edge/boundary of the system with external system. In this case, they are verying the interaction between our github API client code and fake github api (smocker).</p>
+<p>Tests for this new package are going to be integration tests. Integration is an overloaded term. Different people have their own definition of integration tests. For me, integration tests verify the interaction at the edge/boundary of the system with external system. In this case, they are verifying the interaction between our github API client code and github api (smocker in local).</p>
 
-<p>I find it easier to start with a negative test case: return authorization error when we don&rsquo;t provide token. This is a possible error returned from github api. We actually don&rsquo;t care what error returned, as long as it&rsquo;s returned by <code>CreateRepository()</code>, so any error works:</p>
+<p>I find it easier to start with a negative test case: return authorization error when we don&rsquo;t provide token. This is a possible error returned from github api. We actually don&rsquo;t care what error returned, as long as that same error&rsquo;s returned by <code>CreateRepository()</code>, so any type of error works:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
@@ -1205,7 +1205,7 @@ docker run -d <span class="se">\
 </span><span class="w">        </span>}</code></pre></td></tr></table>
 </div>
 </div>
-<p>Last thing, for now we only focus on creation, so we don&rsquo;t want to call github API creation endpoint again if the repo already exists (the api will return an error). So we should do a check before making creation request. We will update this test when we work on update repository.</p>
+<p>One last thing: for now we only focus on creation, and we don&rsquo;t want to call github API creation endpoint again if the repo already exists (the api will return an error). We will check whether the repository with that name exists before creating it. When we work on update scenario later, this test can be modified to support that.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
@@ -1329,13 +1329,13 @@ docker run -d <span class="se">\
 
 
 	
-		<a class="ui label orange " href="/tags/programming" title="programming">programming</a>
+		<a class="ui label violet " href="/tags/programming" title="programming">programming</a>
 	
-		<a class="ui label violet " href="/tags/golang" title="golang">golang</a>
+		<a class="ui label brown " href="/tags/golang" title="golang">golang</a>
 	
-		<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+		<a class="ui label green " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 	
-		<a class="ui label violet " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+		<a class="ui label blue " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 	
 
 
