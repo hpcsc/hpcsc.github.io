@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.85.0" />
+<meta name="generator" content="Hugo 0.55.1" />
 
 
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label olive " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label red " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
 			<a class="ui label teal " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label olive " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+			<a class="ui label teal " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
 			<a class="ui label orange " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label purple " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label green " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label purple " href="/tags/golang" title="golang">golang</a>
+			<a class="ui label pink " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label olive " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label teal " href="/tags/net-core" title="net-core">net-core</a>
 		
 			
-			<a class="ui label brown " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label purple " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 	
 
@@ -497,40 +497,58 @@ var bodyBgSwitchIndex = 0;
 				
 					<div class="toc">
 						<nav id="TableOfContents">
-  <ul>
-    <li><a href="#scaffold-the-project">Scaffold the project</a></li>
-    <li><a href="#add-fake-github-api">Add fake Github API</a></li>
-    <li><a href="#first-end-to-end-test">First end to end test</a></li>
-    <li><a href="#fix-the-test">Fix the test</a></li>
-    <li><a href="#add-new-package">Add new package</a></li>
-    <li><a href="#test-it-out">Test it out</a></li>
-  </ul>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#the-operator">The Operator</a></li>
+<li><a href="#planning">Planning</a></li>
+<li><a href="#get-started">Get started</a>
+<ul>
+<li><a href="#scaffold-the-project">Scaffold the project</a></li>
+<li><a href="#add-fake-github-api">Add fake Github API</a></li>
+<li><a href="#first-end-to-end-test">First end to end test</a></li>
+<li><a href="#fix-the-test">Fix the test</a></li>
+<li><a href="#add-new-package">Add new package</a></li>
+<li><a href="#test-it-out">Test it out</a></li>
+</ul></li>
+</ul>
 </nav>
 					</div>
 				
 
 				<article class="post-content twemoji">
-					<h1 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h1>
+					
+
+<h1 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h1>
+
 <p>Kubernetes operator is one of the patterns that allows you to extend Kubernetes to fit your business requirements. This series of posts is going to go through the process of creating a very simple Kubernetes operator following TDD approach. The posts assume prior knowledge of Kubernetes operator pattern, what it is, when to use it, basic concepts of operator pattern like reconcillation loop etc. Below are some links to get started on that:</p>
+
 <ul>
 <li><a href="https://kubernetes.io/docs/concepts/extend-kubernetes/operator/">https://kubernetes.io/docs/concepts/extend-kubernetes/operator/</a></li>
 <li><a href="https://www.redhat.com/en/topics/containers/what-is-a-kubernetes-operator">https://www.redhat.com/en/topics/containers/what-is-a-kubernetes-operator</a></li>
 </ul>
+
 <h1 id="the-operator">The Operator&nbsp;<a class="anchor" href="#the-operator"><i class="small linkify icon"></i></a> </h1>
+
 <p>The operator that we are going to build is a Github Repository Operator. It allows us to create custom resources <code>GithubRepository</code> and the operator will create actual github repositories using specification from those CRs. It&rsquo;s just a toy example and probably not going to give much value in real life, but it&rsquo;s complicated enough to demonstrate TDD and operator development process.</p>
+
 <p>How the series is going to look like:</p>
+
 <ul>
 <li>Scaffold and first slice of the operator: creation of github repository (this post)</li>
 <li>Update and delete of github repository (TODO)</li>
 <li>Creating of github repository by cloning another repository (TODO)</li>
 <li>Validation using webhooks (TODO)</li>
 </ul>
+
 <h1 id="planning">Planning&nbsp;<a class="anchor" href="#planning"><i class="small linkify icon"></i></a> </h1>
+
 <p>Before diving into actual coding, we need to plan how the custom resource is going to look like, what fields it should support. For now, the CR is going to contain a few fields:</p>
+
 <ul>
 <li><code>owner</code>, <code>repo</code>, <code>description</code>: github owner, name and description of the repository to be created</li>
 <li><code>templateOwner</code>, <code>templateRepo</code>: (optional) owner and repository name of a template repository to clone from</li>
 </ul>
+
 <pre><code>apiVersion: &quot;pnguyen.io/v1&quot;
 kind: GithubRepository
 metadata:
@@ -541,42 +559,53 @@ spec:
   description: &quot;some repository&quot;
   templateOwner: &quot;another-owner&quot;
   templateRepo: &quot;another-repo&quot;
-</code></pre><p>Some requirements:</p>
-<ul>
-<li><code>owner</code> and <code>repo</code> cannot be changed after created the first time. We need some validation to enforce this</li>
-<li><code>templateOwner</code> and <code>templateRepo</code> are only used during creation and ignored during update</li>
-</ul>
+</code></pre>
+
+<p>Some requirements:
+- <code>owner</code> and <code>repo</code> cannot be changed after created the first time. We need some validation to enforce this
+- <code>templateOwner</code> and <code>templateRepo</code> are only used during creation and ignored during update</p>
+
 <h1 id="get-started">Get started&nbsp;<a class="anchor" href="#get-started"><i class="small linkify icon"></i></a> </h1>
+
 <h2 id="scaffold-the-project">Scaffold the project&nbsp;<a class="anchor" href="#scaffold-the-project"><i class="small linkify icon"></i></a> </h2>
+
 <p>We are going to use <a href="https://github.com/operator-framework/operator-sdk">Operator SDK</a> version 1.8.1
 Let&rsquo;s scaffold the project directory:</p>
+
 <pre><code>mkdir github-repository-operator
 cd github-repository-operator
 operator-sdk init --domain pnguyen.io --repo github.com/hpcsc/github-repository-operator
-</code></pre><p>And generate skeleton for our controller</p>
+</code></pre>
+
+<p>And generate skeleton for our controller</p>
+
 <pre><code>operator-sdk create api --group pnguyen.io --version v1 --kind GithubRepository --resource --controller
-</code></pre><p>Let&rsquo;s go over some of the most important directories/files in the generated project:</p>
-<p><img src="images/initial-skeleton.png" alt="" title="Initial skeleton"></p>
+</code></pre>
+
+<p>Let&rsquo;s go over some of the most important directories/files in the generated project:</p>
+
+<p><img src="images/initial-skeleton.png" alt="" title="Initial skeleton" /></p>
+
 <ul>
-<li>
-<p><code>api/v1/githubrepository_types.go</code>: contain Go declaration of our custom resource, its spec and status structure. We are going to modify this file next to add additional fields that we need above</p>
-</li>
-<li>
-<p><code>controllers/githubrepository_controller.go</code>: our controller. The most important function here is <code>Reconcil</code>, which is called whenever there&rsquo;s any update to the custom resource</p>
-</li>
-<li>
-<p><code>config</code>: this contains a bunch of yaml files for various things. It has a lot of files and it took me a while to understand purpose of each config the first time, so hopefully below explaination makes it easier for you to understand:</p>
+<li><code>api/v1/githubrepository_types.go</code>: contain Go declaration of our custom resource, its spec and status structure. We are going to modify this file next to add additional fields that we need above</li>
+<li><code>controllers/githubrepository_controller.go</code>: our controller. The most important function here is <code>Reconcil</code>, which is called whenever there&rsquo;s any update to the custom resource</li>
+
+<li><p><code>config</code>: this contains a bunch of yaml files for various things. It has a lot of files and it took me a while to understand purpose of each config the first time, so hopefully below explaination makes it easier for you to understand:</p>
+
 <ul>
 <li><code>samples</code>: example <code>GithubRepository</code> resource definition file</li>
 <li><code>crd</code>: CRD definition for <code>GithubRepository</code> resource</li>
 <li><code>manager</code>/<code>prometheus</code>/<code>rbac</code>: actual resource definition to deploy controller-manager, prometheus monitor etc, acting as bases for kustomize</li>
 <li><code>default</code>: kustomize patches, to be applied on top of bases above</li>
+</ul></li>
 </ul>
-</li>
-</ul>
+
 <h2 id="add-fake-github-api">Add fake Github API&nbsp;<a class="anchor" href="#add-fake-github-api"><i class="small linkify icon"></i></a> </h2>
+
 <p>The operator needs to interacts with Github API. For quick feedback and safer local development and testing, we should use a fake Github API server that responds to above endpoints. For this, I choose <a href="https://smocker.dev/guide/">smocker</a></p>
+
 <p>Let&rsquo;s add a Make task and script to start smocker docker container in the background:</p>
+
 <pre><code>SMOCKER_VERSION=0.16.2
 CONTAINER_NAME=fake-github
 
@@ -603,11 +632,18 @@ for MOCK_DEFINITION in ${SCRIPT_DIR}/../smocker/*; do
         http://localhost:8089/mocks \
         --data-binary @${MOCK_DEFINITION}
 done
-</code></pre><p>This script also uses smocker admin api to register mock definitions (There is no easy way to let smocker load mock definitions automatically when starting up at the moment). For now we don&rsquo;t have any mock definition yet. They will be added progressively when we develop the operator.</p>
+</code></pre>
+
+<p>This script also uses smocker admin api to register mock definitions (There is no easy way to let smocker load mock definitions automatically when starting up at the moment). For now we don&rsquo;t have any mock definition yet. They will be added progressively when we develop the operator.</p>
+
 <p>Smocker provides a convenient admin UI that can be accessed at <code>http://localhost:8089</code></p>
+
 <h2 id="first-end-to-end-test">First end to end test&nbsp;<a class="anchor" href="#first-end-to-end-test"><i class="small linkify icon"></i></a> </h2>
+
 <p>We will follow outside-in TDD and start with an end to end test to verify that when a <code>GithubRepository</code> custom resource is created, it will create the corresponding github repository using Github API</p>
+
 <p>The skeleton of end to end test (in Ginkgo) is already created for us at <code>controllers/suite_test.go</code>. Let&rsquo;s modify the <code>BeforeSuite</code> to add in this code at the end:</p>
+
 <pre><code>logf.Log.Info(&quot;Creating new manager&quot;)
 mgr, err := ctrl.NewManager(cfg, ctrl.Options{
   Scheme: scheme.Scheme,
@@ -637,8 +673,12 @@ go func() {
 k8sClient = mgr.GetClient()
 Expect(err).NotTo(HaveOccurred())
 Expect(k8sClient).NotTo(BeNil())
-</code></pre><p>The initial code starts <a href="https://sdk.operatorframework.io/docs/building-operators/golang/testing/">EnvTest</a> but doesn&rsquo;t create the controller manager or register our reconciler with any manager. The code above does that and also create a kubernetes client so that we can query kubernetes server.</p>
+</code></pre>
+
+<p>The initial code starts <a href="https://sdk.operatorframework.io/docs/building-operators/golang/testing/">EnvTest</a> but doesn&rsquo;t create the controller manager or register our reconciler with any manager. The code above does that and also create a kubernetes client so that we can query kubernetes server.</p>
+
 <p>Now the setup and teardown are propertly wired up, let&rsquo;s add the first test:</p>
+
 <pre><code>var _ = Describe(&quot;GithubRepository Controller&quot;, func() {
 	Context(&quot;When GithubRepository resource created&quot;, func() {
 		var name, namespace string
@@ -684,18 +724,24 @@ Expect(k8sClient).NotTo(BeNil())
 		})
 	})
 })
-</code></pre><p>this test uses kubernetes client to create a <code>GithubRepository</code> custom resource. There are 2 things we want to verify as the result of reconcillation:</p>
+</code></pre>
+
+<p>this test uses kubernetes client to create a <code>GithubRepository</code> custom resource. There are 2 things we want to verify as the result of reconcillation:</p>
+
 <ul>
-<li>
-<p>The custom resource status is updated to successful after reconcillation. This is verified by these 2 lines:</p>
-<pre><code>err = waitUntilSuccessful(name, namespace)
-Expect(err).NotTo(HaveOccurred())
-</code></pre></li>
-<li>
-<p>The reconcillation invoke Github API to create repository. To verify this, we query smocker admin API for the request history and make sure that history matches our expectation.</p>
-</li>
+<li>The custom resource status is updated to successful after reconcillation. This is verified by these 2 lines:</li>
 </ul>
+
+<pre><code>  err = waitUntilSuccessful(name, namespace)
+  Expect(err).NotTo(HaveOccurred())
+</code></pre>
+
+<ul>
+<li>The reconcillation invoke Github API to create repository. To verify this, we query smocker admin API for the request history and make sure that history matches our expectation.</li>
+</ul>
+
 <p>We can already see that the test is not compilable becuse <code>GithubRepositorySpec</code> and <code>GithubRepositoryStatus</code> do not contain the fields we want in the test. Let&rsquo;s quickly go to <code>api/v1/githubrepository_types.go</code> and add those in:</p>
+
 <pre><code>type GithubRepositorySpec struct {
 	Owner         string `json:&quot;owner&quot;`
 	Repo          string `json:&quot;repo&quot;`
@@ -705,10 +751,16 @@ Expect(err).NotTo(HaveOccurred())
 type GithubRepositoryStatus struct {
 	Successful bool `json:&quot;successful&quot;`
 }
-</code></pre><p>Now run the test with <code>make test</code> and it should fail with below error:</p>
-<p><img src="images/status-not-updated-error.png" alt="" title="Status not updated error"></p>
+</code></pre>
+
+<p>Now run the test with <code>make test</code> and it should fail with below error:</p>
+
+<p><img src="images/status-not-updated-error.png" alt="" title="Status not updated error" /></p>
+
 <h2 id="fix-the-test">Fix the test&nbsp;<a class="anchor" href="#fix-the-test"><i class="small linkify icon"></i></a> </h2>
+
 <p>The simplest way to fix above error is to just update the status to successful without doing anything:</p>
+
 <pre><code>func (r *GithubRepositoryReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx)
 
@@ -726,21 +778,33 @@ type GithubRepositoryStatus struct {
 
 	return ctrl.Result{}, nil
 }
-</code></pre><p>The test should fail with 2nd error message:</p>
-<p><img src="images/no-smocker-match-error.png" alt="" title="No smocker match error"></p>
+</code></pre>
+
+<p>The test should fail with 2nd error message:</p>
+
+<p><img src="images/no-smocker-match-error.png" alt="" title="No smocker match error" /></p>
+
 <p>To fix it, we need to invoke Github API to create repository. We will use <a href="https://github.com/google/go-github">Go Github</a> for that:</p>
+
 <pre><code>go get github.com/google/go-github/v37
-</code></pre><p>the logic to call github API does not belong to controller reconcillation function and should have its own package.</p>
-<p>There are several ways to design the new package:</p>
-<ul>
-<li>It can be a package that is specific to github api. Client of this package will explicitly call function like: <code>github.CreateRepository()</code>, <code>github.DeleteRepository()</code> etc. It&rsquo;s simpler but client&rsquo;s tied to this specific implementation.</li>
-<li>Or it can be a general package like <code>repository</code> with an exposed contract/interface to the client. Github is only an implementation. Other possible implementations are gitlab, bitbucket etc (assuming all of them having similar apis that we need). This is a bit more future-proof and flexile, with the cost of more abstraction and complexity. Another minor disadvantage is that we need to rename our project and controller since it is no longer specific to github.</li>
-</ul>
+</code></pre>
+
+<p>the logic to call github API does not belong to controller reconcillation function and should have its own package.</p>
+
+<p>There are several ways to design the new package:
+- It can be a package that is specific to github api. Client of this package will explicitly call function like: <code>github.CreateRepository()</code>, <code>github.DeleteRepository()</code> etc. It&rsquo;s simpler but client&rsquo;s tied to this specific implementation.
+- Or it can be a general package like <code>repository</code> with an exposed contract/interface to the client. Github is only an implementation. Other possible implementations are gitlab, bitbucket etc (assuming all of them having similar apis that we need). This is a bit more future-proof and flexile, with the cost of more abstraction and complexity. Another minor disadvantage is that we need to rename our project and controller since it is no longer specific to github.</p>
+
 <p>I&rsquo;m not a fan of over-engineering so will choose approach 1 for now. If there&rsquo;s a need to make it more generic in the future, it&rsquo;s simpler enough to extract interface and move to approach 2.</p>
+
 <h2 id="add-new-package">Add new package&nbsp;<a class="anchor" href="#add-new-package"><i class="small linkify icon"></i></a> </h2>
+
 <p>Ideally the new package name should be <code>github</code>, but it&rsquo;s taken by <code>go-github</code> library above, so let&rsquo;s call the new package <code>githubapi</code></p>
+
 <p>Tests for this new package are going to be integration tests. Integration is an overloaded term. Different people have their own definition of integration tests. For me, integration tests verify the interaction at the edge/boundary of the system with external system. In this case, they are verying the interaction between our github API client code and fake github api (smocker).</p>
+
 <p>I find it easier to start with a negative test case: return authorization error when we don&rsquo;t provide token. This is a possible error returned from github api. We actually don&rsquo;t care what error returned, as long as it&rsquo;s returned by <code>CreateRepository()</code>, so any error works:</p>
+
 <pre><code>func TestCreateRepository(t *testing.T) {
 	t.Run(&quot;return error when failed to create repository&quot;, func(t *testing.T) {
 		baseUrl := &quot;http://localhost:8088&quot;
@@ -754,7 +818,10 @@ type GithubRepositoryStatus struct {
 		require.Contains(t, err.Error(), &quot;failed to create repository test-repo&quot;)
 	})
 }
-</code></pre><p>To make it pass, we need to add a smocker definition file at <code>local/smocker/no-token-error.yaml</code>:</p>
+</code></pre>
+
+<p>To make it pass, we need to add a smocker definition file at <code>local/smocker/no-token-error.yaml</code>:</p>
+
 <pre><code>- request:
     path: /api/v3/user/repos
     method: POST
@@ -766,7 +833,10 @@ type GithubRepositoryStatus struct {
     headers:
       Content-Type: application/json
     body: ''
-</code></pre><p>and implement the code:</p>
+</code></pre>
+
+<p>and implement the code:</p>
+
 <pre><code>type api struct {
 	ctx       context.Context
 	baseUrl   string
@@ -804,7 +874,10 @@ func New(ctx context.Context, baseUrl, uploadUrl, token string) *api {
 		token:     token,
 	}
 }
-</code></pre><p>next test is to verify happy path. We need a way to verify that smocker is called with POST request to create the repository. This is similar to what we did in the end to end test. So before creating this test, we need to move the utility functions to verify smocker call to an internal package <code>smocker</code>. It&rsquo;s not ideal to create a package for something that is used only in test, but I can&rsquo;t find a better way to share test utility in golang. After moving the smocker utility to new package, we can write the new test:</p>
+</code></pre>
+
+<p>next test is to verify happy path. We need a way to verify that smocker is called with POST request to create the repository. This is similar to what we did in the end to end test. So before creating this test, we need to move the utility functions to verify smocker call to an internal package <code>smocker</code>. It&rsquo;s not ideal to create a package for something that is used only in test, but I can&rsquo;t find a better way to share test utility in golang. After moving the smocker utility to new package, we can write the new test:</p>
+
 <pre><code>t.Run(&quot;invoke github api when repository created&quot;, func(t *testing.T) {
 	baseUrl := &quot;http://localhost:8088&quot;
 	uploadUrl := &quot;http://localhost:8088&quot;
@@ -820,7 +893,10 @@ func New(ctx context.Context, baseUrl, uploadUrl, token string) *api {
 	require.Equal(t, http.StatusCreated, history.Response.Status)
 	require.Equal(t, repoName, history.Response.Body.(map[string]interface{})[&quot;name&quot;])
 })
-</code></pre><p>add another mock definition file to make it pass: this mock matches on <code>Authorization</code> header with <code>valid-token</code> value and uses dynamic response to return the same repo name from request in the body. The body is only partial response from Github API.</p>
+</code></pre>
+
+<p>add another mock definition file to make it pass: this mock matches on <code>Authorization</code> header with <code>valid-token</code> value and uses dynamic response to return the same repo name from request in the body. The body is only partial response from Github API.</p>
+
 <pre><code>- request:
     path: /api/v3/user/repos
     method: POST
@@ -839,7 +915,10 @@ func New(ctx context.Context, baseUrl, uploadUrl, token string) *api {
           &quot;name&quot;: &quot;{{.Request.Body.name}}&quot;,
           &quot;full_name&quot;: &quot;{{.Request.Body.name}}&quot;
         }
-</code></pre><p>Last thing, for now we only focus on creation, so we don&rsquo;t want to call github API creation endpoint again if the repo already exists (the api will return an error). So we should do a check before making creation request. We will update this test when we work on update repository.</p>
+</code></pre>
+
+<p>Last thing, for now we only focus on creation, so we don&rsquo;t want to call github API creation endpoint again if the repo already exists (the api will return an error). So we should do a check before making creation request. We will update this test when we work on update repository.</p>
+
 <pre><code>t.Run(&quot;not invoke github api creation when repository exists&quot;, func(t *testing.T) {
 	baseUrl := &quot;http://localhost:8088&quot;
 	uploadUrl := &quot;http://localhost:8088&quot;
@@ -854,7 +933,10 @@ func New(ctx context.Context, baseUrl, uploadUrl, token string) *api {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), &quot;no smocker history matching&quot;)
 })
-</code></pre><p>and implementation:</p>
+</code></pre>
+
+<p>and implementation:</p>
+
 <pre><code>func (a *api) CreateRepository(owner, repo, description string) error {
 	// ...
 
@@ -870,7 +952,10 @@ func New(ctx context.Context, baseUrl, uploadUrl, token string) *api {
 
 	// ...
 }
-</code></pre><p><code>githubapi</code> package is done, now just need to use it in controller:</p>
+</code></pre>
+
+<p><code>githubapi</code> package is done, now just need to use it in controller:</p>
+
 <pre><code>baseUrl := getEnv(GithubApiBaseUrlKey, &quot;https://api.github.com/&quot;)
 uploadUrl := getEnv(GithubApiUploadUrlKey, &quot;https://uploads.github.com/&quot;)
 token := os.Getenv(GithubApiTokenKey)
@@ -879,9 +964,14 @@ api := githubapi.New(ctx, baseUrl, uploadUrl, token)
 if err := api.CreateRepository(resource.Spec.Owner, resource.Spec.Repo, resource.Spec.Description); err != nil {
   return ctrl.Result{}, err
 }
-</code></pre><p>The end to end test should pass now</p>
+</code></pre>
+
+<p>The end to end test should pass now</p>
+
 <h2 id="test-it-out">Test it out&nbsp;<a class="anchor" href="#test-it-out"><i class="small linkify icon"></i></a> </h2>
+
 <p>Our code is all wired up, let&rsquo;s test it out:</p>
+
 <ul>
 <li>Go to Github -&gt; Settings -&gt; Developer settings -&gt; Personal access tokens -&gt; Generate new tokens, give it <code>Repo</code> permission</li>
 <li>Export token above as <code>GITHUB_API_TOKEN</code> environment variable in your terminal</li>
@@ -905,13 +995,13 @@ if err := api.CreateRepository(resource.Spec.Owner, resource.Spec.Repo, resource
 
 
 	
-		<a class="ui label purple " href="/tags/programming" title="programming">programming</a>
+		<a class="ui label olive " href="/tags/programming" title="programming">programming</a>
 	
-		<a class="ui label blue " href="/tags/golang" title="golang">golang</a>
+		<a class="ui label violet " href="/tags/golang" title="golang">golang</a>
 	
-		<a class="ui label violet " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+		<a class="ui label purple " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 	
-		<a class="ui label brown " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+		<a class="ui label blue " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 	
 
 

@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.85.0" />
+<meta name="generator" content="Hugo 0.55.1" />
 
 
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label pink " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label teal " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label teal " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label orange " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+			<a class="ui label teal " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
-			<a class="ui label brown " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label violet " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label violet " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label red " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
 			<a class="ui label orange " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label olive " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label green " href="/tags/net-core" title="net-core">net-core</a>
 		
 			
-			<a class="ui label red " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label olive " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 	
 
@@ -497,34 +497,46 @@ var bodyBgSwitchIndex = 0;
 				
 					<div class="toc">
 						<nav id="TableOfContents">
-  <ul>
-    <li><a href="#overview">Overview</a></li>
-    <li><a href="#example">Example</a></li>
-    <li><a href="#what-happened-at-compile-time-and-runtime">What happened at compile time and runtime?</a>
-      <ul>
-        <li><a href="#case-1-a-a--new-a">Case 1: A a = new A()</a></li>
-        <li><a href="#case-2-b-b--new-b">Case 2: B b = new B()</a></li>
-        <li><a href="#case-3-c-c--new-c">Case 3: C c = new C()</a></li>
-        <li><a href="#case-4-a-a--new-b">Case 4: A a = new B()</a></li>
-        <li><a href="#case-5-a-a--new-c">Case 5: A a = new C()</a></li>
-        <li><a href="#case-6-b-b--new-c">Case 6: B b = new C()</a></li>
-      </ul>
-    </li>
-    <li><a href="#reference">Reference</a></li>
-  </ul>
+<ul>
+<li>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#what-happened-at-compile-time-and-runtime">What happened at compile time and runtime?</a>
+<ul>
+<li><a href="#case-1-a-a-new-a">Case 1: A a = new A()</a></li>
+<li><a href="#case-2-b-b-new-b">Case 2: B b = new B()</a></li>
+<li><a href="#case-3-c-c-new-c">Case 3: C c = new C()</a></li>
+<li><a href="#case-4-a-a-new-b">Case 4: A a = new B()</a></li>
+<li><a href="#case-5-a-a-new-c">Case 5: A a = new C()</a></li>
+<li><a href="#case-6-b-b-new-c">Case 6: B b = new C()</a></li>
+</ul></li>
+<li><a href="#reference">Reference</a></li>
+</ul></li>
+</ul>
 </nav>
 					</div>
 				
 
 				<article class="post-content twemoji">
-					<h2 id="overview">Overview&nbsp;<a class="anchor" href="#overview"><i class="small linkify icon"></i></a> </h2>
+					
+
+<h2 id="overview">Overview&nbsp;<a class="anchor" href="#overview"><i class="small linkify icon"></i></a> </h2>
+
 <p>This is a fundamental concept in C# but I find it difficult to find explanation that really goes into details of how it’s implemented in C#, so I decided to write a post to document what I understand about this.</p>
+
 <p>In C#, base class can use <code>virtual</code> modifier for a method to indicate that that method can be overridden by sub class. Different from Java, C# doesn’t enable method overriding by default, so the base class must use this modifier to allow base class method to be overridden. With <code>virtual</code> modifier in base class, child class can use either <code>new</code> modifier or <code>override</code> modifier to hide or override the inherited method from base class.</p>
+
 <p>Under the hood, C# uses <code>virtual method table</code> (<code>vtable</code>, <code>dispatch table</code>) to determine at run time which method from which class in the hierarchy to call. Each class that has at least one virtual method will have its own <code>vtable</code>. When created, every object instance of that class will have a pointer to <code>vtable</code> of the class (the pointer will always be at a fixed address from beginning of object address, so the runtime always knows where to find the vtable). That means all object instances of the same class will share the same <code>vtable</code>. It can be visualized like this:</p>
-<p><img src="images/VirtualDiagram1.png" alt=""></p>
+
+<p><img src="images/VirtualDiagram1.png" alt="" /></p>
+
 <p>In the diagram, a1 and a2 are 2 object instances of class <code>A</code>, both of them have a virtual method table pointer (<code>vptr</code>) to point to the same <code>vtable</code> of class <code>A</code>. <code>vtable</code> only contains entries for virtual methods declared in the class.</p>
+
 <h2 id="example">Example&nbsp;<a class="anchor" href="#example"><i class="small linkify icon"></i></a> </h2>
+
 <p>To understand behaviour of <code>new</code> and <code>override</code> modifiers with <code>vtable</code>, it’s easier to use an example:</p>
+
 <ul>
 <li>Let’s say we have 3 classes: <code>A</code>, <code>B</code> and <code>C</code>.</li>
 <li><code>C</code> inherits <code>B</code> and <code>B</code> inherits <code>A</code></li>
@@ -532,7 +544,7 @@ var bodyBgSwitchIndex = 0;
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -582,17 +594,25 @@ var bodyBgSwitchIndex = 0;
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="what-happened-at-compile-time-and-runtime">What happened at compile time and runtime?&nbsp;<a class="anchor" href="#what-happened-at-compile-time-and-runtime"><i class="small linkify icon"></i></a> </h2>
+</div>
+<h2 id="what-happened-at-compile-time-and-runtime">What happened at compile time and runtime?&nbsp;<a class="anchor" href="#what-happened-at-compile-time-and-runtime"><i class="small linkify icon"></i></a> </h2>
+
 <p>At compile time, the structure of classes and their <code>vtable</code> might look like this:</p>
-<p><img src="images/VirtualDiagram2.png" alt=""></p>
+
+<p><img src="images/VirtualDiagram2.png" alt="" /></p>
+
 <p>Class <code>A</code> has one virtual method, so it has one <code>vtable</code> that contains an entry for that method. We identify that by <code>A:GetName()</code>.</p>
+
 <p>Class <code>B</code> inherits from class <code>A</code>, so it also inherits the entries in class <code>A</code>’s <code>vtable</code>, which is <code>A:GetName()</code>. The modifier <code>override</code> in class <code>B</code> <code>GetName()</code> declaration will overwrite entry <code>A:GetName()</code> that it inherits to point to its own implementation.</p>
+
 <p>Class <code>C</code> inherits from class <code>B</code>, so it also inherts the entries from class <code>B</code>’s <code>vtable</code>, which is <code>A:GetName()</code>. But in addition, class <code>C</code> says it wants to have a new entry for <code>GetName()</code> by specifying modifier <code>new</code> in <code>GetName()</code> declaration. The effect of that is in <code>vtable</code> of class <code>C</code>, beside the inherted <code>A:GetName()</code> from class <code>B</code>, it has its own entry for <code>C:GetName()</code>. This new entry <code>C:GetName()</code> points to its own implementation of <code>GetName()</code> while original entry <code>A:GetName()</code> points to the implementation that it inherits (from class <code>B</code>)</p>
+
 <p>Now let’s come to the interesting part: at runtime, how it determines which method to call using <code>vtable</code>? We will consider 6 cases of declaring and instantiating instances of <code>A</code>, <code>B</code> and <code>C</code>.</p>
-<h3 id="case-1-a-a--new-a">Case 1: A a = new A()&nbsp;<a class="anchor" href="#case-1-a-a--new-a"><i class="small linkify icon"></i></a> </h3>
+
+<h3 id="case-1-a-a-new-a">Case 1: A a = new A()&nbsp;<a class="anchor" href="#case-1-a-a-new-a"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
@@ -600,12 +620,15 @@ var bodyBgSwitchIndex = 0;
 <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">GetName</span><span class="p">());</span>    <span class="c1">// A
 </span></code></pre></td></tr></table>
 </div>
-</div><p>We declare a variable of type <code>A</code>. Actual object instance is also of type <code>A</code>. So <code>vptr</code> of the variable <code>a</code> points to <code>vtable</code> of class <code>A</code>. When <code>a.GetName()</code> is called, it just follows the pointer to look into class <code>A</code> <code>vtable</code> and finds the implementation of <code>GetName()</code> from class <code>A</code>.</p>
-<p><img src="images/VirtualDiagram3.png" alt=""></p>
-<h3 id="case-2-b-b--new-b">Case 2: B b = new B()&nbsp;<a class="anchor" href="#case-2-b-b--new-b"><i class="small linkify icon"></i></a> </h3>
+</div>
+<p>We declare a variable of type <code>A</code>. Actual object instance is also of type <code>A</code>. So <code>vptr</code> of the variable <code>a</code> points to <code>vtable</code> of class <code>A</code>. When <code>a.GetName()</code> is called, it just follows the pointer to look into class <code>A</code> <code>vtable</code> and finds the implementation of <code>GetName()</code> from class <code>A</code>.</p>
+
+<p><img src="images/VirtualDiagram3.png" alt="" /></p>
+
+<h3 id="case-2-b-b-new-b">Case 2: B b = new B()&nbsp;<a class="anchor" href="#case-2-b-b-new-b"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
@@ -613,12 +636,15 @@ var bodyBgSwitchIndex = 0;
 <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">GetName</span><span class="p">());</span>    <span class="c1">// B
 </span></code></pre></td></tr></table>
 </div>
-</div><p>Similar to case 1 above, <code>vptr</code> of the variable <code>b</code> points to <code>vtable</code> of class <code>B</code>. When <code>GetName()</code> is called, it uses class <code>B</code> implementation of <code>GetName()</code></p>
-<p><img src="images/VirtualDiagram4.png" alt=""></p>
-<h3 id="case-3-c-c--new-c">Case 3: C c = new C()&nbsp;<a class="anchor" href="#case-3-c-c--new-c"><i class="small linkify icon"></i></a> </h3>
+</div>
+<p>Similar to case 1 above, <code>vptr</code> of the variable <code>b</code> points to <code>vtable</code> of class <code>B</code>. When <code>GetName()</code> is called, it uses class <code>B</code> implementation of <code>GetName()</code></p>
+
+<p><img src="images/VirtualDiagram4.png" alt="" /></p>
+
+<h3 id="case-3-c-c-new-c">Case 3: C c = new C()&nbsp;<a class="anchor" href="#case-3-c-c-new-c"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
@@ -626,12 +652,15 @@ var bodyBgSwitchIndex = 0;
 <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">GetName</span><span class="p">());</span>     <span class="c1">// C
 </span></code></pre></td></tr></table>
 </div>
-</div><p>In this case, <code>vptr</code> of the variable <code>c</code> points to <code>vtable</code> of class <code>C</code>. But one thing that is different is that in <code>vtable</code> of class <code>C</code>, we have 2 entries for <code>GetName()</code> and <code>C:GetName()</code> effectively hides <code>A:GetName()</code> when referenced through <code>C</code> variable. So <code>C</code> implementation of <code>GetName()</code> is the one actually called.</p>
-<p><img src="images/VirtualDiagram5.png" alt=""></p>
-<h3 id="case-4-a-a--new-b">Case 4: A a = new B()&nbsp;<a class="anchor" href="#case-4-a-a--new-b"><i class="small linkify icon"></i></a> </h3>
+</div>
+<p>In this case, <code>vptr</code> of the variable <code>c</code> points to <code>vtable</code> of class <code>C</code>. But one thing that is different is that in <code>vtable</code> of class <code>C</code>, we have 2 entries for <code>GetName()</code> and <code>C:GetName()</code> effectively hides <code>A:GetName()</code> when referenced through <code>C</code> variable. So <code>C</code> implementation of <code>GetName()</code> is the one actually called.</p>
+
+<p><img src="images/VirtualDiagram5.png" alt="" /></p>
+
+<h3 id="case-4-a-a-new-b">Case 4: A a = new B()&nbsp;<a class="anchor" href="#case-4-a-a-new-b"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
@@ -639,12 +668,15 @@ var bodyBgSwitchIndex = 0;
 <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">GetName</span><span class="p">());</span>    <span class="c1">// B
 </span></code></pre></td></tr></table>
 </div>
-</div><p>We have a variable of type <code>A</code> that holds reference to an object of type <code>B</code>. This means <code>vptr</code> of variable <code>a</code> points to class <code>B</code> <code>vtable</code></p>
-<p><img src="images/VirtualDiagram6.png" alt=""></p>
-<h3 id="case-5-a-a--new-c">Case 5: A a = new C()&nbsp;<a class="anchor" href="#case-5-a-a--new-c"><i class="small linkify icon"></i></a> </h3>
+</div>
+<p>We have a variable of type <code>A</code> that holds reference to an object of type <code>B</code>. This means <code>vptr</code> of variable <code>a</code> points to class <code>B</code> <code>vtable</code></p>
+
+<p><img src="images/VirtualDiagram6.png" alt="" /></p>
+
+<h3 id="case-5-a-a-new-c">Case 5: A a = new C()&nbsp;<a class="anchor" href="#case-5-a-a-new-c"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
@@ -652,12 +684,15 @@ var bodyBgSwitchIndex = 0;
 <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">GetName</span><span class="p">());</span>    <span class="c1">// B
 </span></code></pre></td></tr></table>
 </div>
-</div><p>We have a variable of type <code>A</code> that holds reference to an object of type <code>C</code>. This means <code>vptr</code> of variable <code>a</code> points to class <code>C</code> <code>vtable</code>. But notice that since we only have variable of type <code>A</code>, it doesn&rsquo;t know about the new entry <code>C:GetName()</code> in class <code>C</code> <code>vtable</code> and uses <code>A:GetName()</code> instead. As mentioned above, <code>A:GetName()</code> is pointing to class <code>B</code> implementation.</p>
-<p><img src="images/VirtualDiagram7.png" alt=""></p>
-<h3 id="case-6-b-b--new-c">Case 6: B b = new C()&nbsp;<a class="anchor" href="#case-6-b-b--new-c"><i class="small linkify icon"></i></a> </h3>
+</div>
+<p>We have a variable of type <code>A</code> that holds reference to an object of type <code>C</code>. This means <code>vptr</code> of variable <code>a</code> points to class <code>C</code> <code>vtable</code>. But notice that since we only have variable of type <code>A</code>, it doesn&rsquo;t know about the new entry <code>C:GetName()</code> in class <code>C</code> <code>vtable</code> and uses <code>A:GetName()</code> instead. As mentioned above, <code>A:GetName()</code> is pointing to class <code>B</code> implementation.</p>
+
+<p><img src="images/VirtualDiagram7.png" alt="" /></p>
+
+<h3 id="case-6-b-b-new-c">Case 6: B b = new C()&nbsp;<a class="anchor" href="#case-6-b-b-new-c"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
@@ -665,10 +700,15 @@ var bodyBgSwitchIndex = 0;
 <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">GetName</span><span class="p">());</span>    <span class="c1">// B
 </span></code></pre></td></tr></table>
 </div>
-</div><p>Similar to case 5 above, <code>vptr</code> points to class <code>C</code> <code>vtable</code> and it also uses <code>A:GetName()</code> entry in <code>vtable</code>.</p>
-<p><img src="images/VirtualDiagram8.png" alt=""></p>
+</div>
+<p>Similar to case 5 above, <code>vptr</code> points to class <code>C</code> <code>vtable</code> and it also uses <code>A:GetName()</code> entry in <code>vtable</code>.</p>
+
+<p><img src="images/VirtualDiagram8.png" alt="" /></p>
+
 <p>And that&rsquo;s it. I hope we have a better visualization of what&rsquo;s going on behind the screen when <code>virtual</code>, <code>new</code> and <code>override</code> are used now.</p>
+
 <h2 id="reference">Reference&nbsp;<a class="anchor" href="#reference"><i class="small linkify icon"></i></a> </h2>
+
 <ul>
 <li><a href="http://stackoverflow.com/questions/1508350/why-does-this-polymorphic-c-sharp-code-print-what-it-does/1510702#1510702">http://stackoverflow.com/questions/1508350/why-does-this-polymorphic-c-sharp-code-print-what-it-does/1510702#1510702</a></li>
 </ul>
@@ -685,9 +725,9 @@ var bodyBgSwitchIndex = 0;
 
 
 	
-		<a class="ui label blue " href="/tags/programming" title="programming">programming</a>
+		<a class="ui label red " href="/tags/programming" title="programming">programming</a>
 	
-		<a class="ui label teal " href="/tags/net-core" title="net-core">net-core</a>
+		<a class="ui label pink " href="/tags/net-core" title="net-core">net-core</a>
 	
 
 

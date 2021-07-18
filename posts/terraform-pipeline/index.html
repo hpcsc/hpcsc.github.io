@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.85.0" />
+<meta name="generator" content="Hugo 0.55.1" />
 
 
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -275,25 +275,25 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label orange " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label blue " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label orange " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label teal " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label green " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+			<a class="ui label brown " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
-			<a class="ui label violet " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label teal " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label teal " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label green " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
 			<a class="ui label pink " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label orange " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label yellow " href="/tags/net-core" title="net-core">net-core</a>
 		
 			
 			<a class="ui label green " href="/tags/pipeline" title="pipeline">pipeline</a>
@@ -497,63 +497,95 @@ var bodyBgSwitchIndex = 0;
 				
 					<div class="toc">
 						<nav id="TableOfContents">
-  <ul>
-    <li><a href="#introduction">Introduction</a></li>
-    <li><a href="#tools">Tools</a></li>
-    <li><a href="#pipeline-design">Pipeline Design</a>
-      <ul>
-        <li></li>
-      </ul>
-    </li>
-    <li><a href="#summary">Summary</a></li>
-  </ul>
+<ul>
+<li>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#tools">Tools</a></li>
+<li><a href="#pipeline-design">Pipeline Design</a>
+<ul>
+<li>
+<ul>
+<li><a href="#packercommit-stage">PackerCommit Stage</a></li>
+<li><a href="#terraformcommit-stage">TerraformCommit Stage</a></li>
+<li><a href="#terraformstaging-stage">TerraformStaging stage</a></li>
+<li><a href="#terraformproduction-stage">TerraformProduction stage</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#summary">Summary</a></li>
+</ul></li>
+</ul>
 </nav>
 					</div>
 				
 
 				<article class="post-content twemoji">
-					<h2 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h2>
+					
+
+<h2 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h2>
+
 <p>In my current project, I have a chance to use Terraform and Packer to automate the process of setting up a new testing environment in AWS. However I always feel something is not right. Terraform is a tool that promotes infrastructure as code, immutable infrastructure, but what we do in this project doesn&rsquo;t align to those principles:</p>
+
 <ul>
 <li>after the servers are created using Terraform, they are maintained manually (.i.e. software is installed/updated by ssh-ing to the servers and updating directly there). After a while, server configuration is drifting away from Terraform code (an issue known as configuration drift)</li>
 <li>Terraform code is version controlled, however it&rsquo;s not truly treated as <code>code</code>, i.e. there&rsquo;s no testing, no integration, no build pipeline to ensure new commit doesn&rsquo;t break any server configuration, no automated application of Terraform code to actual environments</li>
 </ul>
+
 <p>After digging through several online resources (<a href="https://medium.com/@kief/https-medium-com-kief-using-pipelines-to-manage-environments-with-infrastructure-as-code-b37285a1cbf5">Using Pipelines to Manage Environments with Infrastructure as Code</a>) and book (<a href="https://www.amazon.com/Terraform-Running-Writing-Infrastructure-Code/dp/1491977086/ref=sr_1_1?ie=UTF8&amp;qid=1528855626&amp;sr=8-1&amp;keywords=terraform+up+and+running">Terraform: Up and Running</a>), I have a better understanding of how to structure a build pipeline to automate Terraform build and deploy process. Although those resources give me an initial idea, they lack actual code demonstration. So I&rsquo;m creating a pipeline myself to test my knowledge, and to create a sample for future reference. I&rsquo;m going to walk through the main points of the pipeline below.</p>
+
 <h2 id="tools">Tools&nbsp;<a class="anchor" href="#tools"><i class="small linkify icon"></i></a> </h2>
+
 <p>For CI, I use GoCD. Nothing specifically from the pipeline requires GoCD and the same concepts can be applied to other CI tools.</p>
+
 <p>For the setup of GoCD in local using docker-compose, refer to my previous article on <a href="/posts/a-sample-gocd-pipeline">sample GoCD pipeline</a>. I&rsquo;m using the same setup (.i.e. one GoCD server, 3 agents). Additionally, I install a few more things in the agents:</p>
+
 <ul>
 <li>Terraform</li>
 <li>Packer</li>
 <li>AWS CLI</li>
 <li>jq (for json processing)</li>
 </ul>
+
 <p>I also use <a href="https://github.com/tomzo/gocd-yaml-config-plugin">GoCD YAML Config Plugin</a> to define GoCD pipelines in YAML.</p>
+
 <p>Source code for this demonstration (including GoCD YAML pipelines) can be found in my github repositories:</p>
+
 <ul>
 <li><a href="https://github.com/hpcsc/terraform-pipeline">terraform-pipeline</a></li>
 <li><a href="https://github.com/hpcsc/terraform-pipeline-config">terraform-pipeline-config</a></li>
 <li><a href="https://github.com/hpcsc/terraform-pipeline-packer">terraform-pipeline-packer</a></li>
 </ul>
+
 <h2 id="pipeline-design">Pipeline Design&nbsp;<a class="anchor" href="#pipeline-design"><i class="small linkify icon"></i></a> </h2>
+
 <p>Here&rsquo;s an overview of the pipeline:</p>
-<p><img src="images/terraform-pipeline.png" alt="" title="Terraform Pipeline"></p>
+
+<p><img src="images/terraform-pipeline.png" alt="" title="Terraform Pipeline" /></p>
+
 <p>The purpose of this pipeline is to setup 2 environments (Staging and Production) using Terraform. Each environment has 1 EC2 instance, with Nginx installed and displays a custom HTML page.</p>
+
 <p>There are 3 repositories:</p>
+
 <ul>
 <li><code>terraform-pipeline-packer</code>: contains Packer code to generate an AMI based on Ubuntu, with Nginx installed.</li>
 <li><code>terraform-pipeline</code>: contains Terraform code to spin up an EC2 instance using AMI provided by previous Packer build</li>
 <li><code>terraform-pipeline-config</code>: contains <code>tfvars</code> files which are configuration for Terraform that are specific to each environment</li>
 </ul>
+
 <p>Separation of Terraform infrastructure definition and Terraform environment-specific configuration closely resembles how we normally separate code and configuration in traditional software development. In traditional build pipelines, code is only built/compiled once and deployed to different environments with different configurations (in the form of environment variables applied at startup/run time, or property file configuration applied at deployment time etc). Similarly, in Terraform pipeline, Terraform infrastructure definition files are processed once, stored in S3 and subsequently applied to different environments using different Terraform environment-specific configurations.</p>
+
 <p>As seen from the diagram above, the pipeline goes through 4 stages (4 pipelines in GoCD term): PackerCommit -&gt; TerraformCommit -&gt; TerraformStaging -&gt; TerraformProduction</p>
+
 <p>This is how they look in GoCD overview page:</p>
-<p><img src="images/terraform-gocd-overview.png" alt="" title="GoCD Overview"></p>
+
+<p><img src="images/terraform-gocd-overview.png" alt="" title="GoCD Overview" /></p>
+
 <h4 id="packercommit-stage">PackerCommit Stage&nbsp;<a class="anchor" href="#packercommit-stage"><i class="small linkify icon"></i></a> </h4>
+
 <p>Packer file <code>nginx.json</code> defines a single builder:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -580,14 +612,15 @@ var bodyBgSwitchIndex = 0;
       <span class="nt">&#34;ssh_username&#34;</span><span class="p">:</span> <span class="s2">&#34;ubuntu&#34;</span><span class="p">,</span>
       <span class="nt">&#34;ami_name&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx-terraform-pipeline-{{user `build_label`}}&#34;</span>
     <span class="p">}</span>
-  <span class="p">]</span>
-</code></pre></td></tr></table>
+  <span class="p">]</span></code></pre></td></tr></table>
 </div>
-</div><p>Environment variable BUILD_LABEL (which is passed in by GoCD) is used to name final AMI. Other settings are just standard EC2 settings</p>
+</div>
+<p>Environment variable BUILD_LABEL (which is passed in by GoCD) is used to name final AMI. Other settings are just standard EC2 settings</p>
+
 <p>Packer also uses shell and file provisioners to install nginx and copies custom index.html (stored in the same repository with Packer file) to AMI:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -624,22 +657,28 @@ var bodyBgSwitchIndex = 0;
       <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;shell&#34;</span><span class="p">,</span>
       <span class="nt">&#34;inline&#34;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&#34;sudo mv -f /tmp/nginx-index.html /var/www/html/index.html&#34;</span> <span class="p">]</span>
     <span class="p">}</span>
-  <span class="p">]</span>
-</code></pre></td></tr></table>
+  <span class="p">]</span></code></pre></td></tr></table>
 </div>
-</div><p>The reason I need to copy file to <code>/tmp</code> first before moving it to <code>/var/www</code> is because <code>/var/www</code> requires sudo priviledge and I can&rsquo;t provide that in file provisioner</p>
+</div>
+<p>The reason I need to copy file to <code>/tmp</code> first before moving it to <code>/var/www</code> is because <code>/var/www</code> requires sudo priviledge and I can&rsquo;t provide that in file provisioner</p>
+
 <p>In GoCD, the PackerCommit stage contains only 2 simple tasks:</p>
+
 <ul>
 <li>Validate: calling to <code>packer validate</code> to validate the syntax of Packer json file</li>
 <li>Build: calling to <code>packer build</code> to build an AMI, passing in GoCD pipeline label. Output of this task is an AMI with label <code>nginx-terraform-pipeline-{LABEL}</code> stored in AWS.</li>
 </ul>
+
 <p>Successful build of Packer image also triggers the next stage: <code>TerraformCommit</code></p>
+
 <h4 id="terraformcommit-stage">TerraformCommit Stage&nbsp;<a class="anchor" href="#terraformcommit-stage"><i class="small linkify icon"></i></a> </h4>
+
 <p>First I&rsquo;m going to walk through Terraform files in <code>terraform-pipeline</code> repository.</p>
+
 <p>The main Terraform file (<code>modules/nginx/main.tf</code>) defines an EC2 instance:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code class="language-hcl" data-lang="hcl"><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -652,23 +691,23 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-hcl" data-lang="hcl"><span class="k">resource</span> <span class="s2">&#34;aws_instance&#34; &#34;nginx_server&#34;</span> {
-<span class="n">  ami</span>                    <span class="o">=</span> <span class="s2">&#34;${data.aws_ami.nginx_ami.id}&#34;</span>
-<span class="n">  instance_type</span>          <span class="o">=</span> <span class="s2">&#34;t2.micro&#34;</span>
-<span class="n">  vpc_security_group_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;${aws_security_group.nginx_security_group.id}&#34;</span><span class="p">]</span>
-<span class="n">  key_name</span>               <span class="o">=</span> <span class="s2">&#34;hpcsc-terraform&#34;</span>
+<pre class="chroma"><code class="language-hcl" data-lang="hcl">resource &#34;aws_instance&#34; &#34;nginx_server&#34; {
+  ami                    = &#34;${data.aws_ami.nginx_ami.id}&#34;
+  instance_type          = &#34;t2.micro&#34;
+  vpc_security_group_ids = [&#34;${aws_security_group.nginx_security_group.id}&#34;]
+  key_name               = &#34;hpcsc-terraform&#34;
 
-  <span class="k">tags</span> {
-<span class="n">    Name</span>      <span class="o">=</span> <span class="s2">&#34;terraform-example-${var.server_name}&#34;</span>
-<span class="n">    CreatedBy</span> <span class="o">=</span> <span class="s2">&#34;Terraform&#34;</span>
+  tags {
+    Name      = &#34;terraform-example-${var.server_name}&#34;
+    CreatedBy = &#34;Terraform&#34;
   }
-}
-</code></pre></td></tr></table>
+}</code></pre></td></tr></table>
 </div>
-</div><p>This definition uses a few security groups defined in <code>modules/nginx/security-group.tf</code> that allow incoming connection to ports 80, 22, and allow any outgoing connection. It also uses Terraform data source to dynamically look up the AMI created by Packer in previous stage. This is definition of the data source:</p>
+</div>
+<p>This definition uses a few security groups defined in <code>modules/nginx/security-group.tf</code> that allow incoming connection to ports 80, 22, and allow any outgoing connection. It also uses Terraform data source to dynamically look up the AMI created by Packer in previous stage. This is definition of the data source:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code class="language-hcl" data-lang="hcl"><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -680,23 +719,24 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-hcl" data-lang="hcl"><span class="k">data</span> <span class="s2">&#34;aws_ami&#34; &#34;nginx_ami&#34;</span> {
-<span class="n">  most_recent</span> <span class="o">=</span> <span class="kt">true</span>
+<pre class="chroma"><code class="language-hcl" data-lang="hcl">data &#34;aws_ami&#34; &#34;nginx_ami&#34; {
+  most_recent = true
 
-  <span class="k">filter</span> {
-<span class="n">    name</span>   <span class="o">=</span> <span class="s2">&#34;name&#34;</span>
-<span class="n">    values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;nginx-terraform-pipeline-${var.packer_build_number}&#34;</span><span class="p">]</span>
+  filter {
+    name   = &#34;name&#34;
+    values = [&#34;nginx-terraform-pipeline-${var.packer_build_number}&#34;]
   }
 
-<span class="n">  owners</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;self&#34;</span><span class="p">]</span>
-}
-</code></pre></td></tr></table>
+  owners = [&#34;self&#34;]
+}</code></pre></td></tr></table>
 </div>
-</div><p>This data source simply filters AWS AMI for the most recent AMI created by current AWS account, with the name following pattern <code>nginx-terraform-pipeline-{BUILD_NUMBER}</code>. The <code>packer_build_number</code> variable is passed in by GoCD</p>
+</div>
+<p>This data source simply filters AWS AMI for the most recent AMI created by current AWS account, with the name following pattern <code>nginx-terraform-pipeline-{BUILD_NUMBER}</code>. The <code>packer_build_number</code> variable is passed in by GoCD</p>
+
 <p>I also use S3 to store Terraform state of each environment:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code class="language-hcl" data-lang="hcl"><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -705,36 +745,45 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-hcl" data-lang="hcl"><span class="k">terraform</span> {
-  <span class="k">backend</span> <span class="s2">&#34;s3&#34;</span> {
-<span class="n">    bucket</span>         <span class="o">=</span> <span class="s2">&#34;terraform-pipeline-state&#34;</span>
-<span class="n">    region</span>         <span class="o">=</span> <span class="s2">&#34;ap-southeast-1&#34;</span>
-<span class="n">    dynamodb_table</span> <span class="o">=</span> <span class="s2">&#34;tf-state-lock&#34;</span>
+<pre class="chroma"><code class="language-hcl" data-lang="hcl">terraform {
+  backend &#34;s3&#34; {
+    bucket         = &#34;terraform-pipeline-state&#34;
+    region         = &#34;ap-southeast-1&#34;
+    dynamodb_table = &#34;tf-state-lock&#34;
   }
-}
-</code></pre></td></tr></table>
+}</code></pre></td></tr></table>
 </div>
-</div><p>This tells Terraform to store state in S3 bucket <code>terraform-pipeline-state</code> and use dynamodb table <code>tf-state-lock</code> to lock the state when there are concurrent edits. This definition deliberately ignores required <code>key</code> property (which is the name of the state file in S3 bucket). It is going to be passed in by each GoCD environment-specific pipeline.</p>
+</div>
+<p>This tells Terraform to store state in S3 bucket <code>terraform-pipeline-state</code> and use dynamodb table <code>tf-state-lock</code> to lock the state when there are concurrent edits. This definition deliberately ignores required <code>key</code> property (which is the name of the state file in S3 bucket). It is going to be passed in by each GoCD environment-specific pipeline.</p>
+
 <p>The TerraformCommit pipeline consists of a few tasks:</p>
+
 <ul>
 <li>Validate: calling to <code>terraform validate</code> to validate syntax of Terraform files</li>
 <li>Test: this is just a simple <code>echo</code> at the moment. In a real world scenario, I would imagine a few things can be done in this task:
+
 <ul>
 <li>spin up an actual EC2 instance using provided Terraform files to quickly test that the files work. The instance can be destroyed immediately after verification</li>
 <li>and/or use some Terraform specific testing tools like <code>kitchen-terraform</code> to test. I don&rsquo;t have enough exposure to these tools to comment.</li>
-</ul>
-</li>
+</ul></li>
 <li>Sync to S3: after Test step, we should have sufficient confidence that the Terraform files work. This step will copy those Terraform files (artifacts produced by the build process) to S3 which acts as an artifact repository. This step allows us to use same set of files in subsequent stages. Or in other words, Terraform files are &ldquo;promoted&rdquo; through different build stages. Each build has a separate folder in S3, named according to GoCD pipeline label (.e.g. 8.24).</li>
 </ul>
+
 <h4 id="terraformstaging-stage">TerraformStaging stage&nbsp;<a class="anchor" href="#terraformstaging-stage"><i class="small linkify icon"></i></a> </h4>
+
 <p><code>terraform-pipeline-config</code> repository file layout:</p>
-<p><img src="images/terraform-config-organization.png" alt="" title="terraform-pipeline-config Organization"></p>
+
+<p><img src="images/terraform-config-organization.png" alt="" title="terraform-pipeline-config Organization" /></p>
+
 <p>The files are stored according to the environments that they belong to. Each environment has 2 files:</p>
+
 <ul>
 <li><code>terraform.tfvars</code>: this contains environment-specific values for variables defined in Terraform files, e.g. for staging: <code>server_name = &quot;Staging&quot;</code></li>
 <li><code>backend.tfvars</code>: this contains the key in S3 to store Terraform state</li>
 </ul>
+
 <p>This TerraformStaging stage does a few things:</p>
+
 <ul>
 <li>Sync from S3: this task downloads artifacts from previous stage to the agent. Since this GoCD pipeline has previous pipeline (TerraformCommit) as one of the materials, it has access to previous pipeline label through one of the environment variable (<code>GO_DEPENDENCY_LABEL_TERRAFORMMODULESYNCEDTOS3</code>). We can use this environment variable to figure out which folder in S3 to download artifacts. This works but is quite fragile and is easily broken if format of previous pipeline label changes or if we restructure build pipeline. In a real world usage, I would use a more robust way to find out this folder name, .e.g. approaches from this article <a href="https://support.thoughtworks.com/hc/en-us/articles/213254026-Pass-variables-to-other-pipelines">Pass variables to other pipelines</a></li>
 <li>Terraform Init: this step configures the backend file to be used for Staging environment using <code>backend.tfvars</code></li>
@@ -742,7 +791,7 @@ var bodyBgSwitchIndex = 0;
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -755,35 +804,50 @@ var bodyBgSwitchIndex = 0;
 
 <span class="nb">cd</span> <span class="si">${</span><span class="nv">CONFIG_DIR</span><span class="si">}</span>
 <span class="nv">PACKER_BUILD_NO</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="si">${</span><span class="nv">PIPELINE_LABEL</span><span class="si">}</span> <span class="p">|</span> cut -d <span class="s1">&#39;.&#39;</span> -f1<span class="k">)</span>
-<span class="nb">echo</span> yes <span class="p">|</span> terraform apply -var <span class="s2">&#34;packer_build_number=</span><span class="si">${</span><span class="nv">PACKER_BUILD_NO</span><span class="si">}</span><span class="s2">&#34;</span>
-</code></pre></td></tr></table>
+<span class="nb">echo</span> yes <span class="p">|</span> terraform apply -var <span class="s2">&#34;packer_build_number=</span><span class="si">${</span><span class="nv">PACKER_BUILD_NO</span><span class="si">}</span><span class="s2">&#34;</span></code></pre></td></tr></table>
 </div>
-</div><p>This script simply extracts build number from first stage (PackerCommit) and passes it to <code>terraform apply</code> as input variable. This variable is used by Terraform data source to look up correct Packer AMI</p>
+</div>
+<p>This script simply extracts build number from first stage (PackerCommit) and passes it to <code>terraform apply</code> as input variable. This variable is used by Terraform data source to look up correct Packer AMI</p>
+
 <ul>
 <li>Smoke Test: this is a simple post-deployment test to make sure that the EC2 server is up and Nginx is working correctly. It extracts public ip of the created EC2 server by calling <code>terraform output</code>:</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>terraform output -json <span class="p">|</span> jq -r <span class="s1">&#39;.server_public_ip.value&#39;</span><span class="k">)</span>
-</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>terraform output -json <span class="p">|</span> jq -r <span class="s1">&#39;.server_public_ip.value&#39;</span><span class="k">)</span></code></pre></td></tr></table>
 </div>
-</div><p>Then it keeps invoking <code>curl</code> to that public IP every 2 seconds, for 60 seconds. If nginx is not up after 60 seconds, it will fail the build</p>
+</div>
+<p>Then it keeps invoking <code>curl</code> to that public IP every 2 seconds, for 60 seconds. If nginx is not up after 60 seconds, it will fail the build</p>
+
 <p>If everything goes smoothly, we will see something like this in the build log for the first time build. It correctly identifies that a new EC2 server is to be created.</p>
-<p><img src="images/terraform-staging-log.png" alt="" title="TerraformStaging first build log"></p>
+
+<p><img src="images/terraform-staging-log.png" alt="" title="TerraformStaging first build log" /></p>
+
 <p>Browsing to the public IP gives us this result:</p>
-<p><img src="images/terraform-staging-nginx.png" alt="" title="TerraformStaging Nginx output"></p>
+
+<p><img src="images/terraform-staging-nginx.png" alt="" title="TerraformStaging Nginx output" /></p>
+
 <p>As we can see, all the tasks in this step is specific to Staging and use only files in <code>staging</code> folder.</p>
+
 <h4 id="terraformproduction-stage">TerraformProduction stage&nbsp;<a class="anchor" href="#terraformproduction-stage"><i class="small linkify icon"></i></a> </h4>
+
 <p>This is almost exactly the same with TerraformStaging stage. The only difference is instead of using files from <code>staging</code> folder, it uses <code>production</code> folder</p>
+
 <p>That should be all. Now we have a complete Terraform pipeline that can deploy any change in infrastructure (changes in Terraform files) or change in code/application (.e.g. change in html page, which triggers Packer to create a new AMI) to Staging and Production.</p>
+
 <p>As the final demonstration of deploying changes in code to Staging and Production, I update the text in <code>index.html</code> in <code>terraform-pipeline-packer</code> repository to <code>Triggered by a Code Change</code> and make a commit. The whole pipeline is triggered again and Terraform correctly identifies that previous server needs to be teared down and a new server needs to be spinned up for the new change:</p>
-<p><img src="images/terraform-code-change-log.png" alt="" title="Terraform Code Change output"></p>
+
+<p><img src="images/terraform-code-change-log.png" alt="" title="Terraform Code Change output" /></p>
+
 <p>Visiting the new Public IP gives us this page:</p>
-<p><img src="images/terraform-updated-staging-nginx.png" alt="" title="Updated Staging"></p>
+
+<p><img src="images/terraform-updated-staging-nginx.png" alt="" title="Updated Staging" /></p>
+
 <h2 id="summary">Summary&nbsp;<a class="anchor" href="#summary"><i class="small linkify icon"></i></a> </h2>
+
 <p>My key takeaway after implementing this pipeline: it&rsquo;s important to have a clear seperation between Terraform infrastructure definition (which is equivalent to traditional software application/code) and Terraform environment specific configuration (containing Terraform state, environment specific <code>tfvars</code>). This separation allows us to apply the same pipeline design techniques from traditional software build pipeline to build CD pipelines for infrastructure.</p>
 
 				</article>				
@@ -798,15 +862,15 @@ var bodyBgSwitchIndex = 0;
 
 
 	
-		<a class="ui label orange " href="/tags/gocd" title="gocd">gocd</a>
+		<a class="ui label brown " href="/tags/gocd" title="gocd">gocd</a>
 	
 		<a class="ui label green " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 	
-		<a class="ui label yellow " href="/tags/deployment" title="deployment">deployment</a>
+		<a class="ui label orange " href="/tags/deployment" title="deployment">deployment</a>
 	
-		<a class="ui label red " href="/tags/terraform" title="terraform">terraform</a>
+		<a class="ui label purple " href="/tags/terraform" title="terraform">terraform</a>
 	
-		<a class="ui label teal " href="/tags/pipeline" title="pipeline">pipeline</a>
+		<a class="ui label orange " href="/tags/pipeline" title="pipeline">pipeline</a>
 	
 
 
