@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<title>
+	Test drive a Kubernetes operator - Part 1
+</title>
+		<style>
+	body {
+		display: block;
+		--background: "linear-gradient(to right, #40e0d0, #ff8c00, #ff0080) !important;";
+		
+			background: var(--background) !important;
+		
+	}
+
+	body, body.pushable {
+		background-repeat: no-repeat;
+	  	background-attachment: fixed;
+	  	background-size: cover !important;
+	}
+</style>
+
+		<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+	
+	
+	
+	<meta name="author" content="David Nguyen" />
+	<meta name="description" content="Create a simple Kubernetes operator following TDD" />
+
+
+
+<meta name="generator" content="Hugo 0.85.0" />
+
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+
+
+
+		
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+<script
+	src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+
+ <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Inconsolata" rel="stylesheet">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/site.css">
+
+
+
+
+
+
+	
+		<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/UtkarshVerma/hugo-dream-plus/ae11561d/exampleSite/static/css/highlight.css">
+	
+
+
+
+<style>
+	body.pushable {
+		display: block;
+		
+			background: var(--background) !important;
+		 ;
+	}
+</style>
+
+
+
+<script>
+	
+	var isMobile = ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) )
+	console.log("The client device is a "+(isMobile?"mobile":"PC")+".")
+</script>
+
+	</head>
+
+	<body>
+		<script>
+var prevBgIndex = 0;
+var bodyBgSwitchIndex = 0;
+
+
+
+
+
+
+
+	document.body.style.setProperty('--background', "linear-gradient(to bottom, #13547A, #70BEBC)");
+
+
+	function getRandomInt(min, max) {
+	  min = Math.ceil(min);
+	  max = Math.floor(max);
+	  var random;
+	  while (1) {
+	    random = Math.floor(Math.random() * (max - min)) + min;
+	    if (random !== prevBgIndex) {
+	      prevBgIndex = random;
+	      break;
+	    }
+	  }
+	  return random;
+	}
+</script>
+
+
+
+
+		<div id="sidebar" class="ui labeled icon thin right sidebar inverted vertical menu">
+	
+	<a class="item" href="/" >
+		<i class="inverted big link home icon" title="Home"></i>
+		Home
+	</a>
+
+	
+	<a class="item" href="/about">
+		<i class="inverted big link address card icon" title="About Me"></i>
+		About Me
+	</a>
+
+	
+	<a class="item" href="/posts">
+		<i class="inverted big link archive icon" title="Archive"></i>
+		Archive
+	</a>
+
+	
+	
+	<a class="item" href="/tags">
+		<i class="inverted big link tags icon" title="All Tags"></i>
+		All Tags
+	</a>
+	
+
+	
+	
+	<a class="item" href="/categories">
+		<i class="inverted big link cubes icon" title="All Categories"></i>
+		All Categories
+	</a>
+	
+
+	<a class="item" href="/posts/index.xml">
+		<i class="inverted big link rss icon" title="RSS Feed"></i>
+		RSS Feed
+	</a>
+</div>
+
+
+		<div class="pusher">
+			<div class="flipper">
+				<div class="front">
+					
+	<nav class="ui top secondary menu bar">
+	
+	<div class="item left-most">
+		<a href="/">
+			<i class="inverted big link home icon" title="Home"></i>
+		</a>
+	</div>
+
+	
+	
+		
+	
+		
+	
+
+	
+	
+	
+	
+
+	
+	
+		
+		
+			<div class="item">
+				<a href="https://github.com/hpcsc" target="	_blank">
+					<i id="ico" class="inverted big link github icon" title="GitHub"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+			<div class="item">
+				<a href="https://www.linkedin.com/in/nguyenhungphuong" target="	_blank">
+					<i id="ico" class="inverted big link linkedin icon" title="LinkedIn"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+
+	
+	
+		<div class="item right right-most">
+			<i class="inverted big link sidebar icon"
+			   onClick="$('.ui.sidebar').sidebar('setting', 'transition', 'overlay').sidebar('toggle');"
+			   title="Show Sidebar"></i>
+		</div>
+	
+</nav>
+
+
+	<div class="ui centered grid">
+		
+		<div class="sixteen wide mobile only column">
+				<div class="ui inverted accordion">
+	<div id="header" class="ui inverted segment column box">
+		
+		<header id="author" class="ui top attached center aligned inverted segment">
+			
+<div class="ui small circular image">
+	
+		<img src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062?s=150">
+	
+</div>
+
+
+<h3 class="ui header">
+	David Nguyen
+	<div class="sub header">Developer &amp; Karateka</div>
+</h3>
+
+		</header>
+
+		
+		<div id="tag-category" class=" content">
+			
+				<section class="ui attached center aligned inverted segment dream-tags none flexbox">
+					
+					
+					
+
+
+
+
+	
+	
+		
+			
+			<a class="ui label olive " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+		
+			
+			<a class="ui label teal " href="/tags/programming" title="programming">programming</a>
+		
+			
+			<a class="ui label olive " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+		
+			
+			<a class="ui label orange " href="/tags/deployment" title="deployment">deployment</a>
+		
+			
+			<a class="ui label purple " href="/tags/gocd" title="gocd">gocd</a>
+		
+			
+			<a class="ui label purple " href="/tags/golang" title="golang">golang</a>
+		
+			
+			<a class="ui label olive " href="/tags/net-core" title="net-core">net-core</a>
+		
+			
+			<a class="ui label brown " href="/tags/pipeline" title="pipeline">pipeline</a>
+		
+	
+
+
+				</section>
+			
+
+			
+				<section class="ui attached inverted segment dream-categories both flexbox">
+					<div class="inverted accordion">
+						
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >infrastructure</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/eks-iam-roles-for-service-accounts/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>EKS IAM Roles for Service Accounts</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/ckad-tips/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>A few tips to prepare for your CKAD exam</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/terraform-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Terraform Pipeline</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/a-sample-gocd-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>A Sample GoCD Pipeline</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >misc</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/improve-productivity-with-fzf/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Improve productivity with fzf</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>launchd service management in MacOS</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >programming</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/test-drive-kubernetes-operator-1/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Test drive a Kubernetes operator - Part 1</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/virtual-new-override-csharp/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>virtual, new and override in C#</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/verify-ilogger-call-in-dotnet-core/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Verify ILogger call in .NET Core</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >tips</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/improve-productivity-with-fzf/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Improve productivity with fzf</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>launchd service management in MacOS</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+
+					</div>
+				</section>
+			
+		</div>
+
+		
+		<footer class="ui bottom attached center aligned inverted segment">
+			
+
+	<p>© 2018 - 2021 David Nguyen&#39;s Personal Blog</p>
+
+
+<p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with <a href="https://github.com/UtkarshVerma/hugo-dream-plus" target="_blank">Dream Plus</a> theme.</p>
+
+		</footer>
+	</div>
+</div>
+
+		</div>
+
+		<div class="sixteen wide mobile fifteen wide tablet twelve wide computer column post-list">
+			
+			<section class="ui secondary top attached black segment post-head">
+				<h1 class="post-title">
+					Test drive a Kubernetes operator - Part 1
+				</h1>
+
+				<div class="sub header">
+					<div><span><i class="calendar outline icon"></i>Jul 17, 2021</span></div>
+					
+					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/test-drive-kubernetes-operator-1/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="b2563d9a57df570adeff48b53d5d50f6"></a></span></div>
+					<div><span><i class="clock outline icon"></i>11 min read</span></div>
+					<div><span><i class="angle double up icon"></i>Last updated on Jul 17, 2021</span></div>
+				</div>
+				<hr>
+
+				
+					<div class="toc">
+						<nav id="TableOfContents">
+  <ul>
+    <li><a href="#scaffold-the-project">Scaffold the project</a></li>
+    <li><a href="#add-fake-github-api">Add fake Github API</a></li>
+    <li><a href="#first-end-to-end-test">First end to end test</a></li>
+    <li><a href="#fix-the-test">Fix the test</a></li>
+    <li><a href="#add-new-package">Add new package</a></li>
+    <li><a href="#test-it-out">Test it out</a></li>
+  </ul>
+</nav>
+					</div>
+				
+
+				<article class="post-content twemoji">
+					<h1 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h1>
+<p>Kubernetes operator is one of the patterns that allows you to extend Kubernetes to fit your business requirements. This series of posts is going to go through the process of creating a very simple Kubernetes operator following TDD approach. The posts assume prior knowledge of Kubernetes operator pattern, what it is, when to use it, basic concepts of operator pattern like reconcillation loop etc. Below are some links to get started on that:</p>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/extend-kubernetes/operator/">https://kubernetes.io/docs/concepts/extend-kubernetes/operator/</a></li>
+<li><a href="https://www.redhat.com/en/topics/containers/what-is-a-kubernetes-operator">https://www.redhat.com/en/topics/containers/what-is-a-kubernetes-operator</a></li>
+</ul>
+<h1 id="the-operator">The Operator&nbsp;<a class="anchor" href="#the-operator"><i class="small linkify icon"></i></a> </h1>
+<p>The operator that we are going to build is a Github Repository Operator. It allows us to create custom resources <code>GithubRepository</code> and the operator will create actual github repositories using specification from those CRs. It&rsquo;s just a toy example and probably not going to give much value in real life, but it&rsquo;s complicated enough to demonstrate TDD and operator development process.</p>
+<p>How the series is going to look like:</p>
+<ul>
+<li>Scaffold and first slice of the operator: creation of github repository (this post)</li>
+<li>Update and delete of github repository (TODO)</li>
+<li>Creating of github repository by cloning another repository (TODO)</li>
+<li>Validation using webhooks (TODO)</li>
+</ul>
+<h1 id="planning">Planning&nbsp;<a class="anchor" href="#planning"><i class="small linkify icon"></i></a> </h1>
+<p>Before diving into actual coding, we need to plan how the custom resource is going to look like, what fields it should support. For now, the CR is going to contain a few fields:</p>
+<ul>
+<li><code>owner</code>, <code>repo</code>, <code>description</code>: github owner, name and description of the repository to be created</li>
+<li><code>templateOwner</code>, <code>templateRepo</code>: (optional) owner and repository name of a template repository to clone from</li>
+</ul>
+<pre><code>apiVersion: &quot;pnguyen.io/v1&quot;
+kind: GithubRepository
+metadata:
+  name: &quot;my-repository&quot;
+spec:
+  owner: &quot;hpcsc&quot;
+  repo: &quot;my-repository&quot;
+  description: &quot;some repository&quot;
+  templateOwner: &quot;another-owner&quot;
+  templateRepo: &quot;another-repo&quot;
+</code></pre><p>Some requirements:</p>
+<ul>
+<li><code>owner</code> and <code>repo</code> cannot be changed after created the first time. We need some validation to enforce this</li>
+<li><code>templateOwner</code> and <code>templateRepo</code> are only used during creation and ignored during update</li>
+</ul>
+<h1 id="get-started">Get started&nbsp;<a class="anchor" href="#get-started"><i class="small linkify icon"></i></a> </h1>
+<h2 id="scaffold-the-project">Scaffold the project&nbsp;<a class="anchor" href="#scaffold-the-project"><i class="small linkify icon"></i></a> </h2>
+<p>We are going to use <a href="https://github.com/operator-framework/operator-sdk">Operator SDK</a> version 1.8.1
+Let&rsquo;s scaffold the project directory:</p>
+<pre><code>mkdir github-repository-operator
+cd github-repository-operator
+operator-sdk init --domain pnguyen.io --repo github.com/hpcsc/github-repository-operator
+</code></pre><p>And generate skeleton for our controller</p>
+<pre><code>operator-sdk create api --group pnguyen.io --version v1 --kind GithubRepository --resource --controller
+</code></pre><p>Let&rsquo;s go over some of the most important directories/files in the generated project:</p>
+<p><img src="images/initial-skeleton.png" alt="" title="Initial skeleton"></p>
+<ul>
+<li>
+<p><code>api/v1/githubrepository_types.go</code>: contain Go declaration of our custom resource, its spec and status structure. We are going to modify this file next to add additional fields that we need above</p>
+</li>
+<li>
+<p><code>controllers/githubrepository_controller.go</code>: our controller. The most important function here is <code>Reconcil</code>, which is called whenever there&rsquo;s any update to the custom resource</p>
+</li>
+<li>
+<p><code>config</code>: this contains a bunch of yaml files for various things. It has a lot of files and it took me a while to understand purpose of each config the first time, so hopefully below explaination makes it easier for you to understand:</p>
+<ul>
+<li><code>samples</code>: example <code>GithubRepository</code> resource definition file</li>
+<li><code>crd</code>: CRD definition for <code>GithubRepository</code> resource</li>
+<li><code>manager</code>/<code>prometheus</code>/<code>rbac</code>: actual resource definition to deploy controller-manager, prometheus monitor etc, acting as bases for kustomize</li>
+<li><code>default</code>: kustomize patches, to be applied on top of bases above</li>
+</ul>
+</li>
+</ul>
+<h2 id="add-fake-github-api">Add fake Github API&nbsp;<a class="anchor" href="#add-fake-github-api"><i class="small linkify icon"></i></a> </h2>
+<p>The operator needs to interacts with Github API. For quick feedback and safer local development and testing, we should use a fake Github API server that responds to above endpoints. For this, I choose <a href="https://smocker.dev/guide/">smocker</a></p>
+<p>Let&rsquo;s add a Make task and script to start smocker docker container in the background:</p>
+<pre><code>SMOCKER_VERSION=0.16.2
+CONTAINER_NAME=fake-github
+
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+
+if [ ! -z &quot;$(docker ps -a -f name=${CONTAINER_NAME} --format '{{.Names}}')&quot; ]; then
+    echo  &quot;=== Container ${CONTAINER_NAME} exists, removing it&quot;
+    docker rm -f ${CONTAINER_NAME}
+fi
+
+echo  &quot;=== Creating container ${CONTAINER_NAME}&quot;
+docker run -d \
+    -p 8088:8080 \
+    -p 8089:8081 \
+    --name ${CONTAINER_NAME} \
+    thiht/smocker:${SMOCKER_VERSION}
+
+
+for MOCK_DEFINITION in ${SCRIPT_DIR}/../smocker/*; do
+    echo &quot;Registering mock definition from ${MOCK_DEFINTION}&quot;
+
+    curl -X POST \
+        -H &quot;Content-Type: application/x-yaml&quot; \
+        http://localhost:8089/mocks \
+        --data-binary @${MOCK_DEFINITION}
+done
+</code></pre><p>This script also uses smocker admin api to register mock definitions (There is no easy way to let smocker load mock definitions automatically when starting up at the moment). For now we don&rsquo;t have any mock definition yet. They will be added progressively when we develop the operator.</p>
+<p>Smocker provides a convenient admin UI that can be accessed at <code>http://localhost:8089</code></p>
+<h2 id="first-end-to-end-test">First end to end test&nbsp;<a class="anchor" href="#first-end-to-end-test"><i class="small linkify icon"></i></a> </h2>
+<p>We will follow outside-in TDD and start with an end to end test to verify that when a <code>GithubRepository</code> custom resource is created, it will create the corresponding github repository using Github API</p>
+<p>The skeleton of end to end test (in Ginkgo) is already created for us at <code>controllers/suite_test.go</code>. Let&rsquo;s modify the <code>BeforeSuite</code> to add in this code at the end:</p>
+<pre><code>logf.Log.Info(&quot;Creating new manager&quot;)
+mgr, err := ctrl.NewManager(cfg, ctrl.Options{
+  Scheme: scheme.Scheme,
+})
+Expect(err).NotTo(HaveOccurred())
+
+err = (&amp;GithubRepositoryReconciler{
+  Client: mgr.GetClient(),
+  Scheme: mgr.GetScheme(),
+}).SetupWithManager(mgr)
+Expect(err).NotTo(HaveOccurred())
+
+go func() {
+  os.Setenv(GithubApiBaseUrlKey, &quot;http://localhost:8088&quot;)
+  os.Setenv(GithubApiUploadUrlKey, &quot;http://localhost:8088&quot;)
+  os.Setenv(GithubApiTokenKey, &quot;valid-token&quot;)
+
+  defer os.Unsetenv(GithubApiBaseUrlKey)
+  defer os.Unsetenv(GithubApiUploadUrlKey)
+  defer os.Unsetenv(GithubApiTokenKey)
+  defer GinkgoRecover()
+
+  err = mgr.Start(ctrl.SetupSignalHandler())
+  Expect(err).ToNot(HaveOccurred())
+}()
+
+k8sClient = mgr.GetClient()
+Expect(err).NotTo(HaveOccurred())
+Expect(k8sClient).NotTo(BeNil())
+</code></pre><p>The initial code starts <a href="https://sdk.operatorframework.io/docs/building-operators/golang/testing/">EnvTest</a> but doesn&rsquo;t create the controller manager or register our reconciler with any manager. The code above does that and also create a kubernetes client so that we can query kubernetes server.</p>
+<p>Now the setup and teardown are propertly wired up, let&rsquo;s add the first test:</p>
+<pre><code>var _ = Describe(&quot;GithubRepository Controller&quot;, func() {
+	Context(&quot;When GithubRepository resource created&quot;, func() {
+		var name, namespace string
+		var githubRepository pnguyeniov1.GithubRepository
+
+		BeforeEach(func() {
+			namespace = &quot;default&quot;
+			name = fmt.Sprintf(&quot;test-repository-%d&quot;, rand.IntnRange(1000, 9000))
+		})
+
+		It(&quot;should create github repository using github API&quot;, func() {
+			githubRepository = pnguyeniov1.GithubRepository{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      name,
+					Namespace: namespace,
+				},
+				Spec: pnguyeniov1.GithubRepositorySpec{
+					Owner:       &quot;test-owner&quot;,
+					Repo:        name,
+					Description: &quot;test-description&quot;,
+				},
+			}
+
+			err := k8sClient.Create(context.TODO(), &amp;githubRepository)
+			Expect(err).NotTo(HaveOccurred())
+
+			err = waitUntilSuccessful(name, namespace)
+			Expect(err).NotTo(HaveOccurred())
+
+			history, err := smockerRequestByPath(&quot;/user/repos&quot;, &quot;POST&quot;, &quot;name&quot;, name)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(history.Response.Status).To(Equal(201))
+			Expect(history.Response.Body.(map[string]interface{})[&quot;name&quot;]).To(Equal(name))
+
+		})
+
+		AfterEach(func() {
+			err := k8sClient.Delete(context.TODO(), &amp;githubRepository)
+			if err != nil {
+				logf.Log.Error(err, &quot;failed to delete GithubRepository&quot;, &quot;name&quot;, name)
+			}
+		})
+	})
+})
+</code></pre><p>this test uses kubernetes client to create a <code>GithubRepository</code> custom resource. There are 2 things we want to verify as the result of reconcillation:</p>
+<ul>
+<li>
+<p>The custom resource status is updated to successful after reconcillation. This is verified by these 2 lines:</p>
+<pre><code>err = waitUntilSuccessful(name, namespace)
+Expect(err).NotTo(HaveOccurred())
+</code></pre></li>
+<li>
+<p>The reconcillation invoke Github API to create repository. To verify this, we query smocker admin API for the request history and make sure that history matches our expectation.</p>
+</li>
+</ul>
+<p>We can already see that the test is not compilable becuse <code>GithubRepositorySpec</code> and <code>GithubRepositoryStatus</code> do not contain the fields we want in the test. Let&rsquo;s quickly go to <code>api/v1/githubrepository_types.go</code> and add those in:</p>
+<pre><code>type GithubRepositorySpec struct {
+	Owner         string `json:&quot;owner&quot;`
+	Repo          string `json:&quot;repo&quot;`
+	Description   string `json:&quot;description,omitempty&quot;`
+}
+
+type GithubRepositoryStatus struct {
+	Successful bool `json:&quot;successful&quot;`
+}
+</code></pre><p>Now run the test with <code>make test</code> and it should fail with below error:</p>
+<p><img src="images/status-not-updated-error.png" alt="" title="Status not updated error"></p>
+<h2 id="fix-the-test">Fix the test&nbsp;<a class="anchor" href="#fix-the-test"><i class="small linkify icon"></i></a> </h2>
+<p>The simplest way to fix above error is to just update the status to successful without doing anything:</p>
+<pre><code>func (r *GithubRepositoryReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	logger := log.FromContext(ctx)
+
+	var resource pnguyeniov1.GithubRepository
+	if err := r.Get(ctx, req.NamespacedName, &amp;resource); err != nil &amp;&amp; !errors.IsNotFound(err) {
+		return ctrl.Result{}, fmt.Errorf(&quot;unable to fetch GithubRepository: %v&quot;, err)
+	}
+
+	resource.Status.Successful = true
+	if err := r.Status().Update(ctx, &amp;resource); err != nil {
+		return ctrl.Result{}, fmt.Errorf(&quot;unable to update status of GithubRepository resource: %v&quot;, err)
+	}
+
+	logger.Info(&quot;github repository created successfully&quot;)
+
+	return ctrl.Result{}, nil
+}
+</code></pre><p>The test should fail with 2nd error message:</p>
+<p><img src="images/no-smocker-match-error.png" alt="" title="No smocker match error"></p>
+<p>To fix it, we need to invoke Github API to create repository. We will use <a href="https://github.com/google/go-github">Go Github</a> for that:</p>
+<pre><code>go get github.com/google/go-github/v37
+</code></pre><p>the logic to call github API does not belong to controller reconcillation function and should have its own package.</p>
+<p>There are several ways to design the new package:</p>
+<ul>
+<li>It can be a package that is specific to github api. Client of this package will explicitly call function like: <code>github.CreateRepository()</code>, <code>github.DeleteRepository()</code> etc. It&rsquo;s simpler but client&rsquo;s tied to this specific implementation.</li>
+<li>Or it can be a general package like <code>repository</code> with an exposed contract/interface to the client. Github is only an implementation. Other possible implementations are gitlab, bitbucket etc (assuming all of them having similar apis that we need). This is a bit more future-proof and flexile, with the cost of more abstraction and complexity. Another minor disadvantage is that we need to rename our project and controller since it is no longer specific to github.</li>
+</ul>
+<p>I&rsquo;m not a fan of over-engineering so will choose approach 1 for now. If there&rsquo;s a need to make it more generic in the future, it&rsquo;s simpler enough to extract interface and move to approach 2.</p>
+<h2 id="add-new-package">Add new package&nbsp;<a class="anchor" href="#add-new-package"><i class="small linkify icon"></i></a> </h2>
+<p>Ideally the new package name should be <code>github</code>, but it&rsquo;s taken by <code>go-github</code> library above, so let&rsquo;s call the new package <code>githubapi</code></p>
+<p>Tests for this new package are going to be integration tests. Integration is an overloaded term. Different people have their own definition of integration tests. For me, integration tests verify the interaction at the edge/boundary of the system with external system. In this case, they are verying the interaction between our github API client code and fake github api (smocker).</p>
+<p>I find it easier to start with a negative test case: return authorization error when we don&rsquo;t provide token. This is a possible error returned from github api. We actually don&rsquo;t care what error returned, as long as it&rsquo;s returned by <code>CreateRepository()</code>, so any error works:</p>
+<pre><code>func TestCreateRepository(t *testing.T) {
+	t.Run(&quot;return error when failed to create repository&quot;, func(t *testing.T) {
+		baseUrl := &quot;http://localhost:8088&quot;
+		uploadUrl := &quot;http://localhost:8088&quot;
+		token := &quot;&quot;
+		api := New(context.TODO(), baseUrl, uploadUrl, token)
+
+		err := api.CreateRepository(&quot;test-owner&quot;, &quot;test-repo&quot;, &quot;some-description&quot;)
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), &quot;failed to create repository test-repo&quot;)
+	})
+}
+</code></pre><p>To make it pass, we need to add a smocker definition file at <code>local/smocker/no-token-error.yaml</code>:</p>
+<pre><code>- request:
+    path: /api/v3/user/repos
+    method: POST
+    headers:
+      Authorization: Bearer
+      Content-Type: application/json
+  response:
+    status: 401
+    headers:
+      Content-Type: application/json
+    body: ''
+</code></pre><p>and implement the code:</p>
+<pre><code>type api struct {
+	ctx       context.Context
+	baseUrl   string
+	uploadUrl string
+	token     string
+}
+
+func (a *api) CreateRepository(owner, repo, description string) error {
+	ts := oauth2.StaticTokenSource(&amp;oauth2.Token{AccessToken: a.token})
+	oauthClient := oauth2.NewClient(a.ctx, ts)
+	client, err := github.NewEnterpriseClient(a.baseUrl, a.uploadUrl, oauthClient)
+	if err != nil {
+		return fmt.Errorf(&quot;failed to create github client: %v&quot;, err)
+	}
+
+	repository := github.Repository{
+		Name:        &amp;repo,
+		Description: &amp;description,
+	}
+
+	_, _, err = client.Repositories.Create(a.ctx, &quot;&quot;, &amp;repository)
+
+	if err != nil {
+		return fmt.Errorf(&quot;failed to create repository %s: error: %v&quot;, repo, err)
+	}
+
+	return nil
+}
+
+func New(ctx context.Context, baseUrl, uploadUrl, token string) *api {
+	return &amp;api{
+		ctx:       ctx,
+		baseUrl:   baseUrl,
+		uploadUrl: uploadUrl,
+		token:     token,
+	}
+}
+</code></pre><p>next test is to verify happy path. We need a way to verify that smocker is called with POST request to create the repository. This is similar to what we did in the end to end test. So before creating this test, we need to move the utility functions to verify smocker call to an internal package <code>smocker</code>. It&rsquo;s not ideal to create a package for something that is used only in test, but I can&rsquo;t find a better way to share test utility in golang. After moving the smocker utility to new package, we can write the new test:</p>
+<pre><code>t.Run(&quot;invoke github api when repository created&quot;, func(t *testing.T) {
+	baseUrl := &quot;http://localhost:8088&quot;
+	uploadUrl := &quot;http://localhost:8088&quot;
+	token := &quot;valid-token&quot;
+	repoName := fmt.Sprintf(&quot;test-repo-%d&quot;, rand.IntnRange(1000, 9000))
+
+	api := New(context.TODO(), baseUrl, uploadUrl, token)
+	err := api.CreateRepository(&quot;test-owner&quot;, repoName, &quot;some-description&quot;)
+
+	require.NoError(t, err)
+	history, err := smocker.RequestByPath(&quot;/user/repos&quot;, &quot;POST&quot;, &quot;name&quot;, repoName)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusCreated, history.Response.Status)
+	require.Equal(t, repoName, history.Response.Body.(map[string]interface{})[&quot;name&quot;])
+})
+</code></pre><p>add another mock definition file to make it pass: this mock matches on <code>Authorization</code> header with <code>valid-token</code> value and uses dynamic response to return the same repo name from request in the body. The body is only partial response from Github API.</p>
+<pre><code>- request:
+    path: /api/v3/user/repos
+    method: POST
+    headers:
+      Authorization: Bearer valid-token
+      Content-Type: application/json
+  dynamic_response:
+    engine: go_template
+    script: |-
+      status: 201
+      headers:
+        Content-Type: [application/json]
+      body: &gt;
+        {
+          &quot;id&quot;: 1296269,
+          &quot;name&quot;: &quot;{{.Request.Body.name}}&quot;,
+          &quot;full_name&quot;: &quot;{{.Request.Body.name}}&quot;
+        }
+</code></pre><p>Last thing, for now we only focus on creation, so we don&rsquo;t want to call github API creation endpoint again if the repo already exists (the api will return an error). So we should do a check before making creation request. We will update this test when we work on update repository.</p>
+<pre><code>t.Run(&quot;not invoke github api creation when repository exists&quot;, func(t *testing.T) {
+	baseUrl := &quot;http://localhost:8088&quot;
+	uploadUrl := &quot;http://localhost:8088&quot;
+	token := &quot;valid-token&quot;
+	repoName := &quot;existing-repo&quot;
+	api := New(context.TODO(), baseUrl, uploadUrl, token)
+
+	err := api.CreateRepository(&quot;test-owner&quot;, repoName, &quot;some-description&quot;)
+
+	require.NoError(t, err)
+	_, err = smocker.RequestByPath(&quot;/user/repos&quot;, &quot;POST&quot;, &quot;name&quot;, repoName)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), &quot;no smocker history matching&quot;)
+})
+</code></pre><p>and implementation:</p>
+<pre><code>func (a *api) CreateRepository(owner, repo, description string) error {
+	// ...
+
+	_, resp, err := client.Repositories.Get(a.ctx, owner, repo)
+	if err != nil &amp;&amp; resp.StatusCode != http.StatusNotFound {
+		return fmt.Errorf(&quot;failed to get repository %s: error: %v&quot;, repo, err)
+	}
+
+	if resp.StatusCode != http.StatusNotFound {
+		// only work with repo creation for now
+		return nil
+	}
+
+	// ...
+}
+</code></pre><p><code>githubapi</code> package is done, now just need to use it in controller:</p>
+<pre><code>baseUrl := getEnv(GithubApiBaseUrlKey, &quot;https://api.github.com/&quot;)
+uploadUrl := getEnv(GithubApiUploadUrlKey, &quot;https://uploads.github.com/&quot;)
+token := os.Getenv(GithubApiTokenKey)
+
+api := githubapi.New(ctx, baseUrl, uploadUrl, token)
+if err := api.CreateRepository(resource.Spec.Owner, resource.Spec.Repo, resource.Spec.Description); err != nil {
+  return ctrl.Result{}, err
+}
+</code></pre><p>The end to end test should pass now</p>
+<h2 id="test-it-out">Test it out&nbsp;<a class="anchor" href="#test-it-out"><i class="small linkify icon"></i></a> </h2>
+<p>Our code is all wired up, let&rsquo;s test it out:</p>
+<ul>
+<li>Go to Github -&gt; Settings -&gt; Developer settings -&gt; Personal access tokens -&gt; Generate new tokens, give it <code>Repo</code> permission</li>
+<li>Export token above as <code>GITHUB_API_TOKEN</code> environment variable in your terminal</li>
+<li>Run <code>make install</code> to install CRD to your local kubernetes cluster</li>
+<li>Run <code>make run</code> to run controller in your terminal</li>
+<li>Update sample CR at <code>./config/samples/pnguyen.io_v1_githubrepository.yaml</code></li>
+<li>In another terminal, run <code>kubectl apply -f ./config/samples/pnguyen.io_v1_githubrepository.yaml</code></li>
+<li>Verify that new github repository created</li>
+<li>Run <code>kubectl get githubrepository your-cr-name -o yaml</code> and check that <code>status.successful</code> is set to true</li>
+</ul>
+
+				</article>				
+			</section>
+
+			
+			<section class="ui secondary attached segment dream-tags">
+				
+					
+
+
+
+
+	
+		<a class="ui label purple " href="/tags/programming" title="programming">programming</a>
+	
+		<a class="ui label blue " href="/tags/golang" title="golang">golang</a>
+	
+		<a class="ui label violet " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+	
+		<a class="ui label brown " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+	
+
+
+				
+			</section>
+
+			
+			
+				<section class="ui secondary  attached segment share row box">
+					
+
+
+
+
+
+
+
+
+<div class="author">
+	
+	<img class="avatar" src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062?s=150">
+	
+</div>
+<div class="info grow flexbox">
+	
+	<p class="name">David Nguyen</p>
+	
+	<p class="desc">Developer &amp; Karateka</p>
+</div>
+
+
+<section class="buttons row box">
+	<div class="facebook none flexbox" href="#" onclick="window.open(
+			'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+			'facebook-share-dialog',
+			'width=626,height=436'); return false;">
+		<button class="ui facebook button"><i class="facebook icon"></i>Share</button>
+	</div>
+	<div class="twitter none flexbox" onclick="window.open('https://twitter.com/intent/tweet?text=Read &quot;Test drive a Kubernetes operator - Part 1  https:\/\/pnguyen.io\/posts\/test-drive-kubernetes-operator-1\/','_self')">
+		<button class="ui twitter button"><i class="twitter icon"></i>Tweet</button>
+	</div>
+</section>
+
+				</section>
+			
+
+			
+			
+			
+
+			
+			
+				<div class="ui secondary bottom attached stacked segment disqus">
+					
+<div id="disqus_thread"></div>
+<script>
+	var disqus_config = function () {
+		this.page.url = 'https:\/\/pnguyen.io\/posts\/test-drive-kubernetes-operator-1\/';
+		this.page.identifier = 'b2563d9a57df570adeff48b53d5d50f6';
+	};
+	(function() {
+   	var d = document, s = d.createElement('script');
+   	s.src = 'https://' + 'pnguyen' + '.disqus.com/embed.js';
+   	s.setAttribute('data-timestamp', +new Date());
+   	(d.head || d.body).appendChild(s);
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+				</div>
+			
+		</div>
+	</div>
+
+				</div>
+			</div>
+		</div>
+		
+	
+	
+		<script id="dsq-count-scr" src="//pnguyen.disqus.com/count.js" async></script>
+	
+
+		
+
+<script src="/js/site.js"></script>
+
+
+
+	<script src="https://twemoji.maxcdn.com/2/twemoji.min.js?2.6"></script>
+
+
+
+
+
+
+
+
+	
+	<script>
+		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+		ga('create', 'UA-125420743-1', 'auto');
+		ga('send', 'pageview');
+	</script>
+	<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+		
+
+
+		
+
+	<script>
+		(function () {
+		  console.log("Twemoji up and making stuff colourful!");
+		  for (var b = document.getElementsByClassName("twemoji"), a = 0; a < b.length; a++) {
+			twemoji.parse(b[a]);
+		  }
+		})();
+	</script>
+
+
+	</body>
+</html>

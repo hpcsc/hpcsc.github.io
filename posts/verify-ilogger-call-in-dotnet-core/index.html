@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.55.1" />
+<meta name="generator" content="Hugo 0.85.0" />
 
 
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -278,25 +278,25 @@ var bodyBgSwitchIndex = 0;
 			<a class="ui label olive " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label violet " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label teal " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label yellow " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label brown " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
-			<a class="ui label pink " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label olive " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label blue " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+			<a class="ui label violet " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label pink " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label green " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label orange " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label teal " href="/tags/net-core" title="net-core">net-core</a>
 		
 			
-			<a class="ui label teal " href="/tags/shell" title="shell">shell</a>
+			<a class="ui label pink " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 	
 
@@ -395,6 +395,13 @@ var bodyBgSwitchIndex = 0;
 	
 	<div class="content">
 		
+			<a class="item" href="https://pnguyen.io/posts/test-drive-kubernetes-operator-1/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Test drive a Kubernetes operator - Part 1</p>
+				</div>
+			</a>
+		
 			<a class="item" href="https://pnguyen.io/posts/virtual-new-override-csharp/">
 				<div>
 					<i class="cocktail icon"></i>
@@ -460,7 +467,7 @@ var bodyBgSwitchIndex = 0;
 		<footer class="ui bottom attached center aligned inverted segment">
 			
 
-	<p>© 2018 - 2020 David Nguyen&#39;s Personal Blog</p>
+	<p>© 2018 - 2021 David Nguyen&#39;s Personal Blog</p>
 
 
 <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with <a href="https://github.com/UtkarshVerma/hugo-dream-plus" target="_blank">Dream Plus</a> theme.</p>
@@ -490,34 +497,25 @@ var bodyBgSwitchIndex = 0;
 				
 					<div class="toc">
 						<nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#problem">Problem</a></li>
-<li><a href="#sample-application">Sample Application</a></li>
-<li><a href="#using-moq-to-verify-ilogger-call">Using Moq to verify ILogger call</a></li>
-<li><a href="#using-handwritten-mock">Using handwritten mock</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#sample-application">Sample Application</a></li>
+    <li><a href="#using-moq-to-verify-ilogger-call">Using Moq to verify ILogger call</a></li>
+    <li><a href="#using-handwritten-mock">Using handwritten mock</a></li>
+  </ul>
 </nav>
 					</div>
 				
 
 				<article class="post-content twemoji">
-					
-
-<h2 id="problem">Problem&nbsp;<a class="anchor" href="#problem"><i class="small linkify icon"></i></a> </h2>
-
+					<h2 id="problem">Problem&nbsp;<a class="anchor" href="#problem"><i class="small linkify icon"></i></a> </h2>
 <p>In my current project (.NET Core backend), there have been a few times I find myself in the situation of writing tests to verify whether <code>ILogger.Log()</code> method is called with some expected values. Most of the time I find this kind of test brittle (since a slight change in log message can cause the tests to be broken) and not providing any actual values.</p>
-
 <p>There are still some exceptional cases when the log message provides some important information that you want to make sure it&rsquo;s always there. In those cases, most people will just rely on mocking framework (.e.q. Moq). In this post I will explain why I find that approach difficult to use and introduce an alternative approach.</p>
-
 <h2 id="sample-application">Sample Application&nbsp;<a class="anchor" href="#sample-application"><i class="small linkify icon"></i></a> </h2>
-
 <p>To demonstrate the problem, I just modified the weather forecast sample .NET Core Web API project as follow:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -556,33 +554,33 @@ var bodyBgSwitchIndex = 0;
 <td class="lntd">
 <pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">WeatherForecastController</span> <span class="p">:</span> <span class="n">ControllerBase</span>
 <span class="p">{</span>
-    <span class="k">private</span> <span class="k">readonly</span> <span class="n">ITellDateTime</span> <span class="n">_dateTimeProvider</span><span class="p">;</span>
-    <span class="k">private</span> <span class="k">readonly</span> <span class="n">ILogger</span><span class="p">&lt;</span><span class="n">WeatherForecastController</span><span class="p">&gt;</span> <span class="n">_logger</span><span class="p">;</span>
-    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IWeatherClient</span> <span class="n">_weatherClient</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">ITellDateTime</span> <span class="m">_d</span><span class="n">ateTimeProvider</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">ILogger</span><span class="p">&lt;</span><span class="n">WeatherForecastController</span><span class="p">&gt;</span> <span class="m">_l</span><span class="n">ogger</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IWeatherClient</span> <span class="m">_</span><span class="n">weatherClient</span><span class="p">;</span>
 
     <span class="k">public</span> <span class="n">WeatherForecastController</span><span class="p">(</span><span class="n">ITellDateTime</span> <span class="n">dateTimeProvider</span><span class="p">,</span> <span class="n">ILogger</span><span class="p">&lt;</span><span class="n">WeatherForecastController</span><span class="p">&gt;</span> <span class="n">logger</span><span class="p">,</span>
         <span class="n">IWeatherClient</span> <span class="n">weatherClient</span><span class="p">)</span>
     <span class="p">{</span>
-        <span class="n">_dateTimeProvider</span> <span class="p">=</span> <span class="n">dateTimeProvider</span><span class="p">;</span>
-        <span class="n">_logger</span> <span class="p">=</span> <span class="n">logger</span><span class="p">;</span>
-        <span class="n">_weatherClient</span> <span class="p">=</span> <span class="n">weatherClient</span><span class="p">;</span>
-    <span class="p">}</span><span class="na">
-</span><span class="na">
+        <span class="m">_d</span><span class="n">ateTimeProvider</span> <span class="p">=</span> <span class="n">dateTimeProvider</span><span class="p">;</span>
+        <span class="m">_l</span><span class="n">ogger</span> <span class="p">=</span> <span class="n">logger</span><span class="p">;</span>
+        <span class="m">_</span><span class="n">weatherClient</span> <span class="p">=</span> <span class="n">weatherClient</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="na">
 </span><span class="na">    [HttpGet]</span>
     <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">WeatherForecast</span><span class="p">&gt;</span> <span class="n">Get</span><span class="p">()</span>
     <span class="p">{</span>
-        <span class="kt">var</span> <span class="n">now</span> <span class="p">=</span> <span class="n">_dateTimeProvider</span><span class="p">.</span><span class="n">CurrentTime</span><span class="p">();</span>
+        <span class="kt">var</span> <span class="n">now</span> <span class="p">=</span> <span class="m">_d</span><span class="n">ateTimeProvider</span><span class="p">.</span><span class="n">CurrentTime</span><span class="p">();</span>
         <span class="k">return</span> <span class="n">Enumerable</span><span class="p">.</span><span class="n">Range</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">).</span><span class="n">Select</span><span class="p">(</span><span class="n">index</span> <span class="p">=&gt;</span>
             <span class="p">{</span>
                 <span class="kt">var</span> <span class="n">date</span> <span class="p">=</span> <span class="n">now</span><span class="p">.</span><span class="n">AddDays</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
                 <span class="k">try</span>
                 <span class="p">{</span>
-                    <span class="kt">var</span> <span class="n">temp</span> <span class="p">=</span> <span class="n">_weatherClient</span><span class="p">.</span><span class="n">GetTemperature</span><span class="p">(</span><span class="n">date</span><span class="p">);</span>
+                    <span class="kt">var</span> <span class="n">temp</span> <span class="p">=</span> <span class="m">_</span><span class="n">weatherClient</span><span class="p">.</span><span class="n">GetTemperature</span><span class="p">(</span><span class="n">date</span><span class="p">);</span>
                     <span class="k">return</span> <span class="k">new</span> <span class="n">WeatherForecast</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">temp</span><span class="p">);</span>
                 <span class="p">}</span>
                 <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span>
                 <span class="p">{</span>
-                    <span class="n">_logger</span><span class="p">.</span><span class="n">LogError</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s">$&#34;failed to get weather for date {date:dd/MM/yyyy}&#34;</span><span class="p">);</span>
+                    <span class="m">_l</span><span class="n">ogger</span><span class="p">.</span><span class="n">LogError</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s">$&#34;failed to get weather for date {date:dd/MM/yyyy}&#34;</span><span class="p">);</span>
                     <span class="k">return</span> <span class="k">new</span> <span class="n">WeatherForecast</span><span class="p">(</span><span class="n">date</span><span class="p">);</span>
                 <span class="p">}</span>
             <span class="p">})</span>
@@ -591,15 +589,12 @@ var bodyBgSwitchIndex = 0;
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div>
-<p>The behavior of <code>Get()</code> method is slightly different from the sample provided by .NET Core: it now invokes <code>GetTemperature()</code> from an instance of <code>IWeatherClient</code> to get temperature for a specific date. And if there&rsquo;s anything wrong when getting temperature from weather client, it just logs the error and continue with the next day.</p>
-
+</div><p>The behavior of <code>Get()</code> method is slightly different from the sample provided by .NET Core: it now invokes <code>GetTemperature()</code> from an instance of <code>IWeatherClient</code> to get temperature for a specific date. And if there&rsquo;s anything wrong when getting temperature from weather client, it just logs the error and continue with the next day.</p>
 <p><code>ITellDateTime</code> is just an interface to wrap around .NET <code>DateTime</code> so that we can deterministically stub it in tests.</p>
-
 <p>This is the implementation of <code>InMemoryWeatherClient</code> if you are interested. This class is not our main concern in this post.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -617,27 +612,25 @@ var bodyBgSwitchIndex = 0;
 <td class="lntd">
 <pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">InMemoryWeatherClient</span> <span class="p">:</span> <span class="n">IWeatherClient</span>
 <span class="p">{</span>
-    <span class="k">private</span> <span class="k">readonly</span> <span class="n">Random</span> <span class="n">_random</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">Random</span> <span class="m">_</span><span class="n">random</span><span class="p">;</span>
 
     <span class="k">public</span> <span class="n">InMemoryWeatherClient</span><span class="p">()</span>
     <span class="p">{</span>
-        <span class="n">_random</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Random</span><span class="p">();</span>
+        <span class="m">_</span><span class="n">random</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Random</span><span class="p">();</span>
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="kt">int</span> <span class="n">GetTemperature</span><span class="p">(</span><span class="n">DateTime</span> <span class="n">date</span><span class="p">)</span>
     <span class="p">{</span>
-        <span class="k">return</span> <span class="n">_random</span><span class="p">.</span><span class="n">Next</span><span class="p">(-</span><span class="m">20</span><span class="p">,</span> <span class="m">55</span><span class="p">);</span>
+        <span class="k">return</span> <span class="m">_</span><span class="n">random</span><span class="p">.</span><span class="n">Next</span><span class="p">(-</span><span class="m">20</span><span class="p">,</span> <span class="m">55</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div>
-<h2 id="using-moq-to-verify-ilogger-call">Using Moq to verify ILogger call&nbsp;<a class="anchor" href="#using-moq-to-verify-ilogger-call"><i class="small linkify icon"></i></a> </h2>
-
+</div><h2 id="using-moq-to-verify-ilogger-call">Using Moq to verify ILogger call&nbsp;<a class="anchor" href="#using-moq-to-verify-ilogger-call"><i class="small linkify icon"></i></a> </h2>
 <p>Since the application can fail when getting temperature for any day, we probably want to write a test to make sure that the application logs the specific date when it fails to get the temperature. The test will look something like this when using Moq:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -693,11 +686,10 @@ var bodyBgSwitchIndex = 0;
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div>
-<p>and some helper methods to stub dependencies:</p>
+</div><p>and some helper methods to stub dependencies:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -735,19 +727,14 @@ var bodyBgSwitchIndex = 0;
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div>
-<p>you might say: &ldquo;it doesn&rsquo;t look so bad. What&rsquo;s the problem with this?&rdquo;</p>
-
+</div><p>you might say: &ldquo;it doesn&rsquo;t look so bad. What&rsquo;s the problem with this?&rdquo;</p>
 <p>The problem is: in order to come up with correct <code>Verify()</code> call, I needed to trace through 4 extension methods in .NET Core source code to know what is the correct parameters that I should expect. The reason I need to do this is because the application is using <code>ILogger.LogError()</code>. This method is an extension method to <code>ILogger</code> and therefore a static method, which Moq is not able to mock/verify. This also makes the test misleading because it verifies <code>Log()</code> method which is not visible anywhere in actual implementation.</p>
-
 <p>Second problem is that it&rsquo;s difficult to provide correct values to <code>Verify()</code> call. Although I know the expected types that <code>Log()</code> method expects after tracing through 4 extension methods, I&rsquo;m only able to make the test pass after several trial-and-error and countless google searches. To make things worse, when I provided incorrect parameter to the <code>Verify()</code> method, the error message when running tests didn&rsquo;t provide anything meaningful (<code>Expected invocation on the mock at least once, but was never performed</code>). I was not able to guess what parameter was provided incorrectly from that error message.</p>
-
 <h2 id="using-handwritten-mock">Using handwritten mock&nbsp;<a class="anchor" href="#using-handwritten-mock"><i class="small linkify icon"></i></a> </h2>
-
 <p>To solve the problem above, I use a handwritten implementation of <code>ILogger</code> that keeps log message/error in in-memory for verification:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -829,11 +816,10 @@ var bodyBgSwitchIndex = 0;
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div>
-<p>To use this in-memory logger in tests:</p>
+</div><p>To use this in-memory logger in tests:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-csharp" data-lang="csharp"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -875,9 +861,7 @@ var bodyBgSwitchIndex = 0;
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div>
-<p>As you can see, instead of verifying whether the <code>Log()</code> method is called with correct parameters, now I just need to assert whether the recorded message/exception in the logger are correct. The test is much simpler and easier to understand.</p>
-
+</div><p>As you can see, instead of verifying whether the <code>Log()</code> method is called with correct parameters, now I just need to assert whether the recorded message/exception in the logger are correct. The test is much simpler and easier to understand.</p>
 <p>This technique is not new, pretty trivial to implement but the result is quite pleasant. All I did is to convert communication-based testing to state-based testing (.i.e. instead of verifying communication among dependencies, I verify state of dependency instead).</p>
 
 				</article>				
@@ -892,11 +876,11 @@ var bodyBgSwitchIndex = 0;
 
 
 	
-		<a class="ui label red " href="/tags/programming" title="programming">programming</a>
+		<a class="ui label violet " href="/tags/programming" title="programming">programming</a>
 	
-		<a class="ui label red " href="/tags/net-core" title="net-core">net-core</a>
+		<a class="ui label purple " href="/tags/net-core" title="net-core">net-core</a>
 	
-		<a class="ui label purple " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+		<a class="ui label orange " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 	
 
 

@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.55.1" />
+<meta name="generator" content="Hugo 0.85.0" />
 
 
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label green " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label teal " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label blue " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label orange " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label blue " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label blue " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
-			<a class="ui label pink " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label brown " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+			<a class="ui label violet " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label green " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label brown " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label purple " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label red " href="/tags/net-core" title="net-core">net-core</a>
 		
 			
-			<a class="ui label red " href="/tags/shell" title="shell">shell</a>
+			<a class="ui label green " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 	
 
@@ -395,6 +395,13 @@ var bodyBgSwitchIndex = 0;
 	
 	<div class="content">
 		
+			<a class="item" href="https://pnguyen.io/posts/test-drive-kubernetes-operator-1/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Test drive a Kubernetes operator - Part 1</p>
+				</div>
+			</a>
+		
 			<a class="item" href="https://pnguyen.io/posts/virtual-new-override-csharp/">
 				<div>
 					<i class="cocktail icon"></i>
@@ -460,7 +467,7 @@ var bodyBgSwitchIndex = 0;
 		<footer class="ui bottom attached center aligned inverted segment">
 			
 
-	<p>© 2018 - 2020 David Nguyen&#39;s Personal Blog</p>
+	<p>© 2018 - 2021 David Nguyen&#39;s Personal Blog</p>
 
 
 <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with <a href="https://github.com/UtkarshVerma/hugo-dream-plus" target="_blank">Dream Plus</a> theme.</p>
@@ -489,51 +496,35 @@ var bodyBgSwitchIndex = 0;
 
 				
 					<div class="toc">
-						<nav id="TableOfContents">
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#manage-bamboo-ci-agent">Manage Bamboo CI Agent</a></li>
-<li><a href="#play-standup-song">Play Standup Song</a></li>
-</ul>
-</nav>
+						<nav id="TableOfContents"></nav>
 					</div>
 				
 
 				<article class="post-content twemoji">
-					
-
-<h1 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h1>
-
+					<h1 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h1>
 <p>In MacOS, <code>launchd</code> and <code>launchctl</code> are equivalent tools of <code>systemd</code> and <code>systemctl</code> in Linux. Basically <code>launchd</code> manages (start/stop/restart) daemons, applications and processes in MacOS. There are already several excellent tutorials online on <code>launchd</code>, for example:</p>
-
 <ul>
 <li><a href="http://www.launchd.info/">http://www.launchd.info/</a></li>
 <li><a href="https://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs">https://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs</a></li>
 </ul>
-
 <p>so I&rsquo;m not going to go through its concepts again. Instead this post is going to share 2 scenarios where I use <code>launchd</code> in my current actual project.</p>
-
 <h1 id="manage-bamboo-ci-agent">Manage Bamboo CI Agent&nbsp;<a class="anchor" href="#manage-bamboo-ci-agent"><i class="small linkify icon"></i></a> </h1>
-
 <p>In my current project, we use Bamboo from Atlassian as our CI server. We have a physical iMac where we setup 2 remote Bamboo agents to build our ios/android applications. From time to time, the agents died (due to various reasons such as process out of memory, etc) and we only realized that when the builds were scheduled for a long time but not picked up by the agents. A quick workaround that we thought of is to use <code>launchd</code> to automatically restart the agents when they die (of course we also created a card to inspect the real reason why the agents died).</p>
-
 <p>Bamboo Online Knowledge Base already has a post on setting up this at <a href="https://confluence.atlassian.com/bamkb/configuring-bamboo-to-start-automatically-on-startup-on-mac-os-x-302812729.html">https://confluence.atlassian.com/bamkb/configuring-bamboo-to-start-automatically-on-startup-on-mac-os-x-302812729.html</a> so the setup is quite straightforward for us. But to make the updating/maintaining of <code>launchd</code> configuration easier/repeatable in the future, we created a Bamboo playbook/role just for this purpose. Here&rsquo;s the structure of the Bamboo agent role:</p>
-
-<p><img src="images/ansible-bamboo-role-structure.png" alt="" title="Ansible Bamboo Role Structure" /></p>
-
+<p><img src="images/ansible-bamboo-role-structure.png" alt="" title="Ansible Bamboo Role Structure"></p>
 <p><code>vars/main.yml</code> only defines single variable <code>bamboo_home</code> which is the location of the Bamboo working directory at the remote machine.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-xml" data-lang="xml">bamboo_home: /path/to/bamboo/working/directory</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-xml" data-lang="xml">bamboo_home: /path/to/bamboo/working/directory
+</code></pre></td></tr></table>
 </div>
-</div>
-<p><code>templates/com.atlassian.bamboo.plist</code> is the <code>launchd</code> plist file to describe the job that we want to run.</p>
+</div><p><code>templates/com.atlassian.bamboo.plist</code> is the <code>launchd</code> plist file to describe the job that we want to run.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -614,20 +605,18 @@ var bodyBgSwitchIndex = 0;
         <span class="nt">&lt;key&gt;</span>KeepAlive<span class="nt">&lt;/key&gt;</span>
         <span class="nt">&lt;true/&gt;</span>
     <span class="nt">&lt;/dict&gt;</span>
-<span class="nt">&lt;/plist&gt;</span></code></pre></td></tr></table>
+<span class="nt">&lt;/plist&gt;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>This is an Ansible template file so that we can substitute some information on <code>bamboo_home</code>, <code>agent_name</code> (since the same role can be used to run multiple agents, we need <code>agent_name</code> to differentiate between agents. This variable is passed in when the role is applied in the playbook). Most of the keys are self-explanatory, only 2 things that are important to remember:</p>
-
+</div><p>This is an Ansible template file so that we can substitute some information on <code>bamboo_home</code>, <code>agent_name</code> (since the same role can be used to run multiple agents, we need <code>agent_name</code> to differentiate between agents. This variable is passed in when the role is applied in the playbook). Most of the keys are self-explanatory, only 2 things that are important to remember:</p>
 <ul>
 <li>We use zsh to execute the entrypoint command for Bamboo agent since we want the agent process to inherit some of the settings/environment variables set in <code>.zshrc</code> (.e.g. <code>PATH</code>). Admittedly this is not very nice since it makes Bamboo agent process to be dependent on the content of <code>.zshrc</code> at the time of starting up. To make it more reliable, we can set all the environment variables that we need in this plist file before running the Bamboo agent entrypoint command but that can be a maintenance headache in the future. So for now we are still ok with using <code>.zshrc</code>.</li>
 <li>We explicitly set <code>LC_CTYPE</code> variable to <code>UTF-8</code> here to make sure Bamboo agent is able to display Unicode characters properly. Before moving to <code>launchd</code>, we just started the agents manually in iTerm and apparently iTerm setups this variable correctly for you. This caused us quite a bit of trouble at the beginning.</li>
 </ul>
-
 <p>Lastly is the <code>tasks/main.yml</code> which defines the tasks to run:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-yml" data-lang="yml"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -648,64 +637,56 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yml" data-lang="yml">-<span class="w"> </span>name<span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Check plist file exists&#34;</span><span class="w">
-</span><span class="w">  </span>stat<span class="p">:</span><span class="w">
-</span><span class="w">    </span>path<span class="p">:</span><span class="w"> </span>/Library/LaunchDaemons/com.atlassian.bamboo.{{<span class="w"> </span>agent_name<span class="w"> </span>}}.plist<span class="w">
-</span><span class="w">  </span>register<span class="p">:</span><span class="w"> </span>plist_file<span class="w">
+<pre class="chroma"><code class="language-yml" data-lang="yml">- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Check plist file exists&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">stat</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/Library/LaunchDaemons/com.atlassian.bamboo.{{ agent_name }}.plist</span><span class="w">
+</span><span class="w">  </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l">plist_file</span><span class="w">
 </span><span class="w">
-</span><span class="w"></span>-<span class="w"> </span>name<span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Unload launchd service&#34;</span><span class="w">
-</span><span class="w">  </span>become<span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="w">  </span>command<span class="p">:</span><span class="w"> </span><span class="s2">&#34;launchctl unload /Library/LaunchDaemons/com.atlassian.bamboo.{{ agent_name }}.plist&#34;</span><span class="w">
-</span><span class="w">  </span>when<span class="p">:</span><span class="w"> </span>plist_file.stat.exists<span class="w"> </span>==<span class="w"> </span>True<span class="w">
+</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Unload launchd service&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">become</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;launchctl unload /Library/LaunchDaemons/com.atlassian.bamboo.{{ agent_name }}.plist&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">when</span><span class="p">:</span><span class="w"> </span><span class="l">plist_file.stat.exists == True</span><span class="w">
 </span><span class="w">
-</span><span class="w"></span>-<span class="w"> </span>name<span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Copy bamboo plist&#34;</span><span class="w">
-</span><span class="w">  </span>become<span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="w">  </span>template<span class="p">:</span><span class="w">
-</span><span class="w">    </span>src<span class="p">:</span><span class="w"> </span><span class="s2">&#34;com.atlassian.bamboo.plist&#34;</span><span class="w">
-</span><span class="w">    </span>dest<span class="p">:</span><span class="w"> </span><span class="s2">&#34;/Library/LaunchDaemons/com.atlassian.bamboo.{{ agent_name }}.plist&#34;</span><span class="w">
+</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Copy bamboo plist&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">become</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">src</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;com.atlassian.bamboo.plist&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/Library/LaunchDaemons/com.atlassian.bamboo.{{ agent_name }}.plist&#34;</span><span class="w">
 </span><span class="w">
-</span><span class="w"></span>-<span class="w"> </span>name<span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Load launchd service&#34;</span><span class="w">
-</span><span class="w">  </span>become<span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="w">  </span>command<span class="p">:</span><span class="w"> </span><span class="s2">&#34;launchctl load /Library/LaunchDaemons/com.atlassian.bamboo.{{ agent_name }}.plist&#34;</span></code></pre></td></tr></table>
+</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;[{{ agent_name }}] Load launchd service&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">become</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;launchctl load /Library/LaunchDaemons/com.atlassian.bamboo.{{ agent_name }}.plist&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p>First, it checks whether the plist file exists at target location. There&rsquo;s 1 plist file for each agent. If plist file exists, it will try to unload the service, copy over the new plist file and reload it.</p>
-
+</div><p>First, it checks whether the plist file exists at target location. There&rsquo;s 1 plist file for each agent. If plist file exists, it will try to unload the service, copy over the new plist file and reload it.</p>
 <p>And here&rsquo;s how this Ansible role is used in the playbook:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-yml" data-lang="yml"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yml" data-lang="yml">roles<span class="p">:</span><span class="w">
-</span><span class="w"></span>-<span class="w"> </span>role<span class="p">:</span><span class="w"> </span>bamboo<span class="w">
-</span><span class="w">  </span>agent_name<span class="p">:</span><span class="w"> </span>agent1<span class="w">
-</span><span class="w"></span>-<span class="w"> </span>role<span class="p">:</span><span class="w"> </span>bamboo<span class="w">
-</span><span class="w">  </span>agent_name<span class="p">:</span><span class="w"> </span>agent2</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-yml" data-lang="yml"><span class="nt">roles</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">bamboo</span><span class="w">
+</span><span class="w">  </span><span class="nt">agent_name</span><span class="p">:</span><span class="w"> </span><span class="l">agent1</span><span class="w">
+</span><span class="w"></span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">bamboo</span><span class="w">
+</span><span class="w">  </span><span class="nt">agent_name</span><span class="p">:</span><span class="w"> </span><span class="l">agent2</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p>Since we setup this mechanism, we haven&rsquo;t encountered the issue of Bamboo agents die randomly again. As a side benefit, whenever the iMac is restarted, the agents are also started automatically.</p>
-
+</div><p>Since we setup this mechanism, we haven&rsquo;t encountered the issue of Bamboo agents die randomly again. As a side benefit, whenever the iMac is restarted, the agents are also started automatically.</p>
 <p>Also as a note: <code>launchd</code> is only able to monitor and restart processes that exitted unexpectedly. It&rsquo;s not able to determine whether a process hangs or is unresponsive.</p>
-
 <h1 id="play-standup-song">Play Standup Song&nbsp;<a class="anchor" href="#play-standup-song"><i class="small linkify icon"></i></a> </h1>
-
 <p>Our team has standup every morning at 10AM. To alert everyone when it&rsquo;s standup time, we use the same iMac above to play a short and catchy song at exactly 10AM.</p>
-
 <p>In the beginning, we setup recurring calendar invite and let it run an AppleScript to turn on volume and play song when the event is reached. This is working fine but we don&rsquo;t like the idea of cluttering the calendar for this purpose, so we turn to <code>launchd</code> to schedule this recurring task. Apparently <code>launchd</code> has support for recurring task scheduling with similar capability as cron (although its syntax is much more verbal and less powerful than cron syntax)</p>
-
 <p>This is almost the same process like the Bamboo agent job above so we also use Ansible to setup:</p>
-
-<p><img src="images/ansible-standup-alert-role-structure.png" alt="" title="Ansible Standup Alert Role Structure" /></p>
-
+<p><img src="images/ansible-standup-alert-role-structure.png" alt="" title="Ansible Standup Alert Role Structure"></p>
 <p>The structure is the same with Bamboo agent role. One thing of interest is <code>play-standup-songs.sh</code> script:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -728,15 +709,14 @@ afplay ~/workspace/standup/standup.mp3
 osascript -e <span class="s2">&#34;set Volume 4&#34;</span>
 afplay ~/workspace/standup/standup1.mp3
 
-osascript -e <span class="s2">&#34;set Volume 0&#34;</span></code></pre></td></tr></table>
+osascript -e <span class="s2">&#34;set Volume 0&#34;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>This script uses AppleScript to set volume to maximum, play 1st audio file, reduce volume a little and play 2nd audio file before muting the volume</p>
-
+</div><p>This script uses AppleScript to set volume to maximum, play 1st audio file, reduce volume a little and play 2nd audio file before muting the volume</p>
 <p>And here&rsquo;s the content of plist file</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -809,13 +789,13 @@ osascript -e <span class="s2">&#34;set Volume 0&#34;</span></code></pre></td></t
             {% endfor %}
         <span class="nt">&lt;/array&gt;</span>
     <span class="nt">&lt;/dict&gt;</span>
-<span class="nt">&lt;/plist&gt;</span></code></pre></td></tr></table>
+<span class="nt">&lt;/plist&gt;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>Notice the <code>StartCalendarInterval</code> key. This is the equivalent of cron expression in <code>launchd</code>. <code>StartCalendarInterval</code> has quite a verbal way of specifying an event happening multiple days per week: 1 <code>dict</code> in the array for each day. Fortunately I can use Python for loop to create multiple <code>dict</code> in Ansible template. The ending result will look something like this:</p>
+</div><p>Notice the <code>StartCalendarInterval</code> key. This is the equivalent of cron expression in <code>launchd</code>. <code>StartCalendarInterval</code> has quite a verbal way of specifying an event happening multiple days per week: 1 <code>dict</code> in the array for each day. Fortunately I can use Python for loop to create multiple <code>dict</code> in Ansible template. The ending result will look something like this:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -902,7 +882,8 @@ osascript -e <span class="s2">&#34;set Volume 0&#34;</span></code></pre></td></t
         <span class="nt">&lt;key&gt;</span>Weekday<span class="nt">&lt;/key&gt;</span>
         <span class="nt">&lt;integer&gt;</span>5<span class="nt">&lt;/integer&gt;</span>
     <span class="nt">&lt;/dict&gt;</span>
-<span class="nt">&lt;/array&gt;</span></code></pre></td></tr></table>
+<span class="nt">&lt;/array&gt;</span>
+</code></pre></td></tr></table>
 </div>
 </div>
 				</article>				
@@ -917,9 +898,9 @@ osascript -e <span class="s2">&#34;set Volume 0&#34;</span></code></pre></td></t
 
 
 	
-		<a class="ui label yellow " href="/tags/macos" title="macos">macos</a>
+		<a class="ui label violet " href="/tags/macos" title="macos">macos</a>
 	
-		<a class="ui label yellow " href="/tags/launchd" title="launchd">launchd</a>
+		<a class="ui label brown " href="/tags/launchd" title="launchd">launchd</a>
 	
 
 

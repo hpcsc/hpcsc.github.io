@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>net-core on David Nguyen&#39;s Personal Blog</title>
@@ -6,11 +6,7 @@
     <description>Recent content in net-core on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 20 Sep 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://pnguyen.io/tags/net-core/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 20 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://pnguyen.io/tags/net-core/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>virtual, new and override in C#</title>
       <link>https://pnguyen.io/posts/virtual-new-override-csharp/</link>

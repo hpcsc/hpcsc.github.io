@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>kubernetes on David Nguyen&#39;s Personal Blog</title>
@@ -6,10 +6,15 @@
     <description>Recent content in kubernetes on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Apr 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://pnguyen.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Sat, 17 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://pnguyen.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Test drive a Kubernetes operator - Part 1</title>
+      <link>https://pnguyen.io/posts/test-drive-kubernetes-operator-1/</link>
+      <pubDate>Sat, 17 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/test-drive-kubernetes-operator-1/</guid>
+      <description>Introduction Kubernetes operator is one of the patterns that allows you to extend Kubernetes to fit your business requirements. This series of posts is going to go through the process of creating a very simple Kubernetes operator following TDD approach. The posts assume prior knowledge of Kubernetes operator pattern, what it is, when to use it, basic concepts of operator pattern like reconcillation loop etc. Below are some links to get started on that:</description>
+    </item>
     
     <item>
       <title>EKS IAM Roles for Service Accounts</title>

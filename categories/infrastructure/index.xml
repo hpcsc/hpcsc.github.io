@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>infrastructure on David Nguyen&#39;s Personal Blog</title>
@@ -6,11 +6,7 @@
     <description>Recent content in infrastructure on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Apr 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://pnguyen.io/categories/infrastructure/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sat, 25 Apr 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://pnguyen.io/categories/infrastructure/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>EKS IAM Roles for Service Accounts</title>
       <link>https://pnguyen.io/posts/eks-iam-roles-for-service-accounts/</link>
@@ -37,7 +33,8 @@ Type fast The exam is really intense and you will need to compete with time in o
       <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/posts/aws-profile/</guid>
-      <description>TLDR I created a tool to switch among multiple AWS profiles. Installation and usage instruction are at GitHub repo   NOTE: there have been some significant changes to the source code of `aws-profile` tool (you can follow the link above to check the latest source code) so some of the code mentioned below is no longer relevant. I&#39;ll update this blog post to reflect the latest change when I have some time  Introduction If you are working with AWS frequently enough, you should be aware of AWS CLI and its 2 related configuration files:</description>
+      <description>Introduction If you are working with AWS frequently enough, you should be aware of AWS CLI and its 2 related configuration files:
+ credentials file (default location is at ~/.aws/credentials): store credentials for different aws profiles config file (default location is at ~/.aws/config): store additional settings like region or more importantly the information about the AWS role that you can assume  For people that need to switch back and forth among several AWS profiles like me (there are times when I have up to 10 profiles in credentials file), managing which account is the current one is a nightmare.</description>
     </item>
     
     <item>

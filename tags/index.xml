@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on David Nguyen&#39;s Personal Blog</title>
@@ -6,10 +6,42 @@
     <description>Recent content in Tags on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 20 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 17 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://pnguyen.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>golang</title>
+      <link>https://pnguyen.io/tags/golang/</link>
+      <pubDate>Sat, 17 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/tags/golang/</guid>
+      <description></description>
+    </item>
     
-	<atom:link href="https://pnguyen.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubernetes</title>
+      <link>https://pnguyen.io/tags/kubernetes/</link>
+      <pubDate>Sat, 17 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
     
+    <item>
+      <title>programming</title>
+      <link>https://pnguyen.io/tags/programming/</link>
+      <pubDate>Sat, 17 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/tags/programming/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>unit-testing</title>
+      <link>https://pnguyen.io/tags/unit-testing/</link>
+      <pubDate>Sat, 17 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/tags/unit-testing/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>net-core</title>
@@ -21,38 +53,11 @@
     </item>
     
     <item>
-      <title>programming</title>
-      <link>https://pnguyen.io/tags/programming/</link>
-      <pubDate>Sun, 20 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://pnguyen.io/tags/programming/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>infrastructure</title>
       <link>https://pnguyen.io/tags/infrastructure/</link>
       <pubDate>Sat, 25 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/tags/infrastructure/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>kubernetes</title>
-      <link>https://pnguyen.io/tags/kubernetes/</link>
-      <pubDate>Sat, 25 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://pnguyen.io/tags/kubernetes/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>unit-testing</title>
-      <link>https://pnguyen.io/tags/unit-testing/</link>
-      <pubDate>Sat, 08 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://pnguyen.io/tags/unit-testing/</guid>
       <description></description>
     </item>
     
@@ -107,15 +112,6 @@
       <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/tags/aws/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>golang</title>
-      <link>https://pnguyen.io/tags/golang/</link>
-      <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://pnguyen.io/tags/golang/</guid>
       <description></description>
     </item>
     
