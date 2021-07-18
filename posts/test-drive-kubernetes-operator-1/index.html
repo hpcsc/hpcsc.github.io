@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label olive " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label green " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label teal " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label pink " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label teal " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+			<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
-			<a class="ui label brown " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label green " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label pink " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label red " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label green " href="/tags/golang" title="golang">golang</a>
+			<a class="ui label brown " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label brown " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label purple " href="/tags/net-core" title="net-core">net-core</a>
 		
 			
-			<a class="ui label purple " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label green " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 	
 
@@ -574,9 +574,12 @@ var bodyBgSwitchIndex = 0;
 </span><span class="w">  </span>templateRepo<span class="p">:</span><span class="w"> </span><span class="s2">&#34;another-repo&#34;</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>Some requirements:
-- <code>owner</code> and <code>repo</code> cannot be changed after created the first time. We need some validation to enforce this
-- <code>templateOwner</code> and <code>templateRepo</code> are only used during creation and ignored during update</p>
+<p>Some requirements:</p>
+
+<ul>
+<li><code>owner</code> and <code>repo</code> cannot be changed after created the first time. We need some validation to enforce this</li>
+<li><code>templateOwner</code> and <code>templateRepo</code> are only used during creation and ignored during update</li>
+</ul>
 
 <h1 id="get-started">Get started&nbsp;<a class="anchor" href="#get-started"><i class="small linkify icon"></i></a> </h1>
 
@@ -964,9 +967,12 @@ docker run -d <span class="se">\
 </div>
 <p>the logic to call github API does not belong to controller reconcillation function and should have its own package.</p>
 
-<p>There are several ways to design the new package:
-- It can be a package that is specific to github api. Client of this package will explicitly call function like: <code>github.CreateRepository()</code>, <code>github.DeleteRepository()</code> etc. It&rsquo;s simpler but client&rsquo;s tied to this specific implementation.
-- Or it can be a general package like <code>repository</code> with an exposed contract/interface to the client. Github is only an implementation. Other possible implementations are gitlab, bitbucket etc (assuming all of them having similar apis that we need). This is a bit more future-proof and flexile, with the cost of more abstraction and complexity. Another minor disadvantage is that we need to rename our project and controller since it is no longer specific to github.</p>
+<p>There are several ways to design the new package:</p>
+
+<ul>
+<li>It can be a package that is specific to github api. Client of this package will explicitly call function like: <code>github.CreateRepository()</code>, <code>github.DeleteRepository()</code> etc. It&rsquo;s simpler but client&rsquo;s tied to this specific implementation.</li>
+<li>Or it can be a general package like <code>repository</code> with an exposed contract/interface to the client. Github is only an implementation. Other possible implementations are gitlab, bitbucket etc (assuming all of them having similar apis that we need). This is a bit more future-proof and flexile, with the cost of more abstraction and complexity. Another minor disadvantage is that we need to rename our project and controller since it is no longer specific to github.</li>
+</ul>
 
 <p>I&rsquo;m not a fan of over-engineering so will choose approach 1 for now. If there&rsquo;s a need to make it more generic in the future, it&rsquo;s simpler enough to extract interface and move to approach 2.</p>
 
@@ -1323,11 +1329,11 @@ docker run -d <span class="se">\
 
 
 	
-		<a class="ui label olive " href="/tags/programming" title="programming">programming</a>
+		<a class="ui label orange " href="/tags/programming" title="programming">programming</a>
 	
-		<a class="ui label yellow " href="/tags/golang" title="golang">golang</a>
+		<a class="ui label violet " href="/tags/golang" title="golang">golang</a>
 	
-		<a class="ui label red " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+		<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 	
 		<a class="ui label violet " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 	
