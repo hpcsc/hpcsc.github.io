@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label blue " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label olive " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label orange " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label teal " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label green " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+			<a class="ui label teal " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
-			<a class="ui label blue " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label brown " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label olive " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label pink " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label violet " href="/tags/golang" title="golang">golang</a>
+			<a class="ui label green " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label green " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label brown " href="/tags/net-core" title="net-core">net-core</a>
 		
 			
-			<a class="ui label violet " href="/tags/pipeline" title="pipeline">pipeline</a>
+			<a class="ui label purple " href="/tags/pipeline" title="pipeline">pipeline</a>
 		
 	
 
@@ -489,7 +489,7 @@ var bodyBgSwitchIndex = 0;
 					<div><span><i class="calendar outline icon"></i>Jul 17, 2021</span></div>
 					
 					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/test-drive-kubernetes-operator-1/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="b2563d9a57df570adeff48b53d5d50f6"></a></span></div>
-					<div><span><i class="clock outline icon"></i>11 min read</span></div>
+					<div><span><i class="clock outline icon"></i>12 min read</span></div>
 					<div><span><i class="angle double up icon"></i>Last updated on Jul 17, 2021</span></div>
 				</div>
 				<hr>
@@ -548,19 +548,32 @@ var bodyBgSwitchIndex = 0;
 <li><code>owner</code>, <code>repo</code>, <code>description</code>: github owner, name and description of the repository to be created</li>
 <li><code>templateOwner</code>, <code>templateRepo</code>: (optional) owner and repository name of a template repository to clone from</li>
 </ul>
-
-<pre><code>apiVersion: &quot;pnguyen.io/v1&quot;
-kind: GithubRepository
-metadata:
-  name: &quot;my-repository&quot;
-spec:
-  owner: &quot;hpcsc&quot;
-  repo: &quot;my-repository&quot;
-  description: &quot;some repository&quot;
-  templateOwner: &quot;another-owner&quot;
-  templateRepo: &quot;another-repo&quot;
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">apiVersion<span class="p">:</span><span class="w"> </span><span class="s2">&#34;pnguyen.io/v1&#34;</span><span class="w">
+</span><span class="w"></span>kind<span class="p">:</span><span class="w"> </span>GithubRepository<span class="w">
+</span><span class="w"></span>metadata<span class="p">:</span><span class="w">
+</span><span class="w">  </span>name<span class="p">:</span><span class="w"> </span><span class="s2">&#34;my-repository&#34;</span><span class="w">
+</span><span class="w"></span>spec<span class="p">:</span><span class="w">
+</span><span class="w">  </span>owner<span class="p">:</span><span class="w"> </span><span class="s2">&#34;hpcsc&#34;</span><span class="w">
+</span><span class="w">  </span>repo<span class="p">:</span><span class="w"> </span><span class="s2">&#34;my-repository&#34;</span><span class="w">
+</span><span class="w">  </span>description<span class="p">:</span><span class="w"> </span><span class="s2">&#34;some repository&#34;</span><span class="w">
+</span><span class="w">  </span>templateOwner<span class="p">:</span><span class="w"> </span><span class="s2">&#34;another-owner&#34;</span><span class="w">
+</span><span class="w">  </span>templateRepo<span class="p">:</span><span class="w"> </span><span class="s2">&#34;another-repo&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>Some requirements:
 - <code>owner</code> and <code>repo</code> cannot be changed after created the first time. We need some validation to enforce this
 - <code>templateOwner</code> and <code>templateRepo</code> are only used during creation and ignored during update</p>
@@ -571,17 +584,27 @@ spec:
 
 <p>We are going to use <a href="https://github.com/operator-framework/operator-sdk">Operator SDK</a> version 1.8.1
 Let&rsquo;s scaffold the project directory:</p>
-
-<pre><code>mkdir github-repository-operator
-cd github-repository-operator
-operator-sdk init --domain pnguyen.io --repo github.com/hpcsc/github-repository-operator
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">mkdir github-repository-operator
+<span class="nb">cd</span> github-repository-operator
+operator-sdk init --domain pnguyen.io --repo github.com/hpcsc/github-repository-operator</code></pre></td></tr></table>
+</div>
+</div>
 <p>And generate skeleton for our controller</p>
-
-<pre><code>operator-sdk create api --group pnguyen.io --version v1 --kind GithubRepository --resource --controller
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">operator-sdk create api --group pnguyen.io --version v1 --kind GithubRepository --resource --controller</code></pre></td></tr></table>
+</div>
+</div>
 <p>Let&rsquo;s go over some of the most important directories/files in the generated project:</p>
 
 <p><img src="images/initial-skeleton.png" alt="" title="Initial skeleton" /></p>
@@ -605,35 +628,64 @@ operator-sdk init --domain pnguyen.io --repo github.com/hpcsc/github-repository-
 <p>The operator needs to interacts with Github API. For quick feedback and safer local development and testing, we should use a fake Github API server that responds to above endpoints. For this, I choose <a href="https://smocker.dev/guide/">smocker</a></p>
 
 <p>Let&rsquo;s add a Make task and script to start smocker docker container in the background:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">SMOCKER_VERSION</span><span class="o">=</span><span class="m">0</span>.16.2
+<span class="nv">CONTAINER_NAME</span><span class="o">=</span>fake-github
 
-<pre><code>SMOCKER_VERSION=0.16.2
-CONTAINER_NAME=fake-github
+<span class="nv">SCRIPT_DIR</span><span class="o">=</span><span class="k">$(</span><span class="nb">cd</span> <span class="k">$(</span>dirname <span class="nv">$0</span><span class="k">)</span><span class="p">;</span> <span class="nb">pwd</span><span class="k">)</span>
 
-SCRIPT_DIR=$(cd $(dirname $0); pwd)
+<span class="k">if</span> <span class="o">[</span> ! -z <span class="s2">&#34;</span><span class="k">$(</span>docker ps -a -f <span class="nv">name</span><span class="o">=</span><span class="si">${</span><span class="nv">CONTAINER_NAME</span><span class="si">}</span> --format <span class="s1">&#39;{{.Names}}&#39;</span><span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span>  <span class="s2">&#34;=== Container </span><span class="si">${</span><span class="nv">CONTAINER_NAME</span><span class="si">}</span><span class="s2"> exists, removing it&#34;</span>
+    docker rm -f <span class="si">${</span><span class="nv">CONTAINER_NAME</span><span class="si">}</span>
+<span class="k">fi</span>
 
-if [ ! -z &quot;$(docker ps -a -f name=${CONTAINER_NAME} --format '{{.Names}}')&quot; ]; then
-    echo  &quot;=== Container ${CONTAINER_NAME} exists, removing it&quot;
-    docker rm -f ${CONTAINER_NAME}
-fi
-
-echo  &quot;=== Creating container ${CONTAINER_NAME}&quot;
-docker run -d \
-    -p 8088:8080 \
-    -p 8089:8081 \
-    --name ${CONTAINER_NAME} \
-    thiht/smocker:${SMOCKER_VERSION}
+<span class="nb">echo</span>  <span class="s2">&#34;=== Creating container </span><span class="si">${</span><span class="nv">CONTAINER_NAME</span><span class="si">}</span><span class="s2">&#34;</span>
+docker run -d <span class="se">\
+</span><span class="se"></span>    -p <span class="m">8088</span>:8080 <span class="se">\
+</span><span class="se"></span>    -p <span class="m">8089</span>:8081 <span class="se">\
+</span><span class="se"></span>    --name <span class="si">${</span><span class="nv">CONTAINER_NAME</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    thiht/smocker:<span class="si">${</span><span class="nv">SMOCKER_VERSION</span><span class="si">}</span>
 
 
-for MOCK_DEFINITION in ${SCRIPT_DIR}/../smocker/*; do
-    echo &quot;Registering mock definition from ${MOCK_DEFINTION}&quot;
+<span class="k">for</span> MOCK_DEFINITION in <span class="si">${</span><span class="nv">SCRIPT_DIR</span><span class="si">}</span>/../smocker/*<span class="p">;</span> <span class="k">do</span>
+    <span class="nb">echo</span> <span class="s2">&#34;Registering mock definition from </span><span class="si">${</span><span class="nv">MOCK_DEFINTION</span><span class="si">}</span><span class="s2">&#34;</span>
 
-    curl -X POST \
-        -H &quot;Content-Type: application/x-yaml&quot; \
-        http://localhost:8089/mocks \
-        --data-binary @${MOCK_DEFINITION}
-done
-</code></pre>
-
+    curl -X POST <span class="se">\
+</span><span class="se"></span>        -H <span class="s2">&#34;Content-Type: application/x-yaml&#34;</span> <span class="se">\
+</span><span class="se"></span>        http://localhost:8089/mocks <span class="se">\
+</span><span class="se"></span>        --data-binary @<span class="si">${</span><span class="nv">MOCK_DEFINITION</span><span class="si">}</span>
+<span class="k">done</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>This script also uses smocker admin api to register mock definitions (There is no easy way to let smocker load mock definitions automatically when starting up at the moment). For now we don&rsquo;t have any mock definition yet. They will be added progressively when we develop the operator.</p>
 
 <p>Smocker provides a convenient admin UI that can be accessed at <code>http://localhost:8089</code></p>
@@ -643,116 +695,213 @@ done
 <p>We will follow outside-in TDD and start with an end to end test to verify that when a <code>GithubRepository</code> custom resource is created, it will create the corresponding github repository using Github API</p>
 
 <p>The skeleton of end to end test (in Ginkgo) is already created for us at <code>controllers/suite_test.go</code>. Let&rsquo;s modify the <code>BeforeSuite</code> to add in this code at the end:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">logf</span><span class="p">.</span><span class="nx">Log</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;Creating new manager&#34;</span><span class="p">)</span>
+<span class="nx">mgr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nf">NewManager</span><span class="p">(</span><span class="nx">cfg</span><span class="p">,</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span>
+  <span class="nx">Scheme</span><span class="p">:</span> <span class="nx">scheme</span><span class="p">.</span><span class="nx">Scheme</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
 
-<pre><code>logf.Log.Info(&quot;Creating new manager&quot;)
-mgr, err := ctrl.NewManager(cfg, ctrl.Options{
-  Scheme: scheme.Scheme,
-})
-Expect(err).NotTo(HaveOccurred())
+<span class="nx">err</span> <span class="p">=</span> <span class="p">(</span><span class="o">&amp;</span><span class="nx">GithubRepositoryReconciler</span><span class="p">{</span>
+  <span class="nx">Client</span><span class="p">:</span> <span class="nx">mgr</span><span class="p">.</span><span class="nf">GetClient</span><span class="p">(),</span>
+  <span class="nx">Scheme</span><span class="p">:</span> <span class="nx">mgr</span><span class="p">.</span><span class="nf">GetScheme</span><span class="p">(),</span>
+<span class="p">}).</span><span class="nf">SetupWithManager</span><span class="p">(</span><span class="nx">mgr</span><span class="p">)</span>
+<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
 
-err = (&amp;GithubRepositoryReconciler{
-  Client: mgr.GetClient(),
-  Scheme: mgr.GetScheme(),
-}).SetupWithManager(mgr)
-Expect(err).NotTo(HaveOccurred())
+<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">os</span><span class="p">.</span><span class="nf">Setenv</span><span class="p">(</span><span class="nx">GithubApiBaseUrlKey</span><span class="p">,</span> <span class="s">&#34;http://localhost:8088&#34;</span><span class="p">)</span>
+  <span class="nx">os</span><span class="p">.</span><span class="nf">Setenv</span><span class="p">(</span><span class="nx">GithubApiUploadUrlKey</span><span class="p">,</span> <span class="s">&#34;http://localhost:8088&#34;</span><span class="p">)</span>
+  <span class="nx">os</span><span class="p">.</span><span class="nf">Setenv</span><span class="p">(</span><span class="nx">GithubApiTokenKey</span><span class="p">,</span> <span class="s">&#34;valid-token&#34;</span><span class="p">)</span>
 
-go func() {
-  os.Setenv(GithubApiBaseUrlKey, &quot;http://localhost:8088&quot;)
-  os.Setenv(GithubApiUploadUrlKey, &quot;http://localhost:8088&quot;)
-  os.Setenv(GithubApiTokenKey, &quot;valid-token&quot;)
+  <span class="k">defer</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Unsetenv</span><span class="p">(</span><span class="nx">GithubApiBaseUrlKey</span><span class="p">)</span>
+  <span class="k">defer</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Unsetenv</span><span class="p">(</span><span class="nx">GithubApiUploadUrlKey</span><span class="p">)</span>
+  <span class="k">defer</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Unsetenv</span><span class="p">(</span><span class="nx">GithubApiTokenKey</span><span class="p">)</span>
+  <span class="k">defer</span> <span class="nf">GinkgoRecover</span><span class="p">()</span>
 
-  defer os.Unsetenv(GithubApiBaseUrlKey)
-  defer os.Unsetenv(GithubApiUploadUrlKey)
-  defer os.Unsetenv(GithubApiTokenKey)
-  defer GinkgoRecover()
+  <span class="nx">err</span> <span class="p">=</span> <span class="nx">mgr</span><span class="p">.</span><span class="nf">Start</span><span class="p">(</span><span class="nx">ctrl</span><span class="p">.</span><span class="nf">SetupSignalHandler</span><span class="p">())</span>
+  <span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">ToNot</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+<span class="p">}()</span>
 
-  err = mgr.Start(ctrl.SetupSignalHandler())
-  Expect(err).ToNot(HaveOccurred())
-}()
-
-k8sClient = mgr.GetClient()
-Expect(err).NotTo(HaveOccurred())
-Expect(k8sClient).NotTo(BeNil())
-</code></pre>
-
+<span class="nx">k8sClient</span> <span class="p">=</span> <span class="nx">mgr</span><span class="p">.</span><span class="nf">GetClient</span><span class="p">()</span>
+<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+<span class="nf">Expect</span><span class="p">(</span><span class="nx">k8sClient</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">BeNil</span><span class="p">())</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>The initial code starts <a href="https://sdk.operatorframework.io/docs/building-operators/golang/testing/">EnvTest</a> but doesn&rsquo;t create the controller manager or register our reconciler with any manager. The code above does that and also create a kubernetes client so that we can query kubernetes server.</p>
 
 <p>Now the setup and teardown are propertly wired up, let&rsquo;s add the first test:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">_</span> <span class="p">=</span> <span class="nf">Describe</span><span class="p">(</span><span class="s">&#34;GithubRepository Controller&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nf">Context</span><span class="p">(</span><span class="s">&#34;When GithubRepository resource created&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span> <span class="kt">string</span>
+		<span class="kd">var</span> <span class="nx">githubRepository</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
 
-<pre><code>var _ = Describe(&quot;GithubRepository Controller&quot;, func() {
-	Context(&quot;When GithubRepository resource created&quot;, func() {
-		var name, namespace string
-		var githubRepository pnguyeniov1.GithubRepository
+		<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">namespace</span> <span class="p">=</span> <span class="s">&#34;default&#34;</span>
+			<span class="nx">name</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;test-repository-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+		<span class="p">})</span>
 
-		BeforeEach(func() {
-			namespace = &quot;default&quot;
-			name = fmt.Sprintf(&quot;test-repository-%d&quot;, rand.IntnRange(1000, 9000))
-		})
+		<span class="nf">It</span><span class="p">(</span><span class="s">&#34;should create github repository using github API&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">githubRepository</span> <span class="p">=</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span><span class="p">{</span>
+				<span class="nx">ObjectMeta</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">{</span>
+					<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+					<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+				<span class="p">},</span>
+				<span class="nx">Spec</span><span class="p">:</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepositorySpec</span><span class="p">{</span>
+					<span class="nx">Owner</span><span class="p">:</span>       <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+					<span class="nx">Repo</span><span class="p">:</span>        <span class="nx">name</span><span class="p">,</span>
+					<span class="nx">Description</span><span class="p">:</span> <span class="s">&#34;test-description&#34;</span><span class="p">,</span>
+				<span class="p">},</span>
+			<span class="p">}</span>
 
-		It(&quot;should create github repository using github API&quot;, func() {
-			githubRepository = pnguyeniov1.GithubRepository{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      name,
-					Namespace: namespace,
-				},
-				Spec: pnguyeniov1.GithubRepositorySpec{
-					Owner:       &quot;test-owner&quot;,
-					Repo:        name,
-					Description: &quot;test-description&quot;,
-				},
-			}
+			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
 
-			err := k8sClient.Create(context.TODO(), &amp;githubRepository)
-			Expect(err).NotTo(HaveOccurred())
+			<span class="nx">err</span> <span class="p">=</span> <span class="nf">waitUntilSuccessful</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span><span class="p">)</span>
+			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
 
-			err = waitUntilSuccessful(name, namespace)
-			Expect(err).NotTo(HaveOccurred())
+			<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">smockerRequestByPath</span><span class="p">(</span><span class="s">&#34;/user/repos&#34;</span><span class="p">,</span> <span class="s">&#34;POST&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
 
-			history, err := smockerRequestByPath(&quot;/user/repos&quot;, &quot;POST&quot;, &quot;name&quot;, name)
-			Expect(err).NotTo(HaveOccurred())
+			<span class="nf">Expect</span><span class="p">(</span><span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">201</span><span class="p">))</span>
+			<span class="nf">Expect</span><span class="p">(</span><span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Body</span><span class="p">.(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{})[</span><span class="s">&#34;name&#34;</span><span class="p">]).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">name</span><span class="p">))</span>
 
-			Expect(history.Response.Status).To(Equal(201))
-			Expect(history.Response.Body.(map[string]interface{})[&quot;name&quot;]).To(Equal(name))
+		<span class="p">})</span>
 
-		})
-
-		AfterEach(func() {
-			err := k8sClient.Delete(context.TODO(), &amp;githubRepository)
-			if err != nil {
-				logf.Log.Error(err, &quot;failed to delete GithubRepository&quot;, &quot;name&quot;, name)
-			}
-		})
-	})
-})
-</code></pre>
-
+		<span class="nf">AfterEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+				<span class="nx">logf</span><span class="p">.</span><span class="nx">Log</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;failed to delete GithubRepository&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+			<span class="p">}</span>
+		<span class="p">})</span>
+	<span class="p">})</span>
+<span class="p">})</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>this test uses kubernetes client to create a <code>GithubRepository</code> custom resource. There are 2 things we want to verify as the result of reconcillation:</p>
 
 <ul>
 <li>The custom resource status is updated to successful after reconcillation. This is verified by these 2 lines:</li>
 </ul>
-
-<pre><code>  err = waitUntilSuccessful(name, namespace)
-  Expect(err).NotTo(HaveOccurred())
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">  <span class="nx">err</span> <span class="p">=</span> <span class="nf">waitUntilSuccessful</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span><span class="p">)</span>
+  <span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span></code></pre></td></tr></table>
+</div>
+</div>
 <ul>
 <li>The reconcillation invoke Github API to create repository. To verify this, we query smocker admin API for the request history and make sure that history matches our expectation.</li>
 </ul>
 
 <p>We can already see that the test is not compilable becuse <code>GithubRepositorySpec</code> and <code>GithubRepositoryStatus</code> do not contain the fields we want in the test. Let&rsquo;s quickly go to <code>api/v1/githubrepository_types.go</code> and add those in:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">GithubRepositorySpec</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Owner</span>         <span class="kt">string</span> <span class="s">`json:&#34;owner&#34;`</span>
+	<span class="nx">Repo</span>          <span class="kt">string</span> <span class="s">`json:&#34;repo&#34;`</span>
+	<span class="nx">Description</span>   <span class="kt">string</span> <span class="s">`json:&#34;description,omitempty&#34;`</span>
+<span class="p">}</span>
 
-<pre><code>type GithubRepositorySpec struct {
-	Owner         string `json:&quot;owner&quot;`
-	Repo          string `json:&quot;repo&quot;`
-	Description   string `json:&quot;description,omitempty&quot;`
-}
-
-type GithubRepositoryStatus struct {
-	Successful bool `json:&quot;successful&quot;`
-}
-</code></pre>
-
+<span class="kd">type</span> <span class="nx">GithubRepositoryStatus</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Successful</span> <span class="kt">bool</span> <span class="s">`json:&#34;successful&#34;`</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>Now run the test with <code>make test</code> and it should fail with below error:</p>
 
 <p><img src="images/status-not-updated-error.png" alt="" title="Status not updated error" /></p>
@@ -760,35 +909,59 @@ type GithubRepositoryStatus struct {
 <h2 id="fix-the-test">Fix the test&nbsp;<a class="anchor" href="#fix-the-test"><i class="small linkify icon"></i></a> </h2>
 
 <p>The simplest way to fix above error is to just update the status to successful without doing anything:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">GithubRepositoryReconciler</span><span class="p">)</span> <span class="nf">Reconcile</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">req</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">(</span><span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">logger</span> <span class="o">:=</span> <span class="nx">log</span><span class="p">.</span><span class="nf">FromContext</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
 
-<pre><code>func (r *GithubRepositoryReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	logger := log.FromContext(ctx)
+	<span class="kd">var</span> <span class="nx">resource</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">NamespacedName</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="nx">errors</span><span class="p">.</span><span class="nf">IsNotFound</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;unable to fetch GithubRepository: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	var resource pnguyeniov1.GithubRepository
-	if err := r.Get(ctx, req.NamespacedName, &amp;resource); err != nil &amp;&amp; !errors.IsNotFound(err) {
-		return ctrl.Result{}, fmt.Errorf(&quot;unable to fetch GithubRepository: %v&quot;, err)
-	}
+	<span class="nx">resource</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">Successful</span> <span class="p">=</span> <span class="kc">true</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Status</span><span class="p">().</span><span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;unable to update status of GithubRepository resource: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	resource.Status.Successful = true
-	if err := r.Status().Update(ctx, &amp;resource); err != nil {
-		return ctrl.Result{}, fmt.Errorf(&quot;unable to update status of GithubRepository resource: %v&quot;, err)
-	}
+	<span class="nx">logger</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;github repository created successfully&#34;</span><span class="p">)</span>
 
-	logger.Info(&quot;github repository created successfully&quot;)
-
-	return ctrl.Result{}, nil
-}
-</code></pre>
-
+	<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="kc">nil</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>The test should fail with 2nd error message:</p>
 
 <p><img src="images/no-smocker-match-error.png" alt="" title="No smocker match error" /></p>
 
 <p>To fix it, we need to invoke Github API to create repository. We will use <a href="https://github.com/google/go-github">Go Github</a> for that:</p>
-
-<pre><code>go get github.com/google/go-github/v37
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">go get github.com/google/go-github/v37</code></pre></td></tr></table>
+</div>
+</div>
 <p>the logic to call github API does not belong to controller reconcillation function and should have its own package.</p>
 
 <p>There are several ways to design the new package:
@@ -804,168 +977,323 @@ type GithubRepositoryStatus struct {
 <p>Tests for this new package are going to be integration tests. Integration is an overloaded term. Different people have their own definition of integration tests. For me, integration tests verify the interaction at the edge/boundary of the system with external system. In this case, they are verying the interaction between our github API client code and fake github api (smocker).</p>
 
 <p>I find it easier to start with a negative test case: return authorization error when we don&rsquo;t provide token. This is a possible error returned from github api. We actually don&rsquo;t care what error returned, as long as it&rsquo;s returned by <code>CreateRepository()</code>, so any error works:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">TestCreateRepository</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;return error when failed to create repository&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+		<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+		<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
+		<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
 
-<pre><code>func TestCreateRepository(t *testing.T) {
-	t.Run(&quot;return error when failed to create repository&quot;, func(t *testing.T) {
-		baseUrl := &quot;http://localhost:8088&quot;
-		uploadUrl := &quot;http://localhost:8088&quot;
-		token := &quot;&quot;
-		api := New(context.TODO(), baseUrl, uploadUrl, token)
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="s">&#34;test-repo&#34;</span><span class="p">,</span> <span class="s">&#34;some-description&#34;</span><span class="p">)</span>
 
-		err := api.CreateRepository(&quot;test-owner&quot;, &quot;test-repo&quot;, &quot;some-description&quot;)
-
-		require.Error(t, err)
-		require.Contains(t, err.Error(), &quot;failed to create repository test-repo&quot;)
-	})
-}
-</code></pre>
-
+		<span class="nx">require</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="nx">require</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(),</span> <span class="s">&#34;failed to create repository test-repo&#34;</span><span class="p">)</span>
+	<span class="p">})</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>To make it pass, we need to add a smocker definition file at <code>local/smocker/no-token-error.yaml</code>:</p>
-
-<pre><code>- request:
-    path: /api/v3/user/repos
-    method: POST
-    headers:
-      Authorization: Bearer
-      Content-Type: application/json
-  response:
-    status: 401
-    headers:
-      Content-Type: application/json
-    body: ''
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">-<span class="w"> </span>request<span class="p">:</span><span class="w">
+</span><span class="w">    </span>path<span class="p">:</span><span class="w"> </span>/api/v3/user/repos<span class="w">
+</span><span class="w">    </span>method<span class="p">:</span><span class="w"> </span>POST<span class="w">
+</span><span class="w">    </span>headers<span class="p">:</span><span class="w">
+</span><span class="w">      </span>Authorization<span class="p">:</span><span class="w"> </span>Bearer<span class="w">
+</span><span class="w">      </span>Content-Type<span class="p">:</span><span class="w"> </span>application/json<span class="w">
+</span><span class="w">  </span>response<span class="p">:</span><span class="w">
+</span><span class="w">    </span>status<span class="p">:</span><span class="w"> </span><span class="m">401</span><span class="w">
+</span><span class="w">    </span>headers<span class="p">:</span><span class="w">
+</span><span class="w">      </span>Content-Type<span class="p">:</span><span class="w"> </span>application/json<span class="w">
+</span><span class="w">    </span>body<span class="p">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>and implement the code:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">api</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">ctx</span>       <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span>
+	<span class="nx">baseUrl</span>   <span class="kt">string</span>
+	<span class="nx">uploadUrl</span> <span class="kt">string</span>
+	<span class="nx">token</span>     <span class="kt">string</span>
+<span class="p">}</span>
 
-<pre><code>type api struct {
-	ctx       context.Context
-	baseUrl   string
-	uploadUrl string
-	token     string
-}
+<span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">api</span><span class="p">)</span> <span class="nf">CreateRepository</span><span class="p">(</span><span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">description</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">ts</span> <span class="o">:=</span> <span class="nx">oauth2</span><span class="p">.</span><span class="nf">StaticTokenSource</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">oauth2</span><span class="p">.</span><span class="nx">Token</span><span class="p">{</span><span class="nx">AccessToken</span><span class="p">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">token</span><span class="p">})</span>
+	<span class="nx">oauthClient</span> <span class="o">:=</span> <span class="nx">oauth2</span><span class="p">.</span><span class="nf">NewClient</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">ts</span><span class="p">)</span>
+	<span class="nx">client</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">github</span><span class="p">.</span><span class="nf">NewEnterpriseClient</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">oauthClient</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create github client: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-func (a *api) CreateRepository(owner, repo, description string) error {
-	ts := oauth2.StaticTokenSource(&amp;oauth2.Token{AccessToken: a.token})
-	oauthClient := oauth2.NewClient(a.ctx, ts)
-	client, err := github.NewEnterpriseClient(a.baseUrl, a.uploadUrl, oauthClient)
-	if err != nil {
-		return fmt.Errorf(&quot;failed to create github client: %v&quot;, err)
-	}
+	<span class="nx">repository</span> <span class="o">:=</span> <span class="nx">github</span><span class="p">.</span><span class="nx">Repository</span><span class="p">{</span>
+		<span class="nx">Name</span><span class="p">:</span>        <span class="o">&amp;</span><span class="nx">repo</span><span class="p">,</span>
+		<span class="nx">Description</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">description</span><span class="p">,</span>
+	<span class="p">}</span>
 
-	repository := github.Repository{
-		Name:        &amp;repo,
-		Description: &amp;description,
-	}
+	<span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">repository</span><span class="p">)</span>
 
-	_, _, err = client.Repositories.Create(a.ctx, &quot;&quot;, &amp;repository)
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	if err != nil {
-		return fmt.Errorf(&quot;failed to create repository %s: error: %v&quot;, repo, err)
-	}
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
 
-	return nil
-}
-
-func New(ctx context.Context, baseUrl, uploadUrl, token string) *api {
-	return &amp;api{
-		ctx:       ctx,
-		baseUrl:   baseUrl,
-		uploadUrl: uploadUrl,
-		token:     token,
-	}
-}
-</code></pre>
-
+<span class="kd">func</span> <span class="nf">New</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">api</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">api</span><span class="p">{</span>
+		<span class="nx">ctx</span><span class="p">:</span>       <span class="nx">ctx</span><span class="p">,</span>
+		<span class="nx">baseUrl</span><span class="p">:</span>   <span class="nx">baseUrl</span><span class="p">,</span>
+		<span class="nx">uploadUrl</span><span class="p">:</span> <span class="nx">uploadUrl</span><span class="p">,</span>
+		<span class="nx">token</span><span class="p">:</span>     <span class="nx">token</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>next test is to verify happy path. We need a way to verify that smocker is called with POST request to create the repository. This is similar to what we did in the end to end test. So before creating this test, we need to move the utility functions to verify smocker call to an internal package <code>smocker</code>. It&rsquo;s not ideal to create a package for something that is used only in test, but I can&rsquo;t find a better way to share test utility in golang. After moving the smocker utility to new package, we can write the new test:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;invoke github api when repository created&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;valid-token&#34;</span>
+	<span class="nx">repoName</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;test-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
 
-<pre><code>t.Run(&quot;invoke github api when repository created&quot;, func(t *testing.T) {
-	baseUrl := &quot;http://localhost:8088&quot;
-	uploadUrl := &quot;http://localhost:8088&quot;
-	token := &quot;valid-token&quot;
-	repoName := fmt.Sprintf(&quot;test-repo-%d&quot;, rand.IntnRange(1000, 9000))
+	<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">,</span> <span class="s">&#34;some-description&#34;</span><span class="p">)</span>
 
-	api := New(context.TODO(), baseUrl, uploadUrl, token)
-	err := api.CreateRepository(&quot;test-owner&quot;, repoName, &quot;some-description&quot;)
-
-	require.NoError(t, err)
-	history, err := smocker.RequestByPath(&quot;/user/repos&quot;, &quot;POST&quot;, &quot;name&quot;, repoName)
-	require.NoError(t, err)
-	require.Equal(t, http.StatusCreated, history.Response.Status)
-	require.Equal(t, repoName, history.Response.Body.(map[string]interface{})[&quot;name&quot;])
-})
-</code></pre>
-
+	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="s">&#34;/user/repos&#34;</span><span class="p">,</span> <span class="s">&#34;POST&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
+	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="nx">require</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusCreated</span><span class="p">,</span> <span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">)</span>
+	<span class="nx">require</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">,</span> <span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Body</span><span class="p">.(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{})[</span><span class="s">&#34;name&#34;</span><span class="p">])</span>
+<span class="p">})</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>add another mock definition file to make it pass: this mock matches on <code>Authorization</code> header with <code>valid-token</code> value and uses dynamic response to return the same repo name from request in the body. The body is only partial response from Github API.</p>
-
-<pre><code>- request:
-    path: /api/v3/user/repos
-    method: POST
-    headers:
-      Authorization: Bearer valid-token
-      Content-Type: application/json
-  dynamic_response:
-    engine: go_template
-    script: |-
-      status: 201
-      headers:
-        Content-Type: [application/json]
-      body: &gt;
-        {
-          &quot;id&quot;: 1296269,
-          &quot;name&quot;: &quot;{{.Request.Body.name}}&quot;,
-          &quot;full_name&quot;: &quot;{{.Request.Body.name}}&quot;
-        }
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">-<span class="w"> </span>request<span class="p">:</span><span class="w">
+</span><span class="w">    </span>path<span class="p">:</span><span class="w"> </span>/api/v3/user/repos<span class="w">
+</span><span class="w">    </span>method<span class="p">:</span><span class="w"> </span>POST<span class="w">
+</span><span class="w">    </span>headers<span class="p">:</span><span class="w">
+</span><span class="w">      </span>Authorization<span class="p">:</span><span class="w"> </span>Bearer<span class="w"> </span>valid-token<span class="w">
+</span><span class="w">      </span>Content-Type<span class="p">:</span><span class="w"> </span>application/json<span class="w">
+</span><span class="w">  </span>dynamic_response<span class="p">:</span><span class="w">
+</span><span class="w">    </span>engine<span class="p">:</span><span class="w"> </span>go_template<span class="w">
+</span><span class="w">    </span>script<span class="p">:</span><span class="w"> </span>|<span class="sd">-
+</span><span class="sd">      status: 201</span><span class="w">
+</span><span class="w">      </span>headers<span class="p">:</span><span class="w">
+</span><span class="w">        </span>Content-Type<span class="p">:</span><span class="w"> </span><span class="p">[</span>application/json<span class="p">]</span><span class="w">
+</span><span class="w">      </span>body<span class="p">:</span><span class="w"> </span><span class="sd">&gt;
+</span><span class="sd">        {</span><span class="w">
+</span><span class="w">          </span><span class="s2">&#34;id&#34;</span><span class="p">:</span><span class="w"> </span><span class="m">1296269</span><span class="p">,</span><span class="w">
+</span><span class="w">          </span><span class="s2">&#34;name&#34;</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;{{.Request.Body.name}}&#34;</span><span class="p">,</span><span class="w">
+</span><span class="w">          </span><span class="s2">&#34;full_name&#34;</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;{{.Request.Body.name}}&#34;</span><span class="w">
+</span><span class="w">        </span>}</code></pre></td></tr></table>
+</div>
+</div>
 <p>Last thing, for now we only focus on creation, so we don&rsquo;t want to call github API creation endpoint again if the repo already exists (the api will return an error). So we should do a check before making creation request. We will update this test when we work on update repository.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;not invoke github api creation when repository exists&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;valid-token&#34;</span>
+	<span class="nx">repoName</span> <span class="o">:=</span> <span class="s">&#34;existing-repo&#34;</span>
+	<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
 
-<pre><code>t.Run(&quot;not invoke github api creation when repository exists&quot;, func(t *testing.T) {
-	baseUrl := &quot;http://localhost:8088&quot;
-	uploadUrl := &quot;http://localhost:8088&quot;
-	token := &quot;valid-token&quot;
-	repoName := &quot;existing-repo&quot;
-	api := New(context.TODO(), baseUrl, uploadUrl, token)
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">,</span> <span class="s">&#34;some-description&#34;</span><span class="p">)</span>
 
-	err := api.CreateRepository(&quot;test-owner&quot;, repoName, &quot;some-description&quot;)
-
-	require.NoError(t, err)
-	_, err = smocker.RequestByPath(&quot;/user/repos&quot;, &quot;POST&quot;, &quot;name&quot;, repoName)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), &quot;no smocker history matching&quot;)
-})
-</code></pre>
-
+	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="s">&#34;/user/repos&#34;</span><span class="p">,</span> <span class="s">&#34;POST&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
+	<span class="nx">require</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="nx">require</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(),</span> <span class="s">&#34;no smocker history matching&#34;</span><span class="p">)</span>
+<span class="p">})</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>and implementation:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">api</span><span class="p">)</span> <span class="nf">CreateRepository</span><span class="p">(</span><span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">description</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c1">// ...
+</span><span class="c1"></span>
+	<span class="nx">_</span><span class="p">,</span> <span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">StatusCode</span> <span class="o">!=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to get repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-<pre><code>func (a *api) CreateRepository(owner, repo, description string) error {
-	// ...
+	<span class="k">if</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">StatusCode</span> <span class="o">!=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span> <span class="p">{</span>
+		<span class="c1">// only work with repo creation for now
+</span><span class="c1"></span>		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">}</span>
 
-	_, resp, err := client.Repositories.Get(a.ctx, owner, repo)
-	if err != nil &amp;&amp; resp.StatusCode != http.StatusNotFound {
-		return fmt.Errorf(&quot;failed to get repository %s: error: %v&quot;, repo, err)
-	}
-
-	if resp.StatusCode != http.StatusNotFound {
-		// only work with repo creation for now
-		return nil
-	}
-
-	// ...
-}
-</code></pre>
-
+	<span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
 <p><code>githubapi</code> package is done, now just need to use it in controller:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">baseUrl</span> <span class="o">:=</span> <span class="nf">getEnv</span><span class="p">(</span><span class="nx">GithubApiBaseUrlKey</span><span class="p">,</span> <span class="s">&#34;https://api.github.com/&#34;</span><span class="p">)</span>
+<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="nf">getEnv</span><span class="p">(</span><span class="nx">GithubApiUploadUrlKey</span><span class="p">,</span> <span class="s">&#34;https://uploads.github.com/&#34;</span><span class="p">)</span>
+<span class="nx">token</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="nx">GithubApiTokenKey</span><span class="p">)</span>
 
-<pre><code>baseUrl := getEnv(GithubApiBaseUrlKey, &quot;https://api.github.com/&quot;)
-uploadUrl := getEnv(GithubApiUploadUrlKey, &quot;https://uploads.github.com/&quot;)
-token := os.Getenv(GithubApiTokenKey)
-
-api := githubapi.New(ctx, baseUrl, uploadUrl, token)
-if err := api.CreateRepository(resource.Spec.Owner, resource.Spec.Repo, resource.Spec.Description); err != nil {
-  return ctrl.Result{}, err
-}
-</code></pre>
-
+<span class="nx">api</span> <span class="o">:=</span> <span class="nx">githubapi</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateRepository</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Owner</span><span class="p">,</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Repo</span><span class="p">,</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Description</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">err</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>The end to end test should pass now</p>
 
 <h2 id="test-it-out">Test it out&nbsp;<a class="anchor" href="#test-it-out"><i class="small linkify icon"></i></a> </h2>
@@ -995,13 +1323,13 @@ if err := api.CreateRepository(resource.Spec.Owner, resource.Spec.Repo, resource
 
 
 	
-		<a class="ui label red " href="/tags/programming" title="programming">programming</a>
+		<a class="ui label olive " href="/tags/programming" title="programming">programming</a>
 	
-		<a class="ui label teal " href="/tags/golang" title="golang">golang</a>
+		<a class="ui label yellow " href="/tags/golang" title="golang">golang</a>
 	
-		<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+		<a class="ui label red " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 	
-		<a class="ui label red " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+		<a class="ui label violet " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 	
 
 
