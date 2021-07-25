@@ -4,61 +4,66 @@
   
   <url>
     <loc>https://pnguyen.io/categories/</loc>
-    <lastmod>2021-07-17T00:00:00+00:00</lastmod>
+    <lastmod>2021-07-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://pnguyen.io/</loc>
-    <lastmod>2021-07-17T00:00:00+00:00</lastmod>
+    <lastmod>2021-07-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://pnguyen.io/posts/</loc>
-    <lastmod>2021-07-17T00:00:00+00:00</lastmod>
+    <lastmod>2021-07-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://pnguyen.io/tags/</loc>
-    <lastmod>2021-07-17T00:00:00+00:00</lastmod>
+    <lastmod>2021-07-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/posts/test-drive-kubernetes-operator-2/</loc>
+    <lastmod>2021-07-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/golang/</loc>
+    <lastmod>2021-07-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/kubernetes/</loc>
+    <lastmod>2021-07-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/categories/programming/</loc>
+    <lastmod>2021-07-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/programming/</loc>
+    <lastmod>2021-07-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://pnguyen.io/tags/unit-testing/</loc>
+    <lastmod>2021-07-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://pnguyen.io/posts/test-drive-kubernetes-operator-1/</loc>
     <lastmod>2021-07-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/tags/golang/</loc>
-    <lastmod>2021-07-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/tags/kubernetes/</loc>
-    <lastmod>2021-07-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/categories/programming/</loc>
-    <lastmod>2021-07-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/tags/programming/</loc>
-    <lastmod>2021-07-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://pnguyen.io/tags/unit-testing/</loc>
-    <lastmod>2021-07-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
