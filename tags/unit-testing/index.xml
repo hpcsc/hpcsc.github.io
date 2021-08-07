@@ -6,10 +6,21 @@
     <description>Recent content in unit-testing on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 25 Jul 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 01 Aug 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://pnguyen.io/tags/unit-testing/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Test drive a Kubernetes operator - Part 3</title>
+      <link>https://pnguyen.io/posts/test-drive-kubernetes-operator-3/</link>
+      <pubDate>Sun, 01 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/test-drive-kubernetes-operator-3/</guid>
+      <description>In the previous post, we have basic functionalities of the operator implemented: create, update and delete.
+Today we are going to add the function to clone from another repository when creating a new repository.
+Posts in the series  Scaffold and first slice of the operator: creation of github repository Update and delete of github repository Creating of github repository by cloning another repository (This post) Validation using webhooks (TODO)  End to end test Our new end to end test looks almost exactly the same like creation end to end test:</description>
+    </item>
     
     <item>
       <title>Test drive a Kubernetes operator - Part 2</title>
@@ -19,7 +30,7 @@
       <guid>https://pnguyen.io/posts/test-drive-kubernetes-operator-2/</guid>
       <description>In the previous post, we scaffolded the skeleton of our operator and also added functionality to create github repository when the custom resource GithubRepository is created.
 In this post, we are going to build on top of that and add functionalities to update and delete the created github repository.
-Posts in the series  Scaffold and first slice of the operator: creation of github repository Update and delete of github repository (this post) Creating of github repository by cloning another repository (TODO) Validation using webhooks (TODO)  Update function End to end test We again start with a failing end to end test:</description>
+Posts in the series  Scaffold and first slice of the operator: creation of github repository Update and delete of github repository (this post) Creating of github repository by cloning another repository Validation using webhooks (TODO)  Update function End to end test We again start with a failing end to end test:</description>
     </item>
     
     <item>

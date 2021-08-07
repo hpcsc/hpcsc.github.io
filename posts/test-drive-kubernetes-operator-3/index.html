@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<title>
+	Test drive a Kubernetes operator - Part 3
+</title>
+		<style>
+	body {
+		display: block;
+		--background: "linear-gradient(to right, #40e0d0, #ff8c00, #ff0080) !important;";
+		
+			background: var(--background) !important;
+		
+	}
+
+	body, body.pushable {
+		background-repeat: no-repeat;
+	  	background-attachment: fixed;
+	  	background-size: cover !important;
+	}
+</style>
+
+		<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+	
+	
+	
+	<meta name="author" content="David Nguyen" />
+	<meta name="description" content="Create a simple Kubernetes operator following TDD" />
+
+
+
+<meta name="generator" content="Hugo 0.55.1" />
+
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+
+
+
+		
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+<script
+	src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+
+ <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Inconsolata" rel="stylesheet">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/site.css">
+
+
+
+
+
+
+	
+		<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/UtkarshVerma/hugo-dream-plus/ae11561d/exampleSite/static/css/highlight.css">
+	
+
+
+
+<style>
+	body.pushable {
+		display: block;
+		
+			background: var(--background) !important;
+		 ;
+	}
+</style>
+
+
+
+<script>
+	
+	var isMobile = ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) )
+	console.log("The client device is a "+(isMobile?"mobile":"PC")+".")
+</script>
+
+	</head>
+
+	<body>
+		<script>
+var prevBgIndex = 0;
+var bodyBgSwitchIndex = 0;
+
+
+
+
+
+
+
+	document.body.style.setProperty('--background', "linear-gradient(to bottom, #13547A, #70BEBC)");
+
+
+	function getRandomInt(min, max) {
+	  min = Math.ceil(min);
+	  max = Math.floor(max);
+	  var random;
+	  while (1) {
+	    random = Math.floor(Math.random() * (max - min)) + min;
+	    if (random !== prevBgIndex) {
+	      prevBgIndex = random;
+	      break;
+	    }
+	  }
+	  return random;
+	}
+</script>
+
+
+
+
+		<div id="sidebar" class="ui labeled icon thin right sidebar inverted vertical menu">
+	
+	<a class="item" href="/" >
+		<i class="inverted big link home icon" title="Home"></i>
+		Home
+	</a>
+
+	
+	<a class="item" href="/about">
+		<i class="inverted big link address card icon" title="About Me"></i>
+		About Me
+	</a>
+
+	
+	<a class="item" href="/posts">
+		<i class="inverted big link archive icon" title="Archive"></i>
+		Archive
+	</a>
+
+	
+	
+	<a class="item" href="/tags">
+		<i class="inverted big link tags icon" title="All Tags"></i>
+		All Tags
+	</a>
+	
+
+	
+	
+	<a class="item" href="/categories">
+		<i class="inverted big link cubes icon" title="All Categories"></i>
+		All Categories
+	</a>
+	
+
+	<a class="item" href="/posts/index.xml">
+		<i class="inverted big link rss icon" title="RSS Feed"></i>
+		RSS Feed
+	</a>
+</div>
+
+
+		<div class="pusher">
+			<div class="flipper">
+				<div class="front">
+					
+	<nav class="ui top secondary menu bar">
+	
+	<div class="item left-most">
+		<a href="/">
+			<i class="inverted big link home icon" title="Home"></i>
+		</a>
+	</div>
+
+	
+	
+		
+	
+		
+	
+
+	
+	
+	
+	
+
+	
+	
+		
+		
+			<div class="item">
+				<a href="https://github.com/hpcsc" target="	_blank">
+					<i id="ico" class="inverted big link github icon" title="GitHub"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+			<div class="item">
+				<a href="https://www.linkedin.com/in/nguyenhungphuong" target="	_blank">
+					<i id="ico" class="inverted big link linkedin icon" title="LinkedIn"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+
+	
+	
+		<div class="item right right-most">
+			<i class="inverted big link sidebar icon"
+			   onClick="$('.ui.sidebar').sidebar('setting', 'transition', 'overlay').sidebar('toggle');"
+			   title="Show Sidebar"></i>
+		</div>
+	
+</nav>
+
+
+	<div class="ui centered grid">
+		
+		<div class="sixteen wide mobile only column">
+				<div class="ui inverted accordion">
+	<div id="header" class="ui inverted segment column box">
+		
+		<header id="author" class="ui top attached center aligned inverted segment">
+			
+<div class="ui small circular image">
+	
+		<img src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062?s=150">
+	
+</div>
+
+
+<h3 class="ui header">
+	David Nguyen
+	<div class="sub header">Developer &amp; Karateka</div>
+</h3>
+
+		</header>
+
+		
+		<div id="tag-category" class=" content">
+			
+				<section class="ui attached center aligned inverted segment dream-tags none flexbox">
+					
+					
+					
+
+
+
+
+	
+	
+		
+			
+			<a class="ui label green " href="/tags/programming" title="programming">programming</a>
+		
+			
+			<a class="ui label red " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+		
+			
+			<a class="ui label pink " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+		
+			
+			<a class="ui label pink " href="/tags/golang" title="golang">golang</a>
+		
+			
+			<a class="ui label yellow " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+		
+			
+			<a class="ui label blue " href="/tags/deployment" title="deployment">deployment</a>
+		
+			
+			<a class="ui label orange " href="/tags/gocd" title="gocd">gocd</a>
+		
+			
+			<a class="ui label blue " href="/tags/net-core" title="net-core">net-core</a>
+		
+	
+
+
+				</section>
+			
+
+			
+				<section class="ui attached inverted segment dream-categories both flexbox">
+					<div class="inverted accordion">
+						
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >infrastructure</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/eks-iam-roles-for-service-accounts/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>EKS IAM Roles for Service Accounts</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/ckad-tips/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>A few tips to prepare for your CKAD exam</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/terraform-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Terraform Pipeline</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/a-sample-gocd-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>A Sample GoCD Pipeline</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >misc</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/improve-productivity-with-fzf/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Improve productivity with fzf</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>launchd service management in MacOS</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >programming</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/test-drive-kubernetes-operator-3/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Test drive a Kubernetes operator - Part 3</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/test-drive-kubernetes-operator-2/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Test drive a Kubernetes operator - Part 2</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/test-drive-kubernetes-operator-1/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Test drive a Kubernetes operator - Part 1</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/virtual-new-override-csharp/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>virtual, new and override in C#</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/verify-ilogger-call-in-dotnet-core/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Verify ILogger call in .NET Core</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >tips</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/improve-productivity-with-fzf/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Improve productivity with fzf</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>launchd service management in MacOS</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+
+					</div>
+				</section>
+			
+		</div>
+
+		
+		<footer class="ui bottom attached center aligned inverted segment">
+			
+
+	<p>© 2018 - 2021 David Nguyen&#39;s Personal Blog</p>
+
+
+<p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with <a href="https://github.com/UtkarshVerma/hugo-dream-plus" target="_blank">Dream Plus</a> theme.</p>
+
+		</footer>
+	</div>
+</div>
+
+		</div>
+
+		<div class="sixteen wide mobile fifteen wide tablet twelve wide computer column post-list">
+			
+			<section class="ui secondary top attached black segment post-head">
+				<h1 class="post-title">
+					Test drive a Kubernetes operator - Part 3
+				</h1>
+
+				<div class="sub header">
+					<div><span><i class="calendar outline icon"></i>Aug 1, 2021</span></div>
+					
+					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/test-drive-kubernetes-operator-3/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="f2bf6aa3fc71c4b2941900fba38f3f85"></a></span></div>
+					<div><span><i class="clock outline icon"></i>4 min read</span></div>
+					<div><span><i class="angle double up icon"></i>Last updated on Aug 1, 2021</span></div>
+				</div>
+				<hr>
+
+				
+					<div class="toc">
+						<nav id="TableOfContents">
+<ul>
+<li><a href="#posts-in-the-series">Posts in the series</a></li>
+<li><a href="#end-to-end-test">End to end test</a></li>
+<li><a href="#update-githubapi-package">Update githubapi package</a></li>
+<li><a href="#test-it-out">Test it out</a></li>
+</ul>
+</nav>
+					</div>
+				
+
+				<article class="post-content twemoji">
+					
+
+<p>In the previous <a href="/posts/test-drive-kubernetes-operator-2/">post</a>, we have basic functionalities of the operator implemented: create, update and delete.</p>
+
+<p>Today we are going to add the function to clone from another repository when creating a new repository.</p>
+
+<h1 id="posts-in-the-series">Posts in the series&nbsp;<a class="anchor" href="#posts-in-the-series"><i class="small linkify icon"></i></a> </h1>
+
+<ul>
+<li><a href="/posts/test-drive-kubernetes-operator-1/">Scaffold and first slice of the operator: creation of github repository</a></li>
+<li><a href="/posts/test-drive-kubernetes-operator-2/">Update and delete of github repository</a></li>
+<li>Creating of github repository by cloning another repository (This post)</li>
+<li>Validation using webhooks (TODO)</li>
+</ul>
+
+<h1 id="end-to-end-test">End to end test&nbsp;<a class="anchor" href="#end-to-end-test"><i class="small linkify icon"></i></a> </h1>
+
+<p>Our new end to end test looks almost exactly the same like creation end to end test:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nf">Context</span><span class="p">(</span><span class="s">&#34;When GithubRepository resource created with template repository&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span> <span class="kt">string</span>
+	<span class="kd">var</span> <span class="nx">githubRepository</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
+
+	<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">namespace</span> <span class="p">=</span> <span class="s">&#34;default&#34;</span>
+		<span class="nx">name</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;test-repository-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+	<span class="p">})</span>
+
+	<span class="nf">It</span><span class="p">(</span><span class="s">&#34;should create github repository using github API&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">githubRepository</span> <span class="p">=</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span><span class="p">{</span>
+			<span class="nx">ObjectMeta</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">{</span>
+				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+			<span class="p">},</span>
+			<span class="nx">Spec</span><span class="p">:</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepositorySpec</span><span class="p">{</span>
+				<span class="nx">Owner</span><span class="p">:</span>         <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+				<span class="nx">Repo</span><span class="p">:</span>          <span class="nx">name</span><span class="p">,</span>
+				<span class="nx">TemplateOwner</span><span class="p">:</span> <span class="s">&#34;template-owner&#34;</span><span class="p">,</span>
+				<span class="nx">TemplateRepo</span><span class="p">:</span>  <span class="s">&#34;template-repo&#34;</span><span class="p">,</span>
+				<span class="nx">Description</span><span class="p">:</span>   <span class="s">&#34;test-description&#34;</span><span class="p">,</span>
+			<span class="p">},</span>
+		<span class="p">}</span>
+
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+
+		<span class="nf">Eventually</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">resource</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
+			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">types</span><span class="p">.</span><span class="nx">NamespacedName</span><span class="p">{</span>
+				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+			<span class="p">},</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">)</span>
+			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+			<span class="nf">Expect</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">Successful</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">BeTrue</span><span class="p">())</span>
+		<span class="p">},</span> <span class="mi">10</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Succeed</span><span class="p">())</span>
+
+		<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="s">&#34;/repos/template-owner/template-repo/generate&#34;</span><span class="p">,</span> <span class="s">&#34;POST&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">201</span><span class="p">))</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Body</span><span class="p">.(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{})[</span><span class="s">&#34;name&#34;</span><span class="p">]).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">name</span><span class="p">))</span>
+	<span class="p">})</span>
+
+	<span class="nf">AfterEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">logf</span><span class="p">.</span><span class="nx">Log</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;failed to delete GithubRepository&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">})</span>
+<span class="p">})</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>There are 2 things that are different:
+- We provide <code>TemplateOwner</code> and <code>TemplateRepo</code> in <code>GithubRepositorySpec</code>. These 2 properties don&rsquo;t exist in the spec yet and we will add them next
+- Instead of verifying POST request to <code>/users/repos</code> like in creation test, we check POST to <code>/repos/{template-owner}/{template-repo}/generate</code> endpoint. We know this from Github API online reference.</p>
+
+<p>To make the test compilable, we need to add 2 additional properties to <code>GithubRepositorySpec</code> in <code>api/v1/githubrepository_types.go</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">GithubRepositorySpec</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// ...
+</span><span class="c1"></span>	<span class="nx">TemplateOwner</span> <span class="kt">string</span> <span class="s">`json:&#34;templateOwner,omitempty&#34;`</span>
+	<span class="nx">TemplateRepo</span>  <span class="kt">string</span> <span class="s">`json:&#34;templateRepo,omitempty&#34;`</span>
+	<span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h1 id="update-githubapi-package">Update githubapi package&nbsp;<a class="anchor" href="#update-githubapi-package"><i class="small linkify icon"></i></a> </h1>
+
+<p>Current <code>githubapi.CreateOrUpdateRepository()</code> already takes 3 parameters and we need to pass in 2 additional parameters for template owner and repo. The number of parameters is a bit too many for my liking so I decide to move them to a separate struct:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">CreateOrUpdateRepositoryRequest</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Owner</span>       <span class="kt">string</span>
+	<span class="nx">Repo</span>        <span class="kt">string</span>
+	<span class="nx">Description</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">api</span><span class="p">)</span> <span class="nf">CreateOrUpdateRepository</span><span class="p">(</span><span class="nx">request</span> <span class="nx">CreateOrUpdateRepositoryRequest</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>This requires some update to existing tests and controller code but it&rsquo;s quite simple. After the change, make sure to re-run all the tests.</p>
+
+<p>Next, add tests to verify correct github api endpoints called. These tests very similar to previous tests that we have written so I just go over them quickly:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;call github api to create repository from template when template owner and repo are provided&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;valid-token&#34;</span>
+	<span class="nx">repoName</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;test-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+	<span class="nx">api</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">smocker</span><span class="p">.</span><span class="nx">Url</span><span class="p">,</span> <span class="nx">smocker</span><span class="p">.</span><span class="nx">Url</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+
+	<span class="nx">err</span> <span class="p">=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateOrUpdateRepository</span><span class="p">(</span><span class="nx">CreateOrUpdateRepositoryRequest</span><span class="p">{</span>
+		<span class="nx">Owner</span><span class="p">:</span>         <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+		<span class="nx">Repo</span><span class="p">:</span>          <span class="nx">repoName</span><span class="p">,</span>
+		<span class="nx">Description</span><span class="p">:</span>   <span class="s">&#34;some-description&#34;</span><span class="p">,</span>
+		<span class="nx">TemplateOwner</span><span class="p">:</span> <span class="s">&#34;template-owner&#34;</span><span class="p">,</span>
+		<span class="nx">TemplateRepo</span><span class="p">:</span>  <span class="s">&#34;template-repo&#34;</span><span class="p">,</span>
+	<span class="p">})</span>
+
+	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="s">&#34;/repos/template-owner/template-repo/generate&#34;</span><span class="p">,</span> <span class="s">&#34;POST&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
+	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="nx">require</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusCreated</span><span class="p">,</span> <span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">)</span>
+	<span class="nx">require</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">,</span> <span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Body</span><span class="p">.(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{})[</span><span class="s">&#34;name&#34;</span><span class="p">])</span>
+<span class="p">})</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Add smocker definition for new endpoint, update <code>CreateOrUpdateRepositoryRequest</code> to include 2 new fields, and add simplest implementation that we can think of:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// ...
+</span><span class="c1"></span><span class="k">if</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">StatusCode</span> <span class="o">==</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">request</span><span class="p">.</span><span class="nx">TemplateOwner</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="o">&amp;&amp;</span> <span class="nx">request</span><span class="p">.</span><span class="nx">TemplateRepo</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+		<span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">CreateFromTemplate</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">TemplateOwner</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">TemplateRepo</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">github</span><span class="p">.</span><span class="nx">TemplateRepoRequest</span><span class="p">{</span>
+			<span class="nx">Name</span><span class="p">:</span>        <span class="o">&amp;</span><span class="nx">request</span><span class="p">.</span><span class="nx">Repo</span><span class="p">,</span>
+			<span class="nx">Description</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">request</span><span class="p">.</span><span class="nx">Description</span><span class="p">,</span>
+		<span class="p">})</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create repository %s from template %s/%s: error: %v&#34;</span><span class="p">,</span>
+				<span class="nx">request</span><span class="p">.</span><span class="nx">Repo</span><span class="p">,</span>
+				<span class="nx">request</span><span class="p">.</span><span class="nx">TemplateOwner</span><span class="p">,</span>
+				<span class="nx">request</span><span class="p">.</span><span class="nx">TemplateRepo</span><span class="p">,</span>
+				<span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">repository</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">Repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+	<span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span>
+<span class="o">//</span> <span class="o">...</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Using new feature in controller is as simple as passing additional parameters from custom resource spec to githubapi call:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// controllers/githubrepository_controller.go
+</span><span class="c1"></span><span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateOrUpdateRepository</span><span class="p">(</span><span class="nx">githubapi</span><span class="p">.</span><span class="nx">CreateOrUpdateRepositoryRequest</span><span class="p">{</span>
+	<span class="nx">Owner</span><span class="p">:</span>         <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Owner</span><span class="p">,</span>
+	<span class="nx">Repo</span><span class="p">:</span>          <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Repo</span><span class="p">,</span>
+	<span class="nx">Description</span><span class="p">:</span>   <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Description</span><span class="p">,</span>
+	<span class="nx">TemplateOwner</span><span class="p">:</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateOwner</span><span class="p">,</span>
+	<span class="nx">TemplateRepo</span><span class="p">:</span>  <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateRepo</span><span class="p">,</span>
+<span class="p">});</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">err</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>End to end function should pass now</p>
+
+<h1 id="test-it-out">Test it out&nbsp;<a class="anchor" href="#test-it-out"><i class="small linkify icon"></i></a> </h1>
+
+<ul>
+<li>Export github token as <code>GITHUB_API_TOKEN</code> environment variable in your terminal</li>
+<li>Run <code>make install</code> to install CRD to your local kubernetes cluster</li>
+<li>Run <code>make run</code> to run controller in your terminal</li>
+<li>Update sample CR at <code>./config/samples/pnguyen.io_v1_githubrepository.yaml</code>:</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">apiVersion<span class="p">:</span><span class="w"> </span>pnguyen.io.pnguyen.io/v1<span class="w">
+</span><span class="w"></span>kind<span class="p">:</span><span class="w"> </span>GithubRepository<span class="w">
+</span><span class="w"></span>metadata<span class="p">:</span><span class="w">
+</span><span class="w">  </span>name<span class="p">:</span><span class="w"> </span>operator-test<span class="w">
+</span><span class="w"></span>spec<span class="p">:</span><span class="w">
+</span><span class="w">  </span>owner<span class="p">:</span><span class="w"> </span>hpcsc<span class="w">
+</span><span class="w">  </span>repo<span class="p">:</span><span class="w"> </span>operator-test<span class="w">
+</span><span class="w">  </span>description<span class="p">:</span><span class="w"> </span>my<span class="w"> </span>sample<span class="w"> </span>operator<span class="w"> </span>test<span class="w">
+</span><span class="w">  </span>templateOwner<span class="p">:</span><span class="w"> </span>hpcsc<span class="w">
+</span><span class="w">  </span>templateRepo<span class="p">:</span><span class="w"> </span>asdf-plugin-template</code></pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>In another terminal, run <code>kubectl apply -f ./config/samples/pnguyen.io_v1_githubrepository.yaml</code></li>
+<li>Verify that new github repository created with content from <code>https://github.com/hpcsc/asdf-plugin-template</code></li>
+</ul>
+
+				</article>				
+			</section>
+
+			
+			<section class="ui secondary attached segment dream-tags">
+				
+					
+
+
+
+
+	
+		<a class="ui label blue " href="/tags/programming" title="programming">programming</a>
+	
+		<a class="ui label violet " href="/tags/golang" title="golang">golang</a>
+	
+		<a class="ui label purple " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+	
+		<a class="ui label blue " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+	
+
+
+				
+			</section>
+
+			
+			
+				<section class="ui secondary  attached segment share row box">
+					
+
+
+
+
+
+
+
+
+<div class="author">
+	
+	<img class="avatar" src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062?s=150">
+	
+</div>
+<div class="info grow flexbox">
+	
+	<p class="name">David Nguyen</p>
+	
+	<p class="desc">Developer &amp; Karateka</p>
+</div>
+
+
+<section class="buttons row box">
+	<div class="facebook none flexbox" href="#" onclick="window.open(
+			'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+			'facebook-share-dialog',
+			'width=626,height=436'); return false;">
+		<button class="ui facebook button"><i class="facebook icon"></i>Share</button>
+	</div>
+	<div class="twitter none flexbox" onclick="window.open('https://twitter.com/intent/tweet?text=Read &quot;Test drive a Kubernetes operator - Part 3  https:\/\/pnguyen.io\/posts\/test-drive-kubernetes-operator-3\/','_self')">
+		<button class="ui twitter button"><i class="twitter icon"></i>Tweet</button>
+	</div>
+</section>
+
+				</section>
+			
+
+			
+			
+			
+
+			
+			
+				<div class="ui secondary bottom attached stacked segment disqus">
+					
+<div id="disqus_thread"></div>
+<script>
+	var disqus_config = function () {
+		this.page.url = 'https:\/\/pnguyen.io\/posts\/test-drive-kubernetes-operator-3\/';
+		this.page.identifier = 'f2bf6aa3fc71c4b2941900fba38f3f85';
+	};
+	(function() {
+   	var d = document, s = d.createElement('script');
+   	s.src = 'https://' + 'pnguyen' + '.disqus.com/embed.js';
+   	s.setAttribute('data-timestamp', +new Date());
+   	(d.head || d.body).appendChild(s);
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+				</div>
+			
+		</div>
+	</div>
+
+				</div>
+			</div>
+		</div>
+		
+	
+	
+		<script id="dsq-count-scr" src="//pnguyen.disqus.com/count.js" async></script>
+	
+
+		
+
+<script src="/js/site.js"></script>
+
+
+
+	<script src="https://twemoji.maxcdn.com/2/twemoji.min.js?2.6"></script>
+
+
+
+
+
+
+
+
+	
+	<script>
+		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+		ga('create', 'UA-125420743-1', 'auto');
+		ga('send', 'pageview');
+	</script>
+	<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+		
+
+
+		
+
+	<script>
+		(function () {
+		  console.log("Twemoji up and making stuff colourful!");
+		  for (var b = document.getElementsByClassName("twemoji"), a = 0; a < b.length; a++) {
+			twemoji.parse(b[a]);
+		  }
+		})();
+	</script>
+
+
+	</body>
+</html>
