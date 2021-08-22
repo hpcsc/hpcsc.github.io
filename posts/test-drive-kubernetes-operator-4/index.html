@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<title>
+	Test drive a Kubernetes operator - Part 4
+</title>
+		<style>
+	body {
+		display: block;
+		--background: "linear-gradient(to right, #40e0d0, #ff8c00, #ff0080) !important;";
+		
+			background: var(--background) !important;
+		
+	}
+
+	body, body.pushable {
+		background-repeat: no-repeat;
+	  	background-attachment: fixed;
+	  	background-size: cover !important;
+	}
+</style>
+
+		<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+	
+	
+	
+	<meta name="author" content="David Nguyen" />
+	<meta name="description" content="Create a simple Kubernetes operator following TDD" />
+
+
+
+<meta name="generator" content="Hugo 0.55.1" />
+
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+
+
+
+		
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+<script
+	src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+
+ <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Inconsolata" rel="stylesheet">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/site.css">
+
+
+
+
+
+
+	
+		<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/UtkarshVerma/hugo-dream-plus/ae11561d/exampleSite/static/css/highlight.css">
+	
+
+
+
+<style>
+	body.pushable {
+		display: block;
+		
+			background: var(--background) !important;
+		 ;
+	}
+</style>
+
+
+
+<script>
+	
+	var isMobile = ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) )
+	console.log("The client device is a "+(isMobile?"mobile":"PC")+".")
+</script>
+
+	</head>
+
+	<body>
+		<script>
+var prevBgIndex = 0;
+var bodyBgSwitchIndex = 0;
+
+
+
+
+
+
+
+	document.body.style.setProperty('--background', "linear-gradient(to bottom, #13547A, #70BEBC)");
+
+
+	function getRandomInt(min, max) {
+	  min = Math.ceil(min);
+	  max = Math.floor(max);
+	  var random;
+	  while (1) {
+	    random = Math.floor(Math.random() * (max - min)) + min;
+	    if (random !== prevBgIndex) {
+	      prevBgIndex = random;
+	      break;
+	    }
+	  }
+	  return random;
+	}
+</script>
+
+
+
+
+		<div id="sidebar" class="ui labeled icon thin right sidebar inverted vertical menu">
+	
+	<a class="item" href="/" >
+		<i class="inverted big link home icon" title="Home"></i>
+		Home
+	</a>
+
+	
+	<a class="item" href="/about">
+		<i class="inverted big link address card icon" title="About Me"></i>
+		About Me
+	</a>
+
+	
+	<a class="item" href="/posts">
+		<i class="inverted big link archive icon" title="Archive"></i>
+		Archive
+	</a>
+
+	
+	
+	<a class="item" href="/tags">
+		<i class="inverted big link tags icon" title="All Tags"></i>
+		All Tags
+	</a>
+	
+
+	
+	
+	<a class="item" href="/categories">
+		<i class="inverted big link cubes icon" title="All Categories"></i>
+		All Categories
+	</a>
+	
+
+	<a class="item" href="/posts/index.xml">
+		<i class="inverted big link rss icon" title="RSS Feed"></i>
+		RSS Feed
+	</a>
+</div>
+
+
+		<div class="pusher">
+			<div class="flipper">
+				<div class="front">
+					
+	<nav class="ui top secondary menu bar">
+	
+	<div class="item left-most">
+		<a href="/">
+			<i class="inverted big link home icon" title="Home"></i>
+		</a>
+	</div>
+
+	
+	
+		
+	
+		
+	
+
+	
+	
+	
+	
+
+	
+	
+		
+		
+			<div class="item">
+				<a href="https://github.com/hpcsc" target="	_blank">
+					<i id="ico" class="inverted big link github icon" title="GitHub"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+			<div class="item">
+				<a href="https://www.linkedin.com/in/nguyenhungphuong" target="	_blank">
+					<i id="ico" class="inverted big link linkedin icon" title="LinkedIn"></i>
+				</a>
+			</div>
+		
+	
+		
+		
+	
+		
+		
+	
+		
+		
+	
+
+	
+	
+		<div class="item right right-most">
+			<i class="inverted big link sidebar icon"
+			   onClick="$('.ui.sidebar').sidebar('setting', 'transition', 'overlay').sidebar('toggle');"
+			   title="Show Sidebar"></i>
+		</div>
+	
+</nav>
+
+
+	<div class="ui centered grid">
+		
+		<div class="sixteen wide mobile only column">
+				<div class="ui inverted accordion">
+	<div id="header" class="ui inverted segment column box">
+		
+		<header id="author" class="ui top attached center aligned inverted segment">
+			
+<div class="ui small circular image">
+	
+		<img src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062?s=150">
+	
+</div>
+
+
+<h3 class="ui header">
+	David Nguyen
+	<div class="sub header">Developer &amp; Karateka</div>
+</h3>
+
+		</header>
+
+		
+		<div id="tag-category" class=" content">
+			
+				<section class="ui attached center aligned inverted segment dream-tags none flexbox">
+					
+					
+					
+
+
+
+
+	
+	
+		
+			
+			<a class="ui label yellow " href="/tags/programming" title="programming">programming</a>
+		
+			
+			<a class="ui label brown " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+		
+			
+			<a class="ui label green " href="/tags/golang" title="golang">golang</a>
+		
+			
+			<a class="ui label pink " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+		
+			
+			<a class="ui label teal " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+		
+			
+			<a class="ui label green " href="/tags/deployment" title="deployment">deployment</a>
+		
+			
+			<a class="ui label pink " href="/tags/gocd" title="gocd">gocd</a>
+		
+			
+			<a class="ui label pink " href="/tags/net-core" title="net-core">net-core</a>
+		
+	
+
+
+				</section>
+			
+
+			
+				<section class="ui attached inverted segment dream-categories both flexbox">
+					<div class="inverted accordion">
+						
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >infrastructure</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/eks-iam-roles-for-service-accounts/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>EKS IAM Roles for Service Accounts</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/ckad-tips/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>A few tips to prepare for your CKAD exam</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/terraform-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Terraform Pipeline</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/a-sample-gocd-pipeline/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>A Sample GoCD Pipeline</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >misc</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/improve-productivity-with-fzf/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Improve productivity with fzf</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>launchd service management in MacOS</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >programming</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/test-drive-kubernetes-operator-4/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Test drive a Kubernetes operator - Part 4</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/test-drive-kubernetes-operator-3/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Test drive a Kubernetes operator - Part 3</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/test-drive-kubernetes-operator-2/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Test drive a Kubernetes operator - Part 2</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/test-drive-kubernetes-operator-1/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Test drive a Kubernetes operator - Part 1</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/virtual-new-override-csharp/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>virtual, new and override in C#</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/verify-ilogger-call-in-dotnet-core/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Verify ILogger call in .NET Core</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/aws-profile/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>An utility to switch AWS profiles</p>
+				</div>
+			</a>
+		
+	</div>
+
+	
+	<div class="title">
+		<i class="dropdown icon"></i>
+		<span class="hand dropdown" >tips</span>
+	</div>
+
+	
+	<div class="content">
+		
+			<a class="item" href="https://pnguyen.io/posts/improve-productivity-with-fzf/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Improve productivity with fzf</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/launchd-service-management/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>launchd service management in MacOS</p>
+				</div>
+			</a>
+		
+			<a class="item" href="https://pnguyen.io/posts/speed-up-zsh-custom-functions/">
+				<div>
+					<i class="cocktail icon"></i>
+					<p>Speed up ZSH loading of custom functions</p>
+				</div>
+			</a>
+		
+	</div>
+
+
+					</div>
+				</section>
+			
+		</div>
+
+		
+		<footer class="ui bottom attached center aligned inverted segment">
+			
+
+	<p>© 2018 - 2021 David Nguyen&#39;s Personal Blog</p>
+
+
+<p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with <a href="https://github.com/UtkarshVerma/hugo-dream-plus" target="_blank">Dream Plus</a> theme.</p>
+
+		</footer>
+	</div>
+</div>
+
+		</div>
+
+		<div class="sixteen wide mobile fifteen wide tablet twelve wide computer column post-list">
+			
+			<section class="ui secondary top attached black segment post-head">
+				<h1 class="post-title">
+					Test drive a Kubernetes operator - Part 4
+				</h1>
+
+				<div class="sub header">
+					<div><span><i class="calendar outline icon"></i>Aug 8, 2021</span></div>
+					
+					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/test-drive-kubernetes-operator-4/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="823606a836bcc512db0f458b5ce22c63"></a></span></div>
+					<div><span><i class="clock outline icon"></i>11 min read</span></div>
+					<div><span><i class="angle double up icon"></i>Last updated on Aug 8, 2021</span></div>
+				</div>
+				<hr>
+
+				
+					<div class="toc">
+						<nav id="TableOfContents">
+<ul>
+<li><a href="#posts-in-the-series">Posts in the series</a></li>
+<li><a href="#types-of-validation">Types of validation</a></li>
+<li><a href="#add-openapi-validation">Add OpenAPI validation</a></li>
+<li><a href="#scaffold-validating-webhook">Scaffold validating webhook</a></li>
+<li><a href="#run-generated-validating-webhook">Run generated validating webhook</a>
+<ul>
+<li><a href="#run-outside-of-kubernetes-cluster">Run outside of Kubernetes cluster</a></li>
+<li><a href="#run-inside-kubernetes-cluster">Run inside Kubernetes cluster</a></li>
+</ul></li>
+<li><a href="#first-webhook-validation">First webhook validation</a></li>
+<li><a href="#second-webhook-validation">Second webhook validation</a></li>
+<li><a href="#test-it-out">Test it out</a></li>
+</ul>
+</nav>
+					</div>
+				
+
+				<article class="post-content twemoji">
+					
+
+<p>So far we have ignored most of the validation of custom resource when implementing the operator in the previous 3 posts. That&rsquo;s the topic of today post</p>
+
+<h1 id="posts-in-the-series">Posts in the series&nbsp;<a class="anchor" href="#posts-in-the-series"><i class="small linkify icon"></i></a> </h1>
+
+<ul>
+<li><a href="/posts/test-drive-kubernetes-operator-1/">Scaffold and first slice of the operator: creation of github repository</a></li>
+<li><a href="/posts/test-drive-kubernetes-operator-2/">Update and delete of github repository</a></li>
+<li><a href="/posts/test-drive-kubernetes-operator-3/">Creating of github repository by cloning another repository</a></li>
+<li>Validation using webhooks (this post)</li>
+</ul>
+
+<h1 id="types-of-validation">Types of validation&nbsp;<a class="anchor" href="#types-of-validation"><i class="small linkify icon"></i></a> </h1>
+
+<p>Operator SDK supports both OpenAPIv3 validation and webhook validation. We are going to add both of them to our operator:</p>
+
+<ul>
+<li>OpenAPI validation:
+
+<ul>
+<li><code>owner</code> and <code>repo</code> fields are required</li>
+</ul></li>
+<li>Webhook validation:
+
+<ul>
+<li><code>templateOwner</code> and <code>templateRepo</code> must not be the same with <code>owner</code> and <code>repo</code></li>
+<li><code>templateOwner</code> and <code>templateRepo</code> if present must refer to an existing repo in github that is marked as template repository</li>
+</ul></li>
+</ul>
+
+<h1 id="add-openapi-validation">Add OpenAPI validation&nbsp;<a class="anchor" href="#add-openapi-validation"><i class="small linkify icon"></i></a> </h1>
+
+<p>We can use OpenAPI schema to validate a few simple things like whether a field is required, whether it&rsquo;s in correct format, etc. In our case, both <code>owner</code> and <code>repo</code> are string and are already required by default, but users still can pass in empty string, which we should be able to catch easily.</p>
+
+<p>The test (I put in <code>controllers/suite_test.go</code> because this relies on Kubernetes API server to perform the validation, so we need all the setup in end to end test):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// controllers/suite_test.go
+</span><span class="c1"></span><span class="nf">Context</span><span class="p">(</span><span class="s">&#34;When GithubRepository resource created&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nf">It</span><span class="p">(</span><span class="s">&#34;return error when owner or repo are missing&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">namespace</span> <span class="o">:=</span> <span class="s">&#34;default&#34;</span>
+		<span class="nx">name</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;test-repository-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+		<span class="nx">githubRepository</span> <span class="o">:=</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span><span class="p">{</span>
+			<span class="nx">ObjectMeta</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">{</span>
+				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+			<span class="p">},</span>
+			<span class="nx">Spec</span><span class="p">:</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepositorySpec</span><span class="p">{</span>
+				<span class="nx">Repo</span><span class="p">:</span>        <span class="nx">name</span><span class="p">,</span>
+				<span class="nx">Description</span><span class="p">:</span> <span class="s">&#34;test-description&#34;</span><span class="p">,</span>
+			<span class="p">},</span>
+		<span class="p">}</span>
+
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">()).</span><span class="nf">To</span><span class="p">(</span><span class="nf">ContainSubstring</span><span class="p">(</span><span class="s">&#34;spec.owner: Invalid value&#34;</span><span class="p">))</span>
+
+		<span class="nx">githubRepository</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Owner</span> <span class="p">=</span> <span class="s">&#34;test-owner&#34;</span>
+		<span class="nx">githubRepository</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Repo</span> <span class="p">=</span> <span class="s">&#34;&#34;</span>
+
+		<span class="nx">err</span> <span class="p">=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">()).</span><span class="nf">To</span><span class="p">(</span><span class="nf">ContainSubstring</span><span class="p">(</span><span class="s">&#34;spec.repo: Invalid value&#34;</span><span class="p">))</span>
+	<span class="p">})</span>
+<span class="p">})</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>To fix this test, just need to add kubebuilder marker in <code>GithubRepositorySpec</code> <code>Owner</code> and <code>Repo</code> fields:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// api/v1/githubrepository_types.go
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">GithubRepositorySpec</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">//+kubebuilder:validation:MinLength:=1
+</span><span class="c1"></span>	<span class="nx">Owner</span> <span class="kt">string</span> <span class="s">`json:&#34;owner&#34;`</span>
+	<span class="c1">//+kubebuilder:validation:MinLength:=1
+</span><span class="c1"></span>	<span class="nx">Repo</span>          <span class="kt">string</span> <span class="s">`json:&#34;repo&#34;`</span>
+	<span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Run <code>make manifest</code> to re-generate CRD and run the tests again to see it pass.</p>
+
+<h1 id="scaffold-validating-webhook">Scaffold validating webhook&nbsp;<a class="anchor" href="#scaffold-validating-webhook"><i class="small linkify icon"></i></a> </h1>
+
+<p>Operator sdk supports scaffolding several types of webhook:
+- validating webhook: to perform validation that we cannot do with OpenAPI validation, created by <code>--programmatic-validation</code> flag
+- mutating/defaulting webhook: to set default values for fields or mutate objects for other purposes, created by <code>--defaulting</code> flag
+- conversion webhook: to convert from one version of CRD to another, created by <code>--conversion</code> flag</p>
+
+<p>In our case, we just need validating webhook. To scaffold it, run the following command:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">operator-sdk create webhook <span class="se">\
+</span><span class="se"></span>	--group pnguyen.io <span class="se">\
+</span><span class="se"></span>	--version v1 <span class="se">\
+</span><span class="se"></span>	--kind GithubRepository <span class="se">\
+</span><span class="se"></span>	--programmatic-validation</code></pre></td></tr></table>
+</div>
+</div>
+<p>Here are the files generated by above command:</p>
+
+<p><img src="images/webhook-generated-files.png" alt="" title="Webhook generated files" /></p>
+
+<ul>
+<li><code>config</code>:
+
+<ul>
+<li><code>certmanager</code>: kustomize files to configure CertManager. CertManager is used to automate generation of certificate for our webhook.</li>
+<li><code>webhook</code>: kustomize files for <code>ValidatingWebhookConfiguration</code> and webhook kubernetes service</li>
+<li><code>default</code>:
+
+<ul>
+<li><code>manager_webhook_patch.yaml</code>: add volume and volume mount for webhook cert to <code>controller-manager</code> deployment.</li>
+<li><code>webhookcainjection_patch.yaml</code>: setup annotation for CertManager to inject CA cert into <code>ValidatingWebhookConfiguration</code>. This CA cert is used by API server to verify TLS connection with webhook.</li>
+</ul></li>
+</ul></li>
+<li><code>api/v1/githubrepository_webhook.go</code>: webhook code</li>
+<li><code>main.go</code>: the code generation also modifies <code>main.go</code> to include the following code to setup webhook with manager:</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="p">(</span><span class="o">&amp;</span><span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span><span class="p">{}).</span><span class="nf">SetupWebhookWithManager</span><span class="p">(</span><span class="nx">mgr</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+	<span class="nx">setupLog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;unable to create webhook&#34;</span><span class="p">,</span> <span class="s">&#34;webhook&#34;</span><span class="p">,</span> <span class="s">&#34;GithubRepository&#34;</span><span class="p">)</span>
+	<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Run <code>make manifests</code> will create an additional file <code>config/webhook/manifests.yaml</code>: this is <code>ValidatingWebhookConfiguration</code> generated from <code>+kubebuilder:webhook</code> marker in <code>api/v1/githubrepository_webhook.go</code>.</p>
+
+<p>Before we can test those new files, we need to uncomment all lines with <code>[WEBHOOK]</code> or <code>CERTMANAGER</code> in <code>config/crd/kustomization.yaml</code> and <code>config/default/kustomization.yaml</code></p>
+
+<p>To be honest, all those kustomize configs can be quite confusing, so I draw this diagram to illustrate relationship between different directories under <code>config</code>:</p>
+
+<p><img src="images/kubebuilder-config-layout.png" alt="" title="Kubebuilder config layout" /></p>
+
+<p>Basically <code>default</code> is the top most kustomize overlay and is the main one that we need to interact with. It uses other directories like <code>crd</code>, <code>webhook</code>, <code>certmanager</code>, <code>rbac</code>, <code>manager</code> as bases and provides patches to patch resources from those bases.</p>
+
+<h1 id="run-generated-validating-webhook">Run generated validating webhook&nbsp;<a class="anchor" href="#run-generated-validating-webhook"><i class="small linkify icon"></i></a> </h1>
+
+<h2 id="run-outside-of-kubernetes-cluster">Run outside of Kubernetes cluster&nbsp;<a class="anchor" href="#run-outside-of-kubernetes-cluster"><i class="small linkify icon"></i></a> </h2>
+
+<p>Webhook requires a TLS cert at <code>${TMPDIR}/k8s-webhook-server/serving-certs/{tls.[crt|key]}</code> when starting up. When webhook is deployed to a Kubernetes cluster, this will be provided by CertManager. To run webhook outside of cluster, we can generate the cert ourselves by using following make task:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">webhook-certs: <span class="c1">## generate self-signed cert and key for local webhook development</span>
+	mkdir -p <span class="si">${</span><span class="nv">TMPDIR</span><span class="si">}</span>/k8s-webhook-server/serving-certs
+	openssl req -x509 <span class="se">\
+</span><span class="se"></span>				-newkey rsa:2048 <span class="se">\
+</span><span class="se"></span>				-nodes <span class="se">\
+</span><span class="se"></span>				-keyout <span class="si">${</span><span class="nv">TMPDIR</span><span class="si">}</span>/k8s-webhook-server/serving-certs/tls.key <span class="se">\
+</span><span class="se"></span>				-out <span class="si">${</span><span class="nv">TMPDIR</span><span class="si">}</span>/k8s-webhook-server/serving-certs/tls.crt <span class="se">\
+</span><span class="se"></span>				-days <span class="m">365</span> <span class="se">\
+</span><span class="se"></span>				-subj <span class="s1">&#39;/CN=local-webhook&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Run the following commands:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">make install <span class="c1"># install CRD</span>
+make build
+make webhook-certs
+<span class="nb">export</span> <span class="nv">GITHUB_API_TOKEN</span><span class="o">={</span>your-github-api-token<span class="o">}</span> <span class="c1"># Our controller needs to interact with Github API</span>
+make run</code></pre></td></tr></table>
+</div>
+</div>
+<p>You should see a log like <code>serving webhook server  {&quot;host&quot;: &quot;&quot;, &quot;port&quot;: 9443}</code> in the terminal</p>
+
+<p>Since the webhook is running outside of Kubernetes cluster, Kubernetes API server is not aware of this webhook and will not invoke it when a new CR is created/updated. It&rsquo;s just a http server so we can interact with it through curl like following script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="cp">#!/bin/bash
+</span><span class="cp"></span>
+<span class="nb">set</span> -euo pipefail
+
+<span class="nv">TYPE</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="k">:-</span><span class="nv">validate</span><span class="si">}</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">TYPE</span><span class="si">}</span><span class="s2">&#34;</span> !<span class="o">=</span> <span class="s2">&#34;mutate&#34;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">TYPE</span><span class="si">}</span><span class="s2">&#34;</span> !<span class="o">=</span> <span class="s2">&#34;validate&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="s2">&#34;invalid webhook type: </span><span class="si">${</span><span class="nv">TYPE</span><span class="si">}</span><span class="s2">&#34;</span>
+  <span class="nb">echo</span> <span class="s2">&#34;usage: </span><span class="nv">$0</span><span class="s2"> [mutate|validate]&#34;</span>
+  <span class="nb">exit</span> <span class="m">1</span>
+<span class="k">fi</span><span class="p">;</span>
+
+<span class="nv">SCRIPT_DIR</span><span class="o">=</span><span class="k">$(</span><span class="nb">cd</span> <span class="k">$(</span>dirname <span class="nv">$0</span><span class="k">)</span><span class="p">;</span> <span class="nb">pwd</span><span class="k">)</span>
+
+curl -k --request POST <span class="s2">&#34;https://127.0.0.1:9443/</span><span class="si">${</span><span class="nv">TYPE</span><span class="si">}</span><span class="s2">-github-pnguyen-io-v1-githubrepository&#34;</span> <span class="se">\
+</span><span class="se"></span>        -H <span class="s2">&#34;Content-Type: application/json&#34;</span> <span class="se">\
+</span><span class="se"></span>        --data-binary @<span class="s2">&#34;</span><span class="si">${</span><span class="nv">SCRIPT_DIR</span><span class="si">}</span><span class="s2">/admission-review-request.json&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>This script by default invokes validating webhook endpoint with payload from the file <code>admission-review-request.json</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;admission.k8s.io/v1&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;AdmissionReview&#34;</span><span class="p">,</span>
+	<span class="err">//</span> <span class="err">...</span>
+    <span class="nt">&#34;object&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;github.pnguyen.io/v1&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;GithubRepository&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;metadata&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;githubrepository-sample&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;namespace&#34;</span><span class="p">:</span> <span class="s2">&#34;default&#34;</span>
+      <span class="p">},</span>
+      <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;owner&#34;</span><span class="p">:</span> <span class="s2">&#34;test-owner&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;repo&#34;</span><span class="p">:</span> <span class="s2">&#34;test-repository&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;description&#34;</span><span class="p">:</span> <span class="s2">&#34;my test repository&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;templateOwner&#34;</span><span class="p">:</span> <span class="s2">&#34;template-owner&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;templateRepo&#34;</span><span class="p">:</span> <span class="s2">&#34;template-repository&#34;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+	<span class="err">//</span> <span class="err">...</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>When invoking this script, you should see following logs in the first terminal, indicating the webhook was processing the request:</p>
+
+<pre><code>2021-08-15T13:03:21.277+1000    DEBUG   controller-runtime.webhook.webhooks     received request        {&quot;webhook&quot;: &quot;/validate-github-pnguyen-io-v1-githubrepository&quot;, &quot;UID&quot;: &quot;705ab4f5-6393-11e8-b7cc-42010a800002&quot;, &quot;kind&quot;: &quot;github.pnguyen.io/v1, Kind=GithubRepository&quot;, &quot;resource&quot;: {&quot;group&quot;:&quot;github.pnguyen.io&quot;,&quot;version&quot;:&quot;v1&quot;,&quot;resource&quot;:&quot;&quot;}}
+2021-08-15T13:03:21.278+1000    INFO    githubrepository-resource       validate update {&quot;name&quot;: &quot;githubrepository-sample&quot;}
+2021-08-15T13:03:21.278+1000    DEBUG   controller-runtime.webhook.webhooks     wrote response  {&quot;webhook&quot;: &quot;/validate-github-pnguyen-io-v1-githubrepository&quot;, &quot;code&quot;: 200, &quot;reason&quot;: &quot;&quot;, &quot;UID&quot;: &quot;705ab4f5-6393-11e8-b7cc-42010a800002&quot;, &quot;allowed&quot;: true}
+</code></pre>
+
+<h2 id="run-inside-kubernetes-cluster">Run inside Kubernetes cluster&nbsp;<a class="anchor" href="#run-inside-kubernetes-cluster"><i class="small linkify icon"></i></a> </h2>
+
+<p>Previous method can be used for quick validation during development. Once we are done with webhook implementation, we can deploy webhook to a Kubernetes cluster and test it out.</p>
+
+<p>First install CertManager:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">kubectl apply -f https://github.com/jetstack/cert-manager/releases/latest/download/cert-manager.yaml</code></pre></td></tr></table>
+</div>
+</div>
+<p>Then run following commands:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">make docker-build <span class="nv">IMG</span><span class="o">=</span>controller:0.0.1 <span class="c1"># build docker image controller:0.0.1</span>
+minikube image load controller:0.0.1 <span class="c1"># load controller:latest image into minikube</span>
+make deploy <span class="nv">IMG</span><span class="o">=</span>controller:0.0.1 <span class="c1"># run `kustomize build config/default` and apply generated config</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Once everything&rsquo;s done, a new namespace <code>github-repository-operator-system</code> is created. You will see our controller is deployed as deployment there.</p>
+
+<p>Now let&rsquo;s create a custom resource:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">kubectl apply -f ./config/samples/pnguyen.io_v1_githubrepository.yaml</code></pre></td></tr></table>
+</div>
+</div>
+<p>You should see similar logs like above when inspecting controller pod log</p>
+
+<h1 id="first-webhook-validation">First webhook validation&nbsp;<a class="anchor" href="#first-webhook-validation"><i class="small linkify icon"></i></a> </h1>
+
+<p>Our first validation is to ensure that <code>templateOwner</code> and <code>templateRepo</code> fields are not the same with <code>owner</code> and <code>repo</code> fields. Add following end to end test:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// api/v1/webhook_suite_test.go
+</span><span class="c1"></span><span class="kd">var</span> <span class="nx">_</span> <span class="p">=</span> <span class="nf">Describe</span><span class="p">(</span><span class="s">&#34;GithubRepository Validating Webhook&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nf">Context</span><span class="p">(</span><span class="s">&#34;when templateOwner and templateRepo are the same with owner and repo&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span> <span class="kt">string</span>
+		<span class="kd">var</span> <span class="nx">githubRepository</span> <span class="nx">GithubRepository</span>
+
+		<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">namespace</span> <span class="p">=</span> <span class="s">&#34;default&#34;</span>
+			<span class="nx">name</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;test-github-repository-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+		<span class="p">})</span>
+
+		<span class="nf">It</span><span class="p">(</span><span class="s">&#34;should return error&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">githubRepository</span> <span class="p">=</span> <span class="nx">GithubRepository</span><span class="p">{</span>
+				<span class="nx">ObjectMeta</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">{</span>
+					<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+					<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+				<span class="p">},</span>
+				<span class="nx">Spec</span><span class="p">:</span> <span class="nx">GithubRepositorySpec</span><span class="p">{</span>
+					<span class="nx">Owner</span><span class="p">:</span>         <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+					<span class="nx">Repo</span><span class="p">:</span>          <span class="s">&#34;test-repo&#34;</span><span class="p">,</span>
+					<span class="nx">TemplateOwner</span><span class="p">:</span> <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+					<span class="nx">TemplateRepo</span><span class="p">:</span>  <span class="s">&#34;test-repo&#34;</span><span class="p">,</span>
+				<span class="p">},</span>
+			<span class="p">}</span>
+
+			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+
+			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">()).</span><span class="nf">To</span><span class="p">(</span><span class="nf">ContainSubstring</span><span class="p">(</span><span class="s">&#34;denied the request: templateOwner/templateRepo must be different with owner/repo&#34;</span><span class="p">))</span>
+		<span class="p">})</span>
+	<span class="p">})</span>
+<span class="p">})</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Add following implementation in <code>ValidateCreate()</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">GithubRepository</span><span class="p">)</span> <span class="nf">ValidateCreate</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">githubrepositorylog</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;validate create&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateOwner</span> <span class="o">==</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Owner</span> <span class="o">&amp;&amp;</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateRepo</span> <span class="o">==</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Repo</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;templateOwner/templateRepo must be different with owner/repo&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>The test should pass now. Note that we just need to implement validation during creation of CR because template owner/repo are only used in the first time creation. They will be ignored in update requests.</p>
+
+<h1 id="second-webhook-validation">Second webhook validation&nbsp;<a class="anchor" href="#second-webhook-validation"><i class="small linkify icon"></i></a> </h1>
+
+<p>The 2nd validation is more complicated: <code>templateOwner</code> and <code>templateRepo</code> if present must refer to an existing repo in github that is marked as template repository</p>
+
+<p>In order to validate this, we need to invoke github api in our webhook to check whether the given <code>templateOwner</code>/<code>templateRepo</code> satisfy above requirement.</p>
+
+<p>Let&rsquo;s add 2 end to end tests: one for happy path, the other for unhappy path. Strictly speaking, we kind of get ahead of ourselves here since we add 2 tests consecutively. Since the implementation is just to check a boolean flag from returned github api response, once we pass the 1st test, the other test will pass too. We can avoid it by purposely checking only for a specific value of <code>true</code> or <code>false</code> so that the two tests not pass at the same time but I find it unnecessary.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// api/v1/webhook_suite_test.go
+</span><span class="c1"></span><span class="nf">Context</span><span class="p">(</span><span class="s">&#34;when templateOwner and templateRepo refer to a non-template repository&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span> <span class="kt">string</span>
+	<span class="kd">var</span> <span class="nx">githubRepository</span> <span class="nx">GithubRepository</span>
+
+	<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">namespace</span> <span class="p">=</span> <span class="s">&#34;default&#34;</span>
+		<span class="nx">name</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;test-github-repository-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+	<span class="p">})</span>
+
+	<span class="nf">It</span><span class="p">(</span><span class="s">&#34;should return error&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">templateRepo</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;non-template-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+		<span class="nx">githubRepository</span> <span class="p">=</span> <span class="nx">GithubRepository</span><span class="p">{</span>
+			<span class="nx">ObjectMeta</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">{</span>
+				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+			<span class="p">},</span>
+			<span class="nx">Spec</span><span class="p">:</span> <span class="nx">GithubRepositorySpec</span><span class="p">{</span>
+				<span class="nx">Owner</span><span class="p">:</span>         <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+				<span class="nx">Repo</span><span class="p">:</span>          <span class="s">&#34;test-repo&#34;</span><span class="p">,</span>
+				<span class="nx">TemplateOwner</span><span class="p">:</span> <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+				<span class="nx">TemplateRepo</span><span class="p">:</span>  <span class="nx">templateRepo</span><span class="p">,</span>
+			<span class="p">},</span>
+		<span class="p">}</span>
+
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">()).</span><span class="nf">To</span><span class="p">(</span><span class="nf">ContainSubstring</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;repository test-owner/%s is not marked as template&#34;</span><span class="p">,</span> <span class="nx">templateRepo</span><span class="p">)))</span>
+	<span class="p">})</span>
+<span class="p">})</span>
+
+<span class="nf">Context</span><span class="p">(</span><span class="s">&#34;when templateOwner and templateRepo refer to a valid template repository&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span> <span class="kt">string</span>
+	<span class="kd">var</span> <span class="nx">githubRepository</span> <span class="nx">GithubRepository</span>
+
+	<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">namespace</span> <span class="p">=</span> <span class="s">&#34;default&#34;</span>
+		<span class="nx">name</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;test-github-repository-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+	<span class="p">})</span>
+
+	<span class="nf">It</span><span class="p">(</span><span class="s">&#34;should not return error&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">templateRepo</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;valid-template-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+		<span class="nx">githubRepository</span> <span class="p">=</span> <span class="nx">GithubRepository</span><span class="p">{</span>
+			<span class="nx">ObjectMeta</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">{</span>
+				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+			<span class="p">},</span>
+			<span class="nx">Spec</span><span class="p">:</span> <span class="nx">GithubRepositorySpec</span><span class="p">{</span>
+				<span class="nx">Owner</span><span class="p">:</span>         <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+				<span class="nx">Repo</span><span class="p">:</span>          <span class="s">&#34;test-repo&#34;</span><span class="p">,</span>
+				<span class="nx">TemplateOwner</span><span class="p">:</span> <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+				<span class="nx">TemplateRepo</span><span class="p">:</span>  <span class="nx">templateRepo</span><span class="p">,</span>
+			<span class="p">},</span>
+		<span class="p">}</span>
+
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+	<span class="p">})</span>
+<span class="p">})</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>We know that we need to make a call to github api to check whether given repository is marked as template repository, so we need to add a function <code>IsTemplateRepository()</code> to <code>githubapi</code> package.</p>
+
+<p>I&rsquo;ll not bore you with the details of adding this function to <code>githubapi</code> package since it&rsquo;s pretty straightforward and similar to what we did previously. The signature of the function looks like this when it&rsquo;s completed:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// internal/githubapi/api.go
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">api</span><span class="p">)</span> <span class="nf">IsTemplateRepository</span><span class="p">(</span><span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Before calling this function in webhook, we need to do a little bit of refactoring. Previously we get github api url and token from environment in controller like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">//
+</span><span class="c1"></span><span class="nx">baseUrl</span> <span class="o">:=</span> <span class="nf">getEnv</span><span class="p">(</span><span class="nx">GithubApiBaseUrlKey</span><span class="p">,</span> <span class="s">&#34;https://api.github.com/&#34;</span><span class="p">)</span>
+<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="nf">getEnv</span><span class="p">(</span><span class="nx">GithubApiUploadUrlKey</span><span class="p">,</span> <span class="s">&#34;https://uploads.github.com/&#34;</span><span class="p">)</span>
+<span class="nx">token</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="nx">GithubApiTokenKey</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Now we need to do the same thing in webhook, so it might be better to move this initialisation logic to <code>githubapi</code> package itself:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// internal/githubapi/api.go
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">NewFromEnvironment</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">api</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="nf">getEnv</span><span class="p">(</span><span class="nx">GithubApiBaseUrlKey</span><span class="p">,</span> <span class="s">&#34;https://api.github.com/&#34;</span><span class="p">)</span>
+	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="nf">getEnv</span><span class="p">(</span><span class="nx">GithubApiUploadUrlKey</span><span class="p">,</span> <span class="s">&#34;https://uploads.github.com/&#34;</span><span class="p">)</span>
+	<span class="nx">token</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="nx">GithubApiTokenKey</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="nb">new</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// controllers/githubrepository_controller.go
+</span><span class="c1"></span><span class="nx">api</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">githubapi</span><span class="p">.</span><span class="nf">NewFromEnvironment</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Original <code>githubapi.New()</code> function is made into a private function since it&rsquo;s only used within the package.</p>
+
+<p>Implementation of webhook to pass the 2nd end to end test is simple:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// api/v1/githubrepository_webhook.go
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">GithubRepository</span><span class="p">)</span> <span class="nf">ValidateCreate</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">githubrepositorylog</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;validate create&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateOwner</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="o">&amp;&amp;</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateRepo</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateOwner</span> <span class="o">==</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Owner</span> <span class="o">&amp;&amp;</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateRepo</span> <span class="o">==</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Repo</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;templateOwner/templateRepo must be different with owner/repo&#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+
+		<span class="nx">api</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">githubapi</span><span class="p">.</span><span class="nf">NewFromEnvironment</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">())</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">err</span>
+		<span class="p">}</span>
+
+		<span class="nx">isTemplate</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">IsTemplateRepository</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateOwner</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateRepo</span><span class="p">)</span>
+		<span class="k">if</span> <span class="p">!</span><span class="nx">isTemplate</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;repository %s/%s is not marked as template&#34;</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateOwner</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TemplateRepo</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h1 id="test-it-out">Test it out&nbsp;<a class="anchor" href="#test-it-out"><i class="small linkify icon"></i></a> </h1>
+
+<ul>
+<li>Export github token as <code>GITHUB_API_TOKEN</code> environment variable in your terminal</li>
+<li>Run <code>make install</code> to install CRD to your local kubernetes cluster</li>
+<li>Run <code>make webhook-certs</code> to generate certs at <code>${TMPDIR}/k8s-webhook-server/serving-certs</code> for webhook</li>
+<li>Follow step in section <code>Run in Kubernetes cluster</code> above to deploy controller with webhook to local kubernetes cluster</li>
+<li>Update sample CR at <code>./config/samples/pnguyen.io_v1_githubrepository.yaml</code>:</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">apiVersion<span class="p">:</span><span class="w"> </span>pnguyen.io.pnguyen.io/v1<span class="w">
+</span><span class="w"></span>kind<span class="p">:</span><span class="w"> </span>GithubRepository<span class="w">
+</span><span class="w"></span>metadata<span class="p">:</span><span class="w">
+</span><span class="w">  </span>name<span class="p">:</span><span class="w"> </span>operator-test<span class="w">
+</span><span class="w"></span>spec<span class="p">:</span><span class="w">
+</span><span class="w">  </span>owner<span class="p">:</span><span class="w"> </span>hpcsc<span class="w">
+</span><span class="w">  </span>repo<span class="p">:</span><span class="w"> </span>operator-test<span class="w">
+</span><span class="w">  </span>description<span class="p">:</span><span class="w"> </span>my<span class="w"> </span>sample<span class="w"> </span>operator<span class="w"> </span>test<span class="w">
+</span><span class="w">  </span>templateOwner<span class="p">:</span><span class="w"> </span>hpcsc<span class="w">
+</span><span class="w">  </span>templateRepo<span class="p">:</span><span class="w"> </span>operator-test</code></pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>In another terminal, run <code>kubectl apply -f ./config/samples/pnguyen.io_v1_githubrepository.yaml</code>, we should see error <code>error when creating &quot;./config/samples/pnguyen.io_v1_githubrepository.yaml&quot;: admission webhook &quot;vgithubrepository.kb.io&quot; denied the request: templateOwner/templateRepo must be different with owner/repo</code> in the terminal.</li>
+<li>Update sample CR again with following content:</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">apiVersion<span class="p">:</span><span class="w"> </span>pnguyen.io.pnguyen.io/v1<span class="w">
+</span><span class="w"></span>kind<span class="p">:</span><span class="w"> </span>GithubRepository<span class="w">
+</span><span class="w"></span>metadata<span class="p">:</span><span class="w">
+</span><span class="w">  </span>name<span class="p">:</span><span class="w"> </span>operator-test<span class="w">
+</span><span class="w"></span>spec<span class="p">:</span><span class="w">
+</span><span class="w">  </span>owner<span class="p">:</span><span class="w"> </span>hpcsc<span class="w">
+</span><span class="w">  </span>repo<span class="p">:</span><span class="w"> </span>operator-test<span class="w">
+</span><span class="w">  </span>description<span class="p">:</span><span class="w"> </span>my<span class="w"> </span>sample<span class="w"> </span>operator<span class="w"> </span>test<span class="w">
+</span><span class="w">  </span>templateOwner<span class="p">:</span><span class="w"> </span>hpcsc<span class="w">
+</span><span class="w">  </span>templateRepo<span class="p">:</span><span class="w"> </span>aws-profile</code></pre></td></tr></table>
+</div>
+</div>
+<p><code>aws-profile</code> is one of my repositories and not marked as template. Run <code>kubectl apply</code> again and we should see error: <code>admission webhook &quot;vgithubrepository.kb.io&quot; denied the request: repository hpcsc/aws-profile is not marked as template</code></p>
+
+<ul>
+<li>Lastly, update the sample CR to:</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">apiVersion<span class="p">:</span><span class="w"> </span>pnguyen.io.pnguyen.io/v1<span class="w">
+</span><span class="w"></span>kind<span class="p">:</span><span class="w"> </span>GithubRepository<span class="w">
+</span><span class="w"></span>metadata<span class="p">:</span><span class="w">
+</span><span class="w">  </span>name<span class="p">:</span><span class="w"> </span>operator-test<span class="w">
+</span><span class="w"></span>spec<span class="p">:</span><span class="w">
+</span><span class="w">  </span>owner<span class="p">:</span><span class="w"> </span>hpcsc<span class="w">
+</span><span class="w">  </span>repo<span class="p">:</span><span class="w"> </span>operator-test<span class="w">
+</span><span class="w">  </span>description<span class="p">:</span><span class="w"> </span>my<span class="w"> </span>sample<span class="w"> </span>operator<span class="w"> </span>test<span class="w">
+</span><span class="w">  </span>templateOwner<span class="p">:</span><span class="w"> </span>hpcsc<span class="w">
+</span><span class="w">  </span>templateRepo<span class="p">:</span><span class="w"> </span>asdf-plugin-template</code></pre></td></tr></table>
+</div>
+</div>
+<p><code>asdf-plugin-template</code> is a template repository so the repository should be created successfully</p>
+
+				</article>				
+			</section>
+
+			
+			<section class="ui secondary attached segment dream-tags">
+				
+					
+
+
+
+
+	
+		<a class="ui label green " href="/tags/programming" title="programming">programming</a>
+	
+		<a class="ui label red " href="/tags/golang" title="golang">golang</a>
+	
+		<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+	
+		<a class="ui label orange " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+	
+
+
+				
+			</section>
+
+			
+			
+				<section class="ui secondary  attached segment share row box">
+					
+
+
+
+
+
+
+
+
+<div class="author">
+	
+	<img class="avatar" src="https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062?s=150">
+	
+</div>
+<div class="info grow flexbox">
+	
+	<p class="name">David Nguyen</p>
+	
+	<p class="desc">Developer &amp; Karateka</p>
+</div>
+
+
+<section class="buttons row box">
+	<div class="facebook none flexbox" href="#" onclick="window.open(
+			'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+			'facebook-share-dialog',
+			'width=626,height=436'); return false;">
+		<button class="ui facebook button"><i class="facebook icon"></i>Share</button>
+	</div>
+	<div class="twitter none flexbox" onclick="window.open('https://twitter.com/intent/tweet?text=Read &quot;Test drive a Kubernetes operator - Part 4  https:\/\/pnguyen.io\/posts\/test-drive-kubernetes-operator-4\/','_self')">
+		<button class="ui twitter button"><i class="twitter icon"></i>Tweet</button>
+	</div>
+</section>
+
+				</section>
+			
+
+			
+			
+			
+
+			
+			
+				<div class="ui secondary bottom attached stacked segment disqus">
+					
+<div id="disqus_thread"></div>
+<script>
+	var disqus_config = function () {
+		this.page.url = 'https:\/\/pnguyen.io\/posts\/test-drive-kubernetes-operator-4\/';
+		this.page.identifier = '823606a836bcc512db0f458b5ce22c63';
+	};
+	(function() {
+   	var d = document, s = d.createElement('script');
+   	s.src = 'https://' + 'pnguyen' + '.disqus.com/embed.js';
+   	s.setAttribute('data-timestamp', +new Date());
+   	(d.head || d.body).appendChild(s);
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+				</div>
+			
+		</div>
+	</div>
+
+				</div>
+			</div>
+		</div>
+		
+	
+	
+		<script id="dsq-count-scr" src="//pnguyen.disqus.com/count.js" async></script>
+	
+
+		
+
+<script src="/js/site.js"></script>
+
+
+
+	<script src="https://twemoji.maxcdn.com/2/twemoji.min.js?2.6"></script>
+
+
+
+
+
+
+
+
+	
+	<script>
+		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+		ga('create', 'UA-125420743-1', 'auto');
+		ga('send', 'pageview');
+	</script>
+	<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+		
+
+
+		
+
+	<script>
+		(function () {
+		  console.log("Twemoji up and making stuff colourful!");
+		  for (var b = document.getElementsByClassName("twemoji"), a = 0; a < b.length; a++) {
+			twemoji.parse(b[a]);
+		  }
+		})();
+	</script>
+
+
+	</body>
+</html>
