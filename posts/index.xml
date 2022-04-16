@@ -5,10 +5,19 @@
     <description>Recent content in Posts on David Nguyen&#39;s Personal Blog</description>
     <meta name="generator" content="Hugo 0.55.1" />
     <language>en-us</language>
-    <lastBuildDate>Sat, 19 Feb 2022 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 02 Apr 2022 00:00:00 +0000</lastBuildDate>
     
         <atom:link href="https://pnguyen.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Outside-in TDD a Go API</title>
+      <link>https://pnguyen.io/posts/outside-in-tdd-go-api/</link>
+      <pubDate>Sat, 02 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnguyen.io/posts/outside-in-tdd-go-api/</guid>
+      <description>TDD a Go API application using outside-in approach</description>
+    </item>
     
     <item>
       <title>Fake Vault AWS Secrets Engine</title>
