@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label blue " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label red " href="/tags/programming" title="programming">programming</a>
 		
 			
 			<a class="ui label yellow " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label brown " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label red " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label blue " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+			<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
-			<a class="ui label orange " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+			<a class="ui label brown " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 		
 			
 			<a class="ui label violet " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label green " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label violet " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label olive " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label teal " href="/tags/net-core" title="net-core">net-core</a>
 		
 	
 
@@ -552,6 +552,7 @@ var bodyBgSwitchIndex = 0;
 <li><a href="#remaining-tests">Remaining tests</a></li>
 </ul></li>
 <li><a href="#storer">Storer</a></li>
+<li><a href="#run-the-api">Run the API</a></li>
 <li><a href="#reflections">Reflections</a></li>
 </ul></li>
 </ul>
@@ -1528,6 +1529,28 @@ func RegisterReportsRoutes(router *chi.Mux, generator report.Generator) {
 </div>
 <p>Run the e2e test now and it will pass. We have done it.</p>
 
+<h2 id="run-the-api">Run the API&nbsp;<a class="anchor" href="#run-the-api"><i class="small linkify icon"></i></a> </h2>
+
+<p>To try the api:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">./batect run <span class="c1"># Run mock aws container and then api container</span>
+./batect run-setup <span class="c1"># Use aws cli to create the bucket and put several csv files in the location of previous month</span>
+curl http://localhost:3333/reports/single</code></pre></td></tr></table>
+</div>
+</div>
+<p>You should see aggregated report data from 2 clusters:</p>
+
+<pre><code>REPORT,CLUSTER
+single,cluster-1
+single,cluster-2
+</code></pre>
+
 <h2 id="reflections">Reflections&nbsp;<a class="anchor" href="#reflections"><i class="small linkify icon"></i></a> </h2>
 
 <p>That&rsquo;s a long but enjoyable journey, at least for me. A few things to reflect after the whole thing is done:</p>
@@ -1556,11 +1579,11 @@ func RegisterReportsRoutes(router *chi.Mux, generator report.Generator) {
 
 
 	
-		<a class="ui label olive " href="/tags/programming" title="programming">programming</a>
+		<a class="ui label pink " href="/tags/programming" title="programming">programming</a>
 	
-		<a class="ui label red " href="/tags/golang" title="golang">golang</a>
+		<a class="ui label teal " href="/tags/golang" title="golang">golang</a>
 	
-		<a class="ui label blue " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+		<a class="ui label red " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 	
 
 
