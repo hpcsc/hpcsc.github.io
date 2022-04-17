@@ -11,12 +11,12 @@
     
     
     <item>
-      <title>Outside-in TDD a Go API</title>
+      <title>TDD for a non-trivial Go API</title>
       <link>https://pnguyen.io/posts/outside-in-tdd-go-api/</link>
       <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/posts/outside-in-tdd-go-api/</guid>
-      <description>TDD a Go API application using outside-in approach</description>
+      <description>Test drive a Go API application using outside-in approach</description>
     </item>
     
     <item>

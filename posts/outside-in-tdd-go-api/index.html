@@ -2,7 +2,7 @@
 <html lang="en-us">
 	<head>
 		<title>
-	Outside-in TDD a Go API
+	TDD for a non-trivial Go API
 </title>
 		<style>
 	body {
@@ -29,7 +29,7 @@
 	
 	
 	<meta name="author" content="David Nguyen" />
-	<meta name="description" content="TDD a Go API application using outside-in approach" />
+	<meta name="description" content="Test drive a Go API application using outside-in approach" />
 
 
 
@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label purple " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label yellow " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label blue " href="/tags/golang" title="golang">golang</a>
+			<a class="ui label purple " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label yellow " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label red " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
-			<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
+			<a class="ui label teal " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
-			<a class="ui label blue " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+			<a class="ui label brown " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 		
 			
-			<a class="ui label violet " href="/tags/deployment" title="deployment">deployment</a>
+			<a class="ui label green " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label brown " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label purple " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label blue " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label violet " href="/tags/net-core" title="net-core">net-core</a>
 		
 	
 
@@ -405,7 +405,7 @@ var bodyBgSwitchIndex = 0;
 			<a class="item" href="https://pnguyen.io/posts/outside-in-tdd-go-api/">
 				<div>
 					<i class="cocktail icon"></i>
-					<p>Outside-in TDD a Go API</p>
+					<p>TDD for a non-trivial Go API</p>
 				</div>
 			</a>
 		
@@ -517,7 +517,7 @@ var bodyBgSwitchIndex = 0;
 			
 			<section class="ui secondary top attached black segment post-head">
 				<h1 class="post-title">
-					Outside-in TDD a Go API
+					TDD for a non-trivial Go API
 				</h1>
 
 				<div class="sub header">
@@ -543,13 +543,13 @@ var bodyBgSwitchIndex = 0;
 <ul>
 <li><a href="#first-test">First test</a></li>
 <li><a href="#second-test">Second test</a></li>
-<li><a href="#the-remaining-tests">The remaining tests</a></li>
+<li><a href="#remaining-tests">Remaining tests</a></li>
 <li><a href="#cumulative-endpoint">Cumulative endpoint</a></li>
 </ul></li>
 <li><a href="#report-generator">Report Generator</a>
 <ul>
 <li><a href="#first-test-1">First test</a></li>
-<li><a href="#remaining-tests">Remaining tests</a></li>
+<li><a href="#remaining-tests-1">Remaining tests</a></li>
 </ul></li>
 <li><a href="#storer">Storer</a></li>
 <li><a href="#run-the-api">Run the API</a></li>
@@ -565,7 +565,9 @@ var bodyBgSwitchIndex = 0;
 
 <h2 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h2>
 
-<p>I always find it challenging to find a non-hello world walkthrough of TDD on the internet. Recently when I had a chance to implement a complete feature using outside-in TDD in my current project, I thought it&rsquo;s a good time to document the process.</p>
+<p>I always find it challenging to find a non-hello-world walkthrough of TDD on the internet. Recently when I had a chance to implement a complete feature using outside-in TDD in my current project, I thought it&rsquo;s a good time to document the more realistic process.</p>
+
+<p>In this post, you&rsquo;ll find find a structured approach to test drive an API, from its external endpoints down to its boundary/external dependencies. From this, the advantage of doing TDD and its role in application design get to shine.</p>
 
 <p>Warning: it&rsquo;s a long post. I&rsquo;ll go slower at the beginning and speed it up towards the end when we are already familiar with the thought process.</p>
 
@@ -596,7 +598,7 @@ data-1,data-2
 
 <h2 id="initial-set-up">Initial set up&nbsp;<a class="anchor" href="#initial-set-up"><i class="small linkify icon"></i></a> </h2>
 
-<p>Before writing any code, we need to have necessary set up to run unit/integration/e2e tests. In this case there are quite a number of things to set up:</p>
+<p>Before writing any code, we need to have necessary set up to run unit/integration/end-to-end (e2e) tests. In this case there are quite a number of things to set up:</p>
 
 <ul>
 <li>task runner: I usually use <a href="https://batect.dev/">batect</a> as the task runner to run tests inside containers</li>
@@ -749,7 +751,7 @@ aws configure <span class="nb">set</span> aws_secret_access_key <span class="s2"
 
 <ul>
 <li><code>reports</code> resource only supports 2 types: <code>single</code> and <code>cumulative</code>, so any other type passed in should be rejected with 404 response</li>
-<li>the endpoint also takes 2 query parameters <code>year</code> and <code>month</code> and we know that there are several logics/requirements for those 2 parameters:
+<li>the endpoint also takes 2 query parameters <code>year</code> and <code>month</code> and we know that there are several requirements for those 2 parameters:
 
 <ul>
 <li><code>year</code> and <code>month</code> are either both provided, or none provided. If only one of them is provided, the request should be rejected with 400 response</li>
@@ -759,7 +761,7 @@ aws configure <span class="nb">set</span> aws_secret_access_key <span class="s2"
 </ul></li>
 </ul>
 
-<p>All of above are related to validation of route/query parameters and should be handled by the API handler. We know that there are some other logics regarding aggregating individual csv files into an aggregated file but those don&rsquo;t belong to handler. We don&rsquo;t know how those logics going to look like yet, but we do know that our handler needs to interact with another component to perform those logics. Now is the right time to think about the public interface of that component and how the handler is going to interact with it because we will need to mock that public interface in the handler tests.</p>
+<p>All of above are related to validation of route/query parameters and should be handled by the API handler. We know that there is some other logic regarding aggregating individual csv files into an aggregated file but those don&rsquo;t belong to handler. We don&rsquo;t know how the logic going to look like yet, but we do know that our handler needs to interact with another component to perform that logic. Now is the right time to think about the public interface of that component and how the handler is going to interact with it because we will need to mock that public interface in the handler tests.</p>
 
 <p>I&rsquo;m going to call that component <code>report.Generator</code>. It needs to be able to generate single or cumulative reports. There are 3 designs that I think of at the moment:</p>
 <div class="highlight"><div class="chroma">
@@ -910,13 +912,18 @@ aws configure <span class="nb">set</span> aws_secret_access_key <span class="s2"
 </div>
 </div>
 <ul>
-<li>Add minimum code to <code>internal/handler/reports.go</code>:
-<code>go
-func RegisterReportsRoutes(router *chi.Mux, generator report.Generator) {
-}
-</code></li>
+<li>Add minimum code to <code>internal/handler/reports.go</code>:</li>
 </ul>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">RegisterReportsRoutes</span><span class="p">(</span><span class="nx">router</span> <span class="o">*</span><span class="nx">chi</span><span class="p">.</span><span class="nx">Mux</span><span class="p">,</span> <span class="nx">generator</span> <span class="nx">report</span><span class="p">.</span><span class="nx">Generator</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>Run the test now and it should pass because we haven&rsquo;t registered any route to chi router yet.</p>
 
 <h3 id="second-test">Second test&nbsp;<a class="anchor" href="#second-test"><i class="small linkify icon"></i></a> </h3>
@@ -1041,7 +1048,7 @@ func RegisterReportsRoutes(router *chi.Mux, generator report.Generator) {
 <span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<h3 id="the-remaining-tests">The remaining tests&nbsp;<a class="anchor" href="#the-remaining-tests"><i class="small linkify icon"></i></a> </h3>
+<h3 id="remaining-tests">Remaining tests&nbsp;<a class="anchor" href="#remaining-tests"><i class="small linkify icon"></i></a> </h3>
 
 <p>I&rsquo;m not going to bother you with the remaining tests. Once done, the tests should look like this</p>
 
@@ -1062,7 +1069,7 @@ func RegisterReportsRoutes(router *chi.Mux, generator report.Generator) {
 <p>By now the generator public interface is more or less finalised. Let&rsquo;s think a little bit about expected behavior of the generator and its dependency:</p>
 
 <ul>
-<li>Given a year and month as input, it should get all individual csv files for that specific year and month from S3, merge/aggregate them together, store aggregated file in S3 for subsequent retrieval. Should it interact with S3 using AWS SDK directly? Absolutely not. There are some logics in this generator and embedding S3 logic in this component makes it very difficult to effectively test those generator logics. For that reason, we need another abstraction that interacts with S3. This abstraction is at the boundary of the system and acts as a gateway/client wrapper to S3. Many people like to call that abstraction <code>S3Client</code> or something along that line. Personally I don&rsquo;t like that naming style. Naming it <code>S3Client</code> makes the underlying S3 implementation leaked to the upper layer. Does the generator care whether the individual files stored in S3? No, it just needs individual files to do its aggregation logic. Those files can come from S3, from filesystem, it doesn&rsquo;t matter. I&rsquo;m going to call that abstraction <code>Storer</code> and it looks like:</li>
+<li>Given a year and month as input, it should get all individual csv files for that specific year and month from S3, merge/aggregate them together, store aggregated file in S3 for subsequent retrieval. Should it interact with S3 using AWS SDK directly? Absolutely not. There is some logic in this generator and embedding S3 logic in this component makes it very difficult to effectively test that generator logic. For that reason, we need another abstraction that interacts with S3. This abstraction is at the boundary of the system and acts as a gateway/client wrapper to S3. Many people like to call that abstraction <code>S3Client</code> or something along that line. Personally I don&rsquo;t like that naming style. Naming it <code>S3Client</code> makes the underlying S3 implementation leaked to the upper layer. Does the generator care whether the individual files stored in S3? No, it just needs individual files to do its aggregation logic. Those files can come from S3, from filesystem, it doesn&rsquo;t matter. I&rsquo;m going to call that abstraction <code>Storer</code> and it looks like:</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1117,8 +1124,8 @@ func RegisterReportsRoutes(router *chi.Mux, generator report.Generator) {
 
 <ul>
 <li>if aggregated file exists for given year/month (.i.e. <code>Storer.RetrieveAggregated</code> returns not nil), it should return that straightaway</li>
-<li>if aggregated file not exists and no individual files for given year/month, it should return an error</li>
-<li>if aggregated file not exists and individual files for given year/month exist, it should aggregate those files together, store it to correct location and return aggregated file</li>
+<li>if aggregated file does not exists and no individual files for given year/month, it should return an error</li>
+<li>if aggregated file does not exists and individual files for given year/month exist, it should aggregate those files together, store it to correct location and return aggregated file</li>
 <li>other error handling test cases</li>
 <li>same behavior for <code>GenerateSingle</code> and <code>GenerateCumulative</code></li>
 </ul>
@@ -1261,7 +1268,7 @@ func RegisterReportsRoutes(router *chi.Mux, generator report.Generator) {
 <span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<h3 id="remaining-tests">Remaining tests&nbsp;<a class="anchor" href="#remaining-tests"><i class="small linkify icon"></i></a> </h3>
+<h3 id="remaining-tests-1">Remaining tests&nbsp;<a class="anchor" href="#remaining-tests-1"><i class="small linkify icon"></i></a> </h3>
 
 <p>With dependency and behavior well defined, finishing up the remaining tests and implementation is straightforward. The most important thing is that during the process, writing tests first gets us to think about the component input, output, dependencies and how they interact with each other. And I hope you realise by now: whenever we write tests for a component, we are also designing public interface for its dependencies.</p>
 
@@ -1482,9 +1489,12 @@ func RegisterReportsRoutes(router *chi.Mux, generator report.Generator) {
 <span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>This function looks complicated, but it only does 2 things:
-- Get a list of csv file names for the given report type/year/month
-- For each file name, get actual file content as byte slice</p>
+<p>This function looks complicated, but it only does 2 things:</p>
+
+<ul>
+<li>Get a list of csv file names for the given report type/year/month</li>
+<li>For each file name, get actual file content as byte slice</li>
+</ul>
 
 <p>The other 2 functions (<code>RetrieveAggregated</code>, <code>StoreAggregated</code>) from S3 storer implementation are done in the same way.</p>
 
@@ -1591,11 +1601,11 @@ single,cluster-2
 
 
 	
-		<a class="ui label violet " href="/tags/programming" title="programming">programming</a>
+		<a class="ui label red " href="/tags/programming" title="programming">programming</a>
 	
-		<a class="ui label purple " href="/tags/golang" title="golang">golang</a>
+		<a class="ui label pink " href="/tags/golang" title="golang">golang</a>
 	
-		<a class="ui label yellow " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+		<a class="ui label green " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 	
 
 
@@ -1634,7 +1644,7 @@ single,cluster-2
 			'width=626,height=436'); return false;">
 		<button class="ui facebook button"><i class="facebook icon"></i>Share</button>
 	</div>
-	<div class="twitter none flexbox" onclick="window.open('https://twitter.com/intent/tweet?text=Read &quot;Outside-in TDD a Go API  https:\/\/pnguyen.io\/posts\/outside-in-tdd-go-api\/','_self')">
+	<div class="twitter none flexbox" onclick="window.open('https://twitter.com/intent/tweet?text=Read &quot;TDD for a non-trivial Go API  https:\/\/pnguyen.io\/posts\/outside-in-tdd-go-api\/','_self')">
 		<button class="ui twitter button"><i class="twitter icon"></i>Tweet</button>
 	</div>
 </section>

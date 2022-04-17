@@ -12,13 +12,13 @@
     
     
     <item>
-      <title>Outside-in TDD a Go API</title>
+      <title>TDD for a non-trivial Go API</title>
       <link>https://pnguyen.io/posts/outside-in-tdd-go-api/</link>
       <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/posts/outside-in-tdd-go-api/</guid>
-      <description>Introduction I always find it challenging to find a non-hello world walkthrough of TDD on the internet. Recently when I had a chance to implement a complete feature using outside-in TDD in my current project, I thought it&amp;rsquo;s a good time to document the process.
-Warning: it&amp;rsquo;s a long post. I&amp;rsquo;ll go slower at the beginning and speed it up towards the end when we are already familiar with the thought process.</description>
+      <description>Introduction I always find it challenging to find a non-hello-world walkthrough of TDD on the internet. Recently when I had a chance to implement a complete feature using outside-in TDD in my current project, I thought it&amp;rsquo;s a good time to document the more realistic process.
+In this post, you&amp;rsquo;ll find find a structured approach to test drive an API, from its external endpoints down to its boundary/external dependencies. From this, the advantage of doing TDD and its role in application design get to shine.</description>
     </item>
     
     <item>
