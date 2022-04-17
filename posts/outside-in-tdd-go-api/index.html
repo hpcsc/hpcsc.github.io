@@ -275,28 +275,28 @@ var bodyBgSwitchIndex = 0;
 	
 		
 			
-			<a class="ui label red " href="/tags/programming" title="programming">programming</a>
+			<a class="ui label purple " href="/tags/programming" title="programming">programming</a>
 		
 			
-			<a class="ui label yellow " href="/tags/golang" title="golang">golang</a>
+			<a class="ui label blue " href="/tags/golang" title="golang">golang</a>
 		
 			
-			<a class="ui label red " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
+			<a class="ui label yellow " href="/tags/infrastructure" title="infrastructure">infrastructure</a>
 		
 			
 			<a class="ui label yellow " href="/tags/kubernetes" title="kubernetes">kubernetes</a>
 		
 			
-			<a class="ui label brown " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+			<a class="ui label blue " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 		
 			
 			<a class="ui label violet " href="/tags/deployment" title="deployment">deployment</a>
 		
 			
-			<a class="ui label violet " href="/tags/gocd" title="gocd">gocd</a>
+			<a class="ui label brown " href="/tags/gocd" title="gocd">gocd</a>
 		
 			
-			<a class="ui label teal " href="/tags/net-core" title="net-core">net-core</a>
+			<a class="ui label blue " href="/tags/net-core" title="net-core">net-core</a>
 		
 	
 
@@ -642,7 +642,7 @@ aws configure <span class="nb">set</span> aws_access_key_id <span class="s2">&#3
 aws configure <span class="nb">set</span> aws_secret_access_key <span class="s2">&#34;</span><span class="k">$(</span><span class="nb">echo</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">CREDENTIALS</span><span class="si">}</span><span class="s2">&#34;</span> <span class="p">|</span> jq -r <span class="s1">&#39;.AccessKey.SecretAccessKey&#39;</span><span class="k">)</span><span class="s2">&#34;</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>Since this script is run in moto container, golang container that we use to run tests will not have access to the new user credentials without explicit file sharing. The script above uses <code>aws configure</code> to create AWS credentials file in the location set by <code>AWS_SHARED_CREDENTIALS_FILE</code> variable (<code>./tmp/test-user-credentials</code>). This file will be mounted to golang container and made available to AWS SDK for Go through variable <code>AWS_SHARED_CREDENTIALS_FILE</code></p>
+<p>Since this script is run in moto container, golang container that we use to run tests will not have access to the new user credentials without explicit file sharing. The script above uses <code>aws configure</code> to create AWS credentials file in the location set by <code>AWS_SHARED_CREDENTIALS_FILE</code> variable (<code>/secrets/test-user-credentials</code>). This file will be mounted to golang container and made available to AWS SDK for Go through variable <code>AWS_SHARED_CREDENTIALS_FILE</code></p>
 
 <p><img src="images/initial-setup.png" alt="" title="Initial setup" /></p>
 
@@ -711,12 +711,15 @@ aws configure <span class="nb">set</span> aws_secret_access_key <span class="s2"
 <span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>What this test does is:
-- create a S3 bucket. We need to pass the bucket name in from environment variable because the e2e test and the api will need to share the same bucket and I don&rsquo;t want to hardcode it in the test.
-- put 2 csv files to that bucket at the expected location
-- make the call to the API (which doesn&rsquo;t exist yet)
-- assert that the returned response from the API is csv file and contains data from above 2 csv files
-- assert that the aggregated file exists in S3</p>
+<p>What this test does is:</p>
+
+<ul>
+<li>create a S3 bucket. We need to pass the bucket name in from environment variable because the e2e test and the api will need to share the same bucket and I don&rsquo;t want to hardcode it in the test.</li>
+<li>put 2 csv files to that bucket at the expected location</li>
+<li>make the call to the API (which doesn&rsquo;t exist yet)</li>
+<li>assert that the returned response from the API is csv file and contains data from above 2 csv files</li>
+<li>assert that the aggregated file exists in S3</li>
+</ul>
 
 <p>There are a few helper functions used in the test like <code>s3ClientToMockAws</code>, <code>newEncryptedS3Bucket</code> to hide irrelevant setup details and help with readability of the test.</p>
 
@@ -861,13 +864,19 @@ aws configure <span class="nb">set</span> aws_secret_access_key <span class="s2"
 <span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>There are a lot of compilation errors in above test since we don&rsquo;t have anything yet. But writing this test first lets us think about how clients/users are going to use the handler and how then handler interacts with its dependencies:
-- clients (.e.g. e2e test) invoke the handler through a GET endpoint
-- the handler has one dependency, which is report generator component in <code>report</code> package. At the moment, all we need is a mock instance of report generator that conforms to the public interface we designed above. We will have a function <code>report.NewMockGenerator</code> to return that mock instance. We are also going to inject it to reports handler when setting up router using <code>RegisterReportsRoutes</code></p>
+<p>There are a lot of compilation errors in above test since we don&rsquo;t have anything yet. But writing this test first lets us think about how clients/users are going to use the handler and how the handler interacts with its dependencies:</p>
 
-<p>For the code to be compilable:
-- Install chi library
-- Add <code>report</code> package with empty interface and empty mock generator:</p>
+<ul>
+<li>clients (.e.g. e2e test) invoke the handler through a GET endpoint</li>
+<li>the handler has one dependency, which is report generator component in <code>report</code> package. At the moment, all we need is a mock instance of report generator that conforms to the public interface we designed above. We will have a function <code>report.NewMockGenerator</code> to return that mock instance. We are also going to inject it to reports handler when setting up router using <code>RegisterReportsRoutes</code></li>
+</ul>
+
+<p>For the code to be compilable:</p>
+
+<ul>
+<li>Install chi library</li>
+<li>Add <code>report</code> package with empty interface and empty mock generator:</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
@@ -1161,9 +1170,12 @@ func RegisterReportsRoutes(router *chi.Mux, generator report.Generator) {
 <span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>Again, this test is created against storer interface that we haven&rsquo;t had yet and there are a lot of compilation errors. To make it compilable, we need to:
-- Add storer package with interface and a mock implementation of that interface
-- Add empty csv generator:</p>
+<p>Again, this test is created against storer interface that we haven&rsquo;t had yet and there are a lot of compilation errors. To make it compilable, we need to:</p>
+
+<ul>
+<li>Add storer package with interface and a mock implementation of that interface</li>
+<li>Add empty csv generator:</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
@@ -1579,11 +1591,11 @@ single,cluster-2
 
 
 	
-		<a class="ui label pink " href="/tags/programming" title="programming">programming</a>
+		<a class="ui label violet " href="/tags/programming" title="programming">programming</a>
 	
-		<a class="ui label teal " href="/tags/golang" title="golang">golang</a>
+		<a class="ui label purple " href="/tags/golang" title="golang">golang</a>
 	
-		<a class="ui label red " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
+		<a class="ui label yellow " href="/tags/unit-testing" title="unit-testing">unit-testing</a>
 	
 
 
