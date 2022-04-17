@@ -6,7 +6,7 @@
     <description>Recent content in unit-testing on David Nguyen&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 02 Apr 2022 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 17 Apr 2022 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://pnguyen.io/tags/unit-testing/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,11 +14,11 @@
     <item>
       <title>Outside-in TDD a Go API</title>
       <link>https://pnguyen.io/posts/outside-in-tdd-go-api/</link>
-      <pubDate>Sat, 02 Apr 2022 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://pnguyen.io/posts/outside-in-tdd-go-api/</guid>
-      <description>Introduction For a long time, I found it tough to have a non-hello world walk through of outside-in TDD-ing an application end to end. Recently when I had a chance to implement a complete feature using outside-in TDD in my current project, I thought it&amp;rsquo;s a good time to document the process.
-Warning: it&amp;rsquo;s a long post. I&amp;rsquo;ll go slower at the beginning and make it faster towards the end where we already have a feel of the process.</description>
+      <description>Introduction I always find it challenging to find a non-hello world walkthrough of TDD on the internet. Recently when I had a chance to implement a complete feature using outside-in TDD in my current project, I thought it&amp;rsquo;s a good time to document the process.
+Warning: it&amp;rsquo;s a long post. I&amp;rsquo;ll go slower at the beginning and speed it up towards the end when we are already familiar with the thought process.</description>
     </item>
     
     <item>
