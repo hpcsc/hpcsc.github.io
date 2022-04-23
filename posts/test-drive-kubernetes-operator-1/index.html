@@ -1441,28 +1441,16 @@ Let&rsquo;s scaffold the project directory:</p>
 
 
 
-	
-	<script>
-		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-		ga('create', 'UA-125420743-1', 'auto');
-		ga('send', 'pageview');
-	</script>
-	<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-	
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-54FEYHJ6RL"></script>
-	<script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-54FEYHJ6RL"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
 	window.dataLayer = window.dataLayer || [];
 	function gtag(){dataLayer.push(arguments);}
 	gtag('js', new Date());
-
-	gtag('config', 'G-54FEYHJ6RL');
-	</script>
-
-
-
+	gtag('config', 'G-54FEYHJ6RL', { 'anonymize_ip': false });
+}
+</script>
 
 
 		
