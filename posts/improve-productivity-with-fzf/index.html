@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.55.1" />
+<meta name="generator" content="Hugo 0.97.3" />
 
 
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -532,114 +532,95 @@ var bodyBgSwitchIndex = 0;
 				
 					<div class="toc">
 						<nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#fignore-download-gitignore">fignore: Download .gitignore</a>
-<ul>
-<li><a href="#usage">Usage</a></li>
-<li><a href="#source">Source</a></li>
-</ul></li>
-<li><a href="#fnpm-run-npm-script">fnpm: Run npm script</a>
-<ul>
-<li><a href="#usage-1">Usage</a></li>
-<li><a href="#source-1">Source</a></li>
-</ul></li>
-<li><a href="#fsb-switch-git-branch">fsb: Switch git branch</a>
-<ul>
-<li><a href="#usage-2">Usage</a></li>
-<li><a href="#source-2">Source</a></li>
-</ul></li>
-<li><a href="#zf-switch-directory">zf: Switch directory</a>
-<ul>
-<li><a href="#usage-3">Usage</a></li>
-<li><a href="#source-3">Source</a></li>
-</ul></li>
-<li><a href="#android-emulator-related">Android emulator - related</a>
-<ul>
-<li><a href="#droidsa-start-android-emulator">droidsa: Start Android Emulator</a></li>
-<li><a href="#droidrm-uninstall-a-program-in-the-current-emulator-device">droidrm: Uninstall a program in the current emulator/device</a></li>
-</ul></li>
-<li><a href="#kubernetes-related">Kubernetes - related</a>
-<ul>
-<li><a href="#fkrm-delete-kubernetes-resource-in-current-namespace">fkrm: Delete Kubernetes resource in current namespace</a>
-<ul>
-<li><a href="#usage-4">Usage</a></li>
-<li><a href="#source-4">Source</a></li>
-</ul></li>
-<li><a href="#fkl-get-log-of-a-container-in-current-namespace">fkl: Get log of a container in current namespace</a>
-<ul>
-<li><a href="#usage-5">Usage</a></li>
-<li><a href="#source-5">Source</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#fignore-download-gitignore">fignore: Download .gitignore</a>
+      <ul>
+        <li><a href="#usage">Usage</a></li>
+        <li><a href="#source">Source</a></li>
+      </ul>
+    </li>
+    <li><a href="#fnpm-run-npm-script">fnpm: Run npm script</a>
+      <ul>
+        <li><a href="#usage-1">Usage</a></li>
+        <li><a href="#source-1">Source</a></li>
+      </ul>
+    </li>
+    <li><a href="#fsb-switch-git-branch">fsb: Switch git branch</a>
+      <ul>
+        <li><a href="#usage-2">Usage</a></li>
+        <li><a href="#source-2">Source</a></li>
+      </ul>
+    </li>
+    <li><a href="#zf-switch-directory">zf: Switch directory</a>
+      <ul>
+        <li><a href="#usage-3">Usage</a></li>
+        <li><a href="#source-3">Source</a></li>
+      </ul>
+    </li>
+    <li><a href="#android-emulator---related">Android emulator - related</a>
+      <ul>
+        <li><a href="#droidsa-start-android-emulator">droidsa: Start Android Emulator</a></li>
+        <li><a href="#droidrm-uninstall-a-program-in-the-current-emulatordevice">droidrm: Uninstall a program in the current emulator/device</a></li>
+      </ul>
+    </li>
+    <li><a href="#kubernetes---related">Kubernetes - related</a>
+      <ul>
+        <li><a href="#fkrm-delete-kubernetes-resource-in-current-namespace">fkrm: Delete Kubernetes resource in current namespace</a></li>
+        <li><a href="#fkl-get-log-of-a-container-in-current-namespace">fkl: Get log of a container in current namespace</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
 					</div>
 				
 
 				<article class="post-content twemoji">
-					
-
-<p>As a developer, I spend a lot of time on command line and since I found <a href="https://github.com/junegunn/fzf">fzf</a>, a command line fuzzy finder, I find my productivity has been improved tremendously by applying fzf in everday commands that I use. Below is the collection of small fzf snippets that I wrote and use a lot myself.</p>
-
+					<p>As a developer, I spend a lot of time on command line and since I found <a href="https://github.com/junegunn/fzf">fzf</a>, a command line fuzzy finder, I find my productivity has been improved tremendously by applying fzf in everday commands that I use. Below is the collection of small fzf snippets that I wrote and use a lot myself.</p>
 <h2 id="fignore-download-gitignore">fignore: Download .gitignore&nbsp;<a class="anchor" href="#fignore-download-gitignore"><i class="small linkify icon"></i></a> </h2>
-
 <h3 id="usage">Usage&nbsp;<a class="anchor" href="#usage"><i class="small linkify icon"></i></a> </h3>
-
-<p><img src="images/fzf-fignore.gif" alt="" title="fignore demo" /></p>
-
+<p><img src="images/fzf-fignore.gif" alt="" title="fignore demo"></p>
 <h3 id="source">Source&nbsp;<a class="anchor" href="#source"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">curl -s https://api.github.com/repos/github/gitignore/git/trees/master?recursive<span class="o">=</span><span class="m">1</span> <span class="p">|</span> <span class="se">\
-</span><span class="se"></span>  jq -r <span class="s1">&#39;.tree | .[] | select(.type == &#34;blob&#34; and (.path | endswith(&#34;.gitignore&#34;))) | .path&#39;</span> <span class="p">|</span> <span class="se">\
-</span><span class="se"></span>  fzf --height <span class="m">30</span>% --reverse --header <span class="s1">&#39;Select .gitignore to download&#39;</span> <span class="p">|</span> <span class="se">\
-</span><span class="se"></span>  xargs -I<span class="o">{}</span> bash -c <span class="s1">&#39;curl -s https://raw.githubusercontent.com/github/gitignore/master/{} -o .gitignore &amp;&amp; echo &#34;Downloaded {} as .gitignore&#34;&#39;</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">curl -s https://api.github.com/repos/github/gitignore/git/trees/master?recursive<span class="o">=</span><span class="m">1</span> <span class="p">|</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  jq -r <span class="s1">&#39;.tree | .[] | select(.type == &#34;blob&#34; and (.path | endswith(&#34;.gitignore&#34;))) | .path&#39;</span> <span class="p">|</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  fzf --height 30% --reverse --header <span class="s1">&#39;Select .gitignore to download&#39;</span> <span class="p">|</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  xargs -I<span class="o">{}</span> bash -c <span class="s1">&#39;curl -s https://raw.githubusercontent.com/github/gitignore/master/{} -o .gitignore &amp;&amp; echo &#34;Downloaded {} as .gitignore&#34;&#39;</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p><a href="https://github.com/github/gitignore">github/gitignore</a> contains a good collection of <code>.gitignore</code> template. This script uses github tree api to list all the files ending with .gitignore from that github repository and downloads selected file as <code>.gitignore</code> in the current directory.</p>
-
+</div><p><a href="https://github.com/github/gitignore">github/gitignore</a> contains a good collection of <code>.gitignore</code> template. This script uses github tree api to list all the files ending with .gitignore from that github repository and downloads selected file as <code>.gitignore</code> in the current directory.</p>
 <h2 id="fnpm-run-npm-script">fnpm: Run npm script&nbsp;<a class="anchor" href="#fnpm-run-npm-script"><i class="small linkify icon"></i></a> </h2>
-
 <h3 id="usage-1">Usage&nbsp;<a class="anchor" href="#usage-1"><i class="small linkify icon"></i></a> </h3>
-
-<p><img src="images/fzf-fnpm.gif" alt="" title="fnpm demo" /></p>
-
+<p><img src="images/fzf-fnpm.gif" alt="" title="fnpm demo"></p>
 <h3 id="source-1">Source&nbsp;<a class="anchor" href="#source-1"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">cat package.json <span class="p">|</span> <span class="se">\
-</span><span class="se"></span>  jq -r <span class="s1">&#39;.scripts | keys[]&#39;</span> <span class="p">|</span> <span class="se">\
-</span><span class="se"></span>  fzf --height <span class="m">30</span>% --reverse -1 -0 -d <span class="s1">&#39;,&#39;</span> --with-nth<span class="o">=</span><span class="m">1</span> --header <span class="s1">&#39;Select npm script to run&#39;</span> <span class="p">|</span> <span class="se">\
-</span><span class="se"></span>  xargs npm run</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">cat package.json <span class="p">|</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  jq -r <span class="s1">&#39;.scripts | keys[]&#39;</span> <span class="p">|</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  fzf --height 30% --reverse -1 -0 -d <span class="s1">&#39;,&#39;</span> --with-nth<span class="o">=</span><span class="m">1</span> --header <span class="s1">&#39;Select npm script to run&#39;</span> <span class="p">|</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  xargs npm run
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>This script looks into current folder <code>package.json</code>, extract all the npm script names using <code>jq</code> and pipe those names to fzf for interactive selection. The selected script name will be run using <code>npm run</code>.</p>
-
+</div><p>This script looks into current folder <code>package.json</code>, extract all the npm script names using <code>jq</code> and pipe those names to fzf for interactive selection. The selected script name will be run using <code>npm run</code>.</p>
 <h2 id="fsb-switch-git-branch">fsb: Switch git branch&nbsp;<a class="anchor" href="#fsb-switch-git-branch"><i class="small linkify icon"></i></a> </h2>
-
 <h3 id="usage-2">Usage&nbsp;<a class="anchor" href="#usage-2"><i class="small linkify icon"></i></a> </h3>
-
-<p><img src="images/fzf-fsb.gif" alt="" title="fsb demo" /></p>
-
+<p><img src="images/fzf-fsb.gif" alt="" title="fsb demo"></p>
 <h3 id="source-2">Source&nbsp;<a class="anchor" href="#source-2"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -650,74 +631,62 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">local</span> <span class="nv">pattern</span><span class="o">=</span><span class="nv">$@</span>
-<span class="nb">local</span> branches branch
-<span class="nv">branches</span><span class="o">=</span><span class="k">$(</span>git branch --all <span class="p">|</span> awk <span class="s1">&#39;tolower($0) ~ /&#39;</span><span class="nv">$pattern</span><span class="s1">&#39;/&#39;</span><span class="k">)</span> <span class="o">&amp;&amp;</span>
-<span class="nv">branch</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$branches</span><span class="s2">&#34;</span> <span class="p">|</span>
-         fzf-tmux --height <span class="m">30</span>% --reverse -1 -0 +m<span class="k">)</span> <span class="o">&amp;&amp;</span>
-<span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$branch</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="nb">echo</span> <span class="s2">&#34;[</span><span class="nv">$0</span><span class="s2">] No branch matches the provided pattern&#34;</span><span class="p">;</span> <span class="k">return</span><span class="p">;</span>
-<span class="k">fi</span><span class="p">;</span>
-git checkout <span class="k">$(</span><span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$branch</span><span class="s2">&#34;</span> <span class="p">|</span> sed <span class="s2">&#34;s/.* //&#34;</span> <span class="p">|</span> sed <span class="s2">&#34;s#remotes/[^/]*/##&#34;</span><span class="k">)</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nb">local</span> <span class="nv">pattern</span><span class="o">=</span><span class="nv">$@</span>
+</span></span><span class="line"><span class="cl"><span class="nb">local</span> branches branch
+</span></span><span class="line"><span class="cl"><span class="nv">branches</span><span class="o">=</span><span class="k">$(</span>git branch --all <span class="p">|</span> awk <span class="s1">&#39;tolower($0) ~ /&#39;</span><span class="nv">$pattern</span><span class="s1">&#39;/&#39;</span><span class="k">)</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">branch</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$branches</span><span class="s2">&#34;</span> <span class="p">|</span>
+</span></span><span class="line"><span class="cl">         fzf-tmux --height 30% --reverse -1 -0 +m<span class="k">)</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$branch</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s2">&#34;[</span><span class="nv">$0</span><span class="s2">] No branch matches the provided pattern&#34;</span><span class="p">;</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">git checkout <span class="k">$(</span><span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$branch</span><span class="s2">&#34;</span> <span class="p">|</span> sed <span class="s2">&#34;s/.* //&#34;</span> <span class="p">|</span> sed <span class="s2">&#34;s#remotes/[^/]*/##&#34;</span><span class="k">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>This script takes in an optional pattern to search available git branches. If a branch matches the pattern, it will checkout that branch. There&rsquo;s an additional handling for case where the branch only exists in remote but not yet checked out to local. In that case this script will checkout that remote branch to a local branch.</p>
-
+</div><p>This script takes in an optional pattern to search available git branches. If a branch matches the pattern, it will checkout that branch. There&rsquo;s an additional handling for case where the branch only exists in remote but not yet checked out to local. In that case this script will checkout that remote branch to a local branch.</p>
 <h2 id="zf-switch-directory">zf: Switch directory&nbsp;<a class="anchor" href="#zf-switch-directory"><i class="small linkify icon"></i></a> </h2>
-
 <h3 id="usage-3">Usage&nbsp;<a class="anchor" href="#usage-3"><i class="small linkify icon"></i></a> </h3>
-
-<p><img src="images/fzf-zf.gif" alt="" title="zf demo" /></p>
-
+<p><img src="images/fzf-zf.gif" alt="" title="zf demo"></p>
 <h3 id="source-3">Source&nbsp;<a class="anchor" href="#source-3"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">local</span> dir
-<span class="nv">dir</span><span class="o">=</span><span class="s2">&#34;</span><span class="k">$(</span>fasd -Rdl <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> <span class="p">|</span> fzf -1 -0 --reverse --height <span class="m">30</span>% --no-sort +m<span class="k">)</span><span class="s2">&#34;</span> <span class="o">&amp;&amp;</span> <span class="nb">cd</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">dir</span><span class="si">}</span><span class="s2">&#34;</span> <span class="o">||</span> <span class="k">return</span> <span class="m">1</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nb">local</span> dir
+</span></span><span class="line"><span class="cl"><span class="nv">dir</span><span class="o">=</span><span class="s2">&#34;</span><span class="k">$(</span>fasd -Rdl <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> <span class="p">|</span> fzf -1 -0 --reverse --height 30% --no-sort +m<span class="k">)</span><span class="s2">&#34;</span> <span class="o">&amp;&amp;</span> <span class="nb">cd</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">dir</span><span class="si">}</span><span class="s2">&#34;</span> <span class="o">||</span> <span class="k">return</span> <span class="m">1</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>This script makes use of (fasd)[<a href="https://github.com/clvv/fasd">https://github.com/clvv/fasd</a>] to interactively switch to a commonly-accessed directory. <code>fasd</code> itself already provides <code>fasd -sid</code> command (or <code>sd</code> if you use its default aliases), however I find it a little bit easier to use <code>fzf</code> to select, instead of typing sequence number provided by <code>sd</code>.</p>
-
-<h2 id="android-emulator-related">Android emulator - related&nbsp;<a class="anchor" href="#android-emulator-related"><i class="small linkify icon"></i></a> </h2>
-
+</div><p>This script makes use of (fasd)[https://github.com/clvv/fasd] to interactively switch to a commonly-accessed directory. <code>fasd</code> itself already provides <code>fasd -sid</code> command (or <code>sd</code> if you use its default aliases), however I find it a little bit easier to use <code>fzf</code> to select, instead of typing sequence number provided by <code>sd</code>.</p>
+<h2 id="android-emulator---related">Android emulator - related&nbsp;<a class="anchor" href="#android-emulator---related"><i class="small linkify icon"></i></a> </h2>
 <h3 id="droidsa-start-android-emulator">droidsa: Start Android Emulator&nbsp;<a class="anchor" href="#droidsa-start-android-emulator"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">alias</span> <span class="nv">droidsa</span><span class="o">=</span><span class="s1">&#39;avdmanager list avd | sed -n -e &#34;s/Name: //p&#34; | tr -d &#34; &#34; | fzf | xargs emulator -avd&#39;</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nb">alias</span> <span class="nv">droidsa</span><span class="o">=</span><span class="s1">&#39;avdmanager list avd | sed -n -e &#34;s/Name: //p&#34; | tr -d &#34; &#34; | fzf | xargs emulator -avd&#39;</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>This alias uses <code>avdmanager</code> to list available <code>avd</code> and starts android emulator with that <code>avd</code></p>
-
-<h3 id="droidrm-uninstall-a-program-in-the-current-emulator-device">droidrm: Uninstall a program in the current emulator/device&nbsp;<a class="anchor" href="#droidrm-uninstall-a-program-in-the-current-emulator-device"><i class="small linkify icon"></i></a> </h3>
+</div><p>This alias uses <code>avdmanager</code> to list available <code>avd</code> and starts android emulator with that <code>avd</code></p>
+<h3 id="droidrm-uninstall-a-program-in-the-current-emulatordevice">droidrm: Uninstall a program in the current emulator/device&nbsp;<a class="anchor" href="#droidrm-uninstall-a-program-in-the-current-emulatordevice"><i class="small linkify icon"></i></a> </h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">alias</span> <span class="nv">droidrm</span><span class="o">=</span><span class="s1">&#39;adb shell &#34;pm list packages -3&#34; | sed -e &#34;s/.*://&#34; |  fzf | xargs adb uninstall&#39;</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nb">alias</span> <span class="nv">droidrm</span><span class="o">=</span><span class="s1">&#39;adb shell &#34;pm list packages -3&#34; | sed -e &#34;s/.*://&#34; |  fzf | xargs adb uninstall&#39;</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>This alias lists user installed programs in the current emulator/device to uninstall</p>
-
-<h2 id="kubernetes-related">Kubernetes - related&nbsp;<a class="anchor" href="#kubernetes-related"><i class="small linkify icon"></i></a> </h2>
-
+</div><p>This alias lists user installed programs in the current emulator/device to uninstall</p>
+<h2 id="kubernetes---related">Kubernetes - related&nbsp;<a class="anchor" href="#kubernetes---related"><i class="small linkify icon"></i></a> </h2>
 <h3 id="fkrm-delete-kubernetes-resource-in-current-namespace">fkrm: Delete Kubernetes resource in current namespace&nbsp;<a class="anchor" href="#fkrm-delete-kubernetes-resource-in-current-namespace"><i class="small linkify icon"></i></a> </h3>
-
 <h4 id="usage-4">Usage&nbsp;<a class="anchor" href="#usage-4"><i class="small linkify icon"></i></a> </h4>
-
-<p><img src="images/fzf-fkrm.gif" alt="" title="fkrm demo" /></p>
-
+<p><img src="images/fzf-fkrm.gif" alt="" title="fkrm demo"></p>
 <h4 id="source-4">Source&nbsp;<a class="anchor" href="#source-4"><i class="small linkify icon"></i></a> </h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -733,34 +702,30 @@ git checkout <span class="k">$(</span><span class="nb">echo</span> <span class="
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">local</span> <span class="nv">resource_type</span><span class="o">=</span><span class="nv">$1</span>
-<span class="nb">local</span> <span class="nv">resource_pattern</span><span class="o">=</span><span class="nv">$2</span>
-
-<span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$resource_type</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="nb">echo</span> <span class="s2">&#34;=== resource type (.e.g. pod, service) is required&#34;</span>
-  <span class="k">return</span>
-<span class="k">fi</span><span class="p">;</span>
-
-<span class="nb">local</span> <span class="nv">selected</span><span class="o">=</span><span class="k">$(</span>kubectl get <span class="nv">$resource_type</span> --no-headers <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> fzf-tmux --height <span class="m">30</span>% --reverse -0 --header<span class="o">=</span><span class="s2">&#34;Choose resource to delete&#34;</span> --query<span class="o">=</span><span class="s2">&#34;</span><span class="nv">$resource_pattern</span><span class="s2">&#34;</span><span class="k">)</span>
-<span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$selected</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="k">return</span>
-<span class="k">fi</span><span class="p">;</span>
-
-kubectl delete <span class="nv">$resource_type</span> <span class="nv">$selected</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nb">local</span> <span class="nv">resource_type</span><span class="o">=</span><span class="nv">$1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">local</span> <span class="nv">resource_pattern</span><span class="o">=</span><span class="nv">$2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$resource_type</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s2">&#34;=== resource type (.e.g. pod, service) is required&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">local</span> <span class="nv">selected</span><span class="o">=</span><span class="k">$(</span>kubectl get <span class="nv">$resource_type</span> --no-headers <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> fzf-tmux --height 30% --reverse -0 --header<span class="o">=</span><span class="s2">&#34;Choose resource to delete&#34;</span> --query<span class="o">=</span><span class="s2">&#34;</span><span class="nv">$resource_pattern</span><span class="s2">&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$selected</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl delete <span class="nv">$resource_type</span> <span class="nv">$selected</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>The script takes in resource type (pod, deployment, service, etc) as 1st parameter and interactly select the resource to delete using fzf</p>
-
+</div><p>The script takes in resource type (pod, deployment, service, etc) as 1st parameter and interactly select the resource to delete using fzf</p>
 <h3 id="fkl-get-log-of-a-container-in-current-namespace">fkl: Get log of a container in current namespace&nbsp;<a class="anchor" href="#fkl-get-log-of-a-container-in-current-namespace"><i class="small linkify icon"></i></a> </h3>
-
 <h4 id="usage-5">Usage&nbsp;<a class="anchor" href="#usage-5"><i class="small linkify icon"></i></a> </h4>
-
-<p><img src="images/fzf-fkl.gif" alt="" title="fkl demo" /></p>
-
+<p><img src="images/fzf-fkl.gif" alt="" title="fkl demo"></p>
 <h4 id="source-5">Source&nbsp;<a class="anchor" href="#source-5"><i class="small linkify icon"></i></a> </h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -775,24 +740,24 @@ kubectl delete <span class="nv">$resource_type</span> <span class="nv">$selected
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">local</span> <span class="nv">pod_pattern</span><span class="o">=</span><span class="nv">$1</span>
-
-<span class="nb">local</span> <span class="nv">pod</span><span class="o">=</span><span class="k">$(</span>kubectl get pod --no-headers <span class="p">|</span> awk <span class="s1">&#39;{ print $1 }&#39;</span> <span class="p">|</span> fzf-tmux --height <span class="m">30</span>% --reverse -0 -1 --header <span class="s2">&#34;Select pod&#34;</span> --query<span class="o">=</span><span class="s2">&#34;</span><span class="nv">$pod_pattern</span><span class="s2">&#34;</span><span class="k">)</span>
-<span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$pod</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="k">return</span>
-<span class="k">fi</span><span class="p">;</span>
-
-<span class="nb">local</span> <span class="nv">container</span><span class="o">=</span><span class="k">$(</span>kubectl get pod <span class="nv">$pod</span> -o json <span class="p">|</span> jq -r <span class="s1">&#39;.spec.containers[].name&#39;</span> <span class="p">|</span> fzf-tmux --height <span class="m">30</span>% --reverse -0 --header <span class="s2">&#34;Select container in pod </span><span class="nv">$pod</span><span class="s2">&#34;</span><span class="k">)</span>
-<span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$container</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="k">return</span>
-<span class="k">fi</span><span class="p">;</span>
-
-kubectl logs <span class="nv">$pod</span> -c <span class="nv">$container</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nb">local</span> <span class="nv">pod_pattern</span><span class="o">=</span><span class="nv">$1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">local</span> <span class="nv">pod</span><span class="o">=</span><span class="k">$(</span>kubectl get pod --no-headers <span class="p">|</span> awk <span class="s1">&#39;{ print $1 }&#39;</span> <span class="p">|</span> fzf-tmux --height 30% --reverse -0 -1 --header <span class="s2">&#34;Select pod&#34;</span> --query<span class="o">=</span><span class="s2">&#34;</span><span class="nv">$pod_pattern</span><span class="s2">&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$pod</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">local</span> <span class="nv">container</span><span class="o">=</span><span class="k">$(</span>kubectl get pod <span class="nv">$pod</span> -o json <span class="p">|</span> jq -r <span class="s1">&#39;.spec.containers[].name&#39;</span> <span class="p">|</span> fzf-tmux --height 30% --reverse -0 --header <span class="s2">&#34;Select container in pod </span><span class="nv">$pod</span><span class="s2">&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$container</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl logs <span class="nv">$pod</span> -c <span class="nv">$container</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>This script asks to select the pod which contains the container to get logs first. If the pod only has one container, it straight away gives the logs of that container (<code>-0</code> option for parameter), otherwise it asks again for the container to retrieve logs.</p>
+</div><p>This script asks to select the pod which contains the container to get logs first. If the pod only has one container, it straight away gives the logs of that container (<code>-0</code> option for parameter), otherwise it asks again for the container to retrieve logs.</p>
 
-				</article>				
+				</article>
 			</section>
 
 			

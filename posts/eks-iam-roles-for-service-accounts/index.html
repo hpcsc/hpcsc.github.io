@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.55.1" />
+<meta name="generator" content="Hugo 0.97.3" />
 
 
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -531,49 +531,25 @@ var bodyBgSwitchIndex = 0;
 
 				
 					<div class="toc">
-						<nav id="TableOfContents">
-<ul>
-<li><a href="#step-0-enable-eks-oidc-identity-provider">Step 0: Enable EKS OIDC identity provider</a></li>
-<li><a href="#step-1-developers-create-pod-and-service-account">Step 1: Developers create pod and service account</a></li>
-<li><a href="#step-2-kubelet-creates-the-pod-in-worker-node">Step 2: kubelet creates the pod in worker node</a></li>
-<li><a href="#step-3-kubelet-refreshes-service-account-token-regularly">Step 3: kubelet refreshes service account token regularly</a></li>
-<li><a href="#step-4-tokens-controller-generates-a-new-token">Step 4: Tokens controller generates a new token</a></li>
-<li><a href="#step-5-kubelet-projects-service-account-token-into-the-pod">Step 5: kubelet projects service account token into the pod</a></li>
-<li><a href="#step-6-pod-makes-any-call-to-any-aws-resource">Step 6: Pod makes any call to any AWS resource</a></li>
-<li><a href="#step-7-aws-sts-validate-identity-token-with-oidc-provider">Step 7: AWS STS validate identity token with OIDC provider</a></li>
-<li><a href="#step-8-9-pod-uses-temporary-credentials-to-access-aws-resource">Step 8-9: Pod uses temporary credentials to access AWS resource</a></li>
-</ul>
-</nav>
+						<nav id="TableOfContents"></nav>
 					</div>
 				
 
 				<article class="post-content twemoji">
-					
-
-<p>At my current client, we recently switched from <a href="https://github.com/uswitch/kiam">Kiam</a> to a recently introduced feature from AWS to associate IAM roles with Kubernetes service accounts: <a href="https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html">EKS IAM Roles for Service Accounts</a>. Although the switch was pretty straight forward, many things from EKS Roles for Service Accounts seem pretty magic to me, so I decided to dig a little bit deeper to understand what is going on behind the screen.</p>
-
+					<p>At my current client, we recently switched from <a href="https://github.com/uswitch/kiam">Kiam</a> to a recently introduced feature from AWS to associate IAM roles with Kubernetes service accounts: <a href="https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html">EKS IAM Roles for Service Accounts</a>. Although the switch was pretty straight forward, many things from EKS Roles for Service Accounts seem pretty magic to me, so I decided to dig a little bit deeper to understand what is going on behind the screen.</p>
 <p>Disclaimer: a lot of the things described here are from my own research through different sources and may not be exactly how they are implemented. Feel free to drop me a message if I miss out anything.</p>
-
-<p><img src="images/structure.png" alt="" title="Structure" /></p>
-
+<p><img src="images/structure.png" alt="" title="Structure"></p>
 <p>The flow is summarised in the diagram above. There are a few components involved in this flow:</p>
-
 <h1 id="step-0-enable-eks-oidc-identity-provider">Step 0: Enable EKS OIDC identity provider&nbsp;<a class="anchor" href="#step-0-enable-eks-oidc-identity-provider"><i class="small linkify icon"></i></a> </h1>
-
 <p>As instructed from official AWS guide.</p>
-
 <p>This is so that EKS OIDC identity provider can act as the token issuer for your pods&rsquo; service accounts. For clusters that are manually managed by yourself, you will need to provide the url to OIDC identity provider as <code>--service-account-issuer</code> flag when starting up Kubernetes API server.</p>
-
 <p>For EKS, this should be done automatically for you once you enable EKS OIDC identity provider.</p>
-
 <h1 id="step-1-developers-create-pod-and-service-account">Step 1: Developers create pod and service account&nbsp;<a class="anchor" href="#step-1-developers-create-pod-and-service-account"><i class="small linkify icon"></i></a> </h1>
-
 <p>And annotate service account with the annotation required by EKS (<code>eks.amazonaws.com/role-arn</code>)</p>
-
 <p>Example:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -592,71 +568,54 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml">apiVersion<span class="p">:</span><span class="w"> </span>v1<span class="w">
-</span><span class="w"></span>kind<span class="p">:</span><span class="w"> </span>ServiceAccount<span class="w">
-</span><span class="w"></span>metadata<span class="p">:</span><span class="w">
-</span><span class="w">  </span>name<span class="p">:</span><span class="w"> </span>my-service-account<span class="w">
-</span><span class="w">  </span>annotations<span class="p">:</span><span class="w">
-</span><span class="w">    </span>eks.amazonaws.com/role-arn<span class="p">:</span><span class="w"> </span>arn<span class="p">:</span>aws<span class="p">:</span>iam<span class="p">::</span>xxxxxxxxx<span class="p">:</span>role/my-pod-role<span class="w">
-</span><span class="w">
-</span><span class="w"></span>---<span class="w">
-</span><span class="w"></span>apiVersion<span class="p">:</span><span class="w"> </span>v1<span class="w">
-</span><span class="w"></span>kind<span class="p">:</span><span class="w"> </span>Pod<span class="w">
-</span><span class="w"></span>metadata<span class="p">:</span><span class="w">
-</span><span class="w">  </span>name<span class="p">:</span><span class="w"> </span>my-pod<span class="w">
-</span><span class="w"></span>spec<span class="p">:</span><span class="w">
-</span><span class="w">  </span>serviceAccountName<span class="p">:</span><span class="w"> </span>my-service-account<span class="w">
-</span><span class="w">  </span>containers<span class="p">:</span><span class="w">
-</span><span class="w">  </span>-<span class="w"> </span>name<span class="p">:</span><span class="w"> </span>container-name<span class="w">
-</span><span class="w">    </span>image<span class="p">:</span><span class="w"> </span>container-image<span class="p">:</span>version</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ServiceAccount</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">my-service-account</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">eks.amazonaws.com/role-arn</span><span class="p">:</span><span class="w"> </span><span class="l">arn:aws:iam::xxxxxxxxx:role/my-pod-role</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nn">---</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">my-pod</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l">my-service-account</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">container-name</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">container-image:version</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>When this pod definition is submitted to Kubernetes, <a href="https://github.com/aws/amazon-eks-pod-identity-webhook">EKS Pod Identity Webhook</a> intercepts the request before the pod spec is saved into etcd. This webhook is an admission controller and it modifies the pod spec to add in a few things:</p>
-
+</div><p>When this pod definition is submitted to Kubernetes, <a href="https://github.com/aws/amazon-eks-pod-identity-webhook">EKS Pod Identity Webhook</a> intercepts the request before the pod spec is saved into etcd. This webhook is an admission controller and it modifies the pod spec to add in a few things:</p>
 <ul>
 <li>Environment variables:
-
 <ul>
 <li><code>AWS_ROLE_ARN</code>: to be used by AWS SDK later to assume role</li>
 <li><code>AWS_WEB_IDENTITY_TOKEN_FILE</code>: location of service account token (identity token) to be saved by kubelet</li>
-</ul></li>
+</ul>
+</li>
 <li><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#service-account-token-volume-projection">A service acount token volume projection</a>
 This volume projection is used to project/save service account token to the location mounted by the volume.</li>
 </ul>
-
 <h1 id="step-2-kubelet-creates-the-pod-in-worker-node">Step 2: kubelet creates the pod in worker node&nbsp;<a class="anchor" href="#step-2-kubelet-creates-the-pod-in-worker-node"><i class="small linkify icon"></i></a> </h1>
-
 <p>Nothing special here, just regular Kubernetes work</p>
-
 <h1 id="step-3-kubelet-refreshes-service-account-token-regularly">Step 3: kubelet refreshes service account token regularly&nbsp;<a class="anchor" href="#step-3-kubelet-refreshes-service-account-token-regularly"><i class="small linkify icon"></i></a> </h1>
-
 <p>Kubernetes used to leave service account token fixed without any expiration. Recent change in Kubernetes makes kubelet be responsible for regularly refreshing service account token before its expiration. Before the token expires, kubelet will contact tokens controller (one of the controllers defined in Kubernetes controller manager) to generate a new token.</p>
-
 <h1 id="step-4-tokens-controller-generates-a-new-token">Step 4: Tokens controller generates a new token&nbsp;<a class="anchor" href="#step-4-tokens-controller-generates-a-new-token"><i class="small linkify icon"></i></a> </h1>
-
 <p>The tokens controller will contact service account issuer defined in step 0 to get a new token for given service account. In EKS, this is the EKS OIDC identity provider.</p>
-
 <h1 id="step-5-kubelet-projects-service-account-token-into-the-pod">Step 5: kubelet projects service account token into the pod&nbsp;<a class="anchor" href="#step-5-kubelet-projects-service-account-token-into-the-pod"><i class="small linkify icon"></i></a> </h1>
-
 <p>Since the pod has the service account token volume projection defined, the token returned from tokens controller will be projected automatically in the specified location inside the pod.</p>
-
 <h1 id="step-6-pod-makes-any-call-to-any-aws-resource">Step 6: Pod makes any call to any AWS resource&nbsp;<a class="anchor" href="#step-6-pod-makes-any-call-to-any-aws-resource"><i class="small linkify icon"></i></a> </h1>
-
 <p>When application inside pod makes any call to any AWS resource (through AWS SDK), AWS SDK will look up its credentials chain (list of classes that can provide AWS temporary credentials to the request) and use <code>AssumeRoleWithWebIdentityCredentials</code> to assume role (defined in environment variable <code>AWS_ROLE_ARN</code> above) and exchange identity token for temporary credentials.</p>
-
 <p>This is also the reason why we need to grant permission for the OIDC provider to perform <code>sts:AssumeRoleWithWebIdentity</code>.</p>
-
 <p>Reference: <a href="https://github.com/aws/aws-sdk-net/blob/a3285fca558b05cfab32719c8c6c9e34023b0908/sdk/src/Core/Amazon.Runtime/Credentials/FallbackCredentialsFactory.cs#L60">How FallbackCredentialsFactory look like in .NET SDK</a></p>
-
 <h1 id="step-7-aws-sts-validate-identity-token-with-oidc-provider">Step 7: AWS STS validate identity token with OIDC provider&nbsp;<a class="anchor" href="#step-7-aws-sts-validate-identity-token-with-oidc-provider"><i class="small linkify icon"></i></a> </h1>
-
 <h1 id="step-8-9-pod-uses-temporary-credentials-to-access-aws-resource">Step 8-9: Pod uses temporary credentials to access AWS resource&nbsp;<a class="anchor" href="#step-8-9-pod-uses-temporary-credentials-to-access-aws-resource"><i class="small linkify icon"></i></a> </h1>
-
 <p>And that&rsquo;s it.</p>
-
 <p>Overall this has been a fun experience for me to trace through different resources to understand the complete flow.</p>
 
-				</article>				
+				</article>
 			</section>
 
 			

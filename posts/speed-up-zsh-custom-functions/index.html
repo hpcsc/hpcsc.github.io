@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.55.1" />
+<meta name="generator" content="Hugo 0.97.3" />
 
 
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -530,52 +530,48 @@ var bodyBgSwitchIndex = 0;
 				<hr>
 
 				
+					<div class="toc">
+						<nav id="TableOfContents"></nav>
+					</div>
+				
 
 				<article class="post-content twemoji">
 					<p>I have been using zsh with Prezto for a few years and have always been conscious about what stuffs to put in my shell profile files like <code>.zshrc</code> so that a new shell can start as fast as it can.</p>
-
 <p>If comparing the startup time of my shell to shell startup time of most other people who I have worked with, my current startup time is not bad:</p>
-
-<p><img src="images/zsh-startup-before.png" alt="&quot;zsh startup time before&quot;" /></p>
-
+<p><img src="images/zsh-startup-before.png" alt="&amp;ldquo;zsh startup time before&amp;rdquo;"></p>
 <p>In average, it takes around 0.5s to start.</p>
-
 <p>However today I manage to speed it up even further, using zsh autoloading of custom functions. The idea comes from this SOF answer: <a href="https://unix.stackexchange.com/a/33898">https://unix.stackexchange.com/a/33898</a>. In short, when you use <code>autoload</code> command with a file name, zsh will mark it to be loaded automatically upon its first reference. The content of the file is going to be function body and name of the file will be function name. <code>fpath</code> variable contains the search path for files that can be marked to be loaded automatically upon first usage.</p>
-
 <p>This feature can help to speed up my zsh startup time because I have quite a number of custom shell functions defined in a custom folder. Before this change, my <code>.zshrc</code> sourced all these files when starting up, even though I may not use it in current shell session:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="k">for</span> func_def in ~/.functions/*<span class="p">;</span> <span class="k">do</span>
-    <span class="nb">source</span> <span class="s2">&#34;</span><span class="nv">$func_def</span><span class="s2">&#34;</span>
-<span class="k">done</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="k">for</span> func_def in ~/.functions/*<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">source</span> <span class="s2">&#34;</span><span class="nv">$func_def</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>With autoloading feature, I can &ldquo;lazy load&rdquo; those custom functions and only load a function from the definition file whenever I use it for the first time. My <code>.zshrc</code> calls <code>autoload</code> to mark the custom functions to be loaded automatically (this call is not loading the actual files so will be much faster than using <code>source</code>)</p>
+</div><p>With autoloading feature, I can &ldquo;lazy load&rdquo; those custom functions and only load a function from the definition file whenever I use it for the first time. My <code>.zshrc</code> calls <code>autoload</code> to mark the custom functions to be loaded automatically (this call is not loading the actual files so will be much faster than using <code>source</code>)</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">fpath</span><span class="o">=(</span><span class="nv">$fpath</span> ~/.functions<span class="o">)</span>
-autoload -Uz ~/.functions/**/*</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nv">fpath</span><span class="o">=(</span><span class="nv">$fpath</span> ~/.functions<span class="o">)</span>
+</span></span><span class="line"><span class="cl">autoload -Uz ~/.functions/**/*
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>Here&rsquo;s the resutl after using <code>autoload</code>:</p>
-
-<p><img src="images/zsh-startup-after.png" alt="" title="zsh startup time after" /></p>
-
+</div><p>Here&rsquo;s the resutl after using <code>autoload</code>:</p>
+<p><img src="images/zsh-startup-after.png" alt="" title="zsh startup time after"></p>
 <p>It takes 0.3s now, that&rsquo;s 40% faster than before.</p>
-
 <p>However this change also introduces a difficulty to my dotfiles installation script. Before this change, I just need to source and export files containing those custom functions at the beginning of the installation script, the remaining of the script can use those exported functions easily. With <code>autoloading</code>, each file now is expected to contain body of a function. Sourcing those files will execute those body immediately at sourcing time, which is not what I want. So I need to come up with an ugly trick to load these custom functions at the beginning of my dotfiles installation script:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -594,28 +590,28 @@ autoload -Uz ~/.functions/**/*</code></pre></td></tr></table>
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">autoload_functions</span><span class="o">=(</span>
-  execute
-  echo_with_color
-  is_macos
-  is_ubuntu
-  distro_name
-  <span class="c1">#...</span>
-<span class="o">)</span>
-
-<span class="k">for</span> f in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">autoload_functions</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span>
-<span class="k">do</span>
-  <span class="nb">eval</span> <span class="s2">&#34;
-</span><span class="s2">    function </span><span class="nv">$f</span><span class="s2">() {
-</span><span class="s2">      </span><span class="k">$(</span>cat ./link/common/zsh/.functions/misc/<span class="nv">$f</span><span class="k">)</span><span class="s2">
-</span><span class="s2">    }
-</span><span class="s2">  &#34;</span>
-<span class="k">done</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nv">autoload_functions</span><span class="o">=(</span>
+</span></span><span class="line"><span class="cl">  execute
+</span></span><span class="line"><span class="cl">  echo_with_color
+</span></span><span class="line"><span class="cl">  is_macos
+</span></span><span class="line"><span class="cl">  is_ubuntu
+</span></span><span class="line"><span class="cl">  distro_name
+</span></span><span class="line"><span class="cl">  <span class="c1">#...</span>
+</span></span><span class="line"><span class="cl"><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> f in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">autoload_functions</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">eval</span> <span class="s2">&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    function </span><span class="nv">$f</span><span class="s2">() {
+</span></span></span><span class="line"><span class="cl"><span class="s2">      </span><span class="k">$(</span>cat ./link/common/zsh/.functions/misc/<span class="nv">$f</span><span class="k">)</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    }
+</span></span></span><span class="line"><span class="cl"><span class="s2">  &#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>This script basically <code>cat</code> function body from those <code>autoload</code> files, and uses <code>eval</code> to define a function with the same name with the file</p>
+</div><p>This script basically <code>cat</code> function body from those <code>autoload</code> files, and uses <code>eval</code> to define a function with the same name with the file</p>
 
-				</article>				
+				</article>
 			</section>
 
 			

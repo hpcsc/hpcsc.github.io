@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.55.1" />
+<meta name="generator" content="Hugo 0.97.3" />
 
 
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -532,101 +532,79 @@ var bodyBgSwitchIndex = 0;
 				
 					<div class="toc">
 						<nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#use-vault-kv-secrets-engine-v1">Use Vault KV Secrets Engine V1</a></li>
-<li><a href="#use-aws-secrets-engine-with-moto">Use AWS Secrets Engine with Moto</a></li>
-<li><a href="#code">Code</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#use-vault-kv-secrets-engine-v1">Use Vault KV Secrets Engine V1</a></li>
+    <li><a href="#use-aws-secrets-engine-with-moto">Use AWS Secrets Engine with Moto</a></li>
+    <li><a href="#code">Code</a></li>
+  </ul>
 </nav>
 					</div>
 				
 
 				<article class="post-content twemoji">
-					
-
-<h2 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h2>
-
+					<h2 id="introduction">Introduction&nbsp;<a class="anchor" href="#introduction"><i class="small linkify icon"></i></a> </h2>
 <p>Currently I&rsquo;m working on a system that&rsquo;s deployed to Kubernetes and uses Hashicorp Vault <a href="https://www.vaultproject.io/docs/secrets/aws">AWS Secrets Engine</a> to retrieve temporary credentials from assumed roles when it needs to interact with AWS infrastructure.</p>
-
 <p>The system uses a sidecar that&rsquo;s built on top of vault agent to get AWS credentials as below:</p>
-
-<p><img src="images/kubernetes-vault.png" alt="Overview" /></p>
-
+<p><img src="images/kubernetes-vault.png" alt="Overview"></p>
 <p>In local, the application is deployed to minikube in a very similar way (.i.e. including the vault sidecar, aws infrastructures are replaced with either <a href="https://localstack.cloud/">localstack</a> or <a href="http://docs.getmoto.org/en/latest/">moto</a>) so that we can catch issues as early as we can. This poses the challenge of how to let vault sidecar work safely with AWS, in particular the part where it gets AWS temporary credentials. We can let everyone work directly with a test AWS account but there are many issues with that like: troublesome setup, slow, maintain/cleanup real infrastructure in AWS.</p>
-
 <p>So we come up with 2 ways to work around this</p>
-
 <h2 id="use-vault-kv-secrets-engine-v1">Use Vault KV Secrets Engine V1&nbsp;<a class="anchor" href="#use-vault-kv-secrets-engine-v1"><i class="small linkify icon"></i></a> </h2>
-
 <p>to replace Vault AWS Secrets Engine. It looks like this:</p>
-
-<p><img src="images/vault-kv1.png" alt="KV v1" /></p>
-
+<p><img src="images/vault-kv1.png" alt="KV v1"></p>
 <p>Due to the fact that we can use the same way (<code>vault read</code> or <code>vault write</code>) to work with different secrets engine, we can kind of trick vault into thinking that a key-value v1 secrets engine mounted at <code>aws</code> path is an aws secrets engine. As long as we put the test credentials into this kv v1 secrets engine in the same way that vault expects from an aws secrets engine, vault doesn&rsquo;t care that they are different engines.</p>
-
 <p>So when starting up our vault server in minikube, we setup kv v1 as aws secrets engine as below:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="k">$(</span>vault secrets list <span class="p">|</span> grep aws<span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="c1"># mount kv v1 to path `aws`</span>
-  vault secrets <span class="nb">enable</span> -version<span class="o">=</span><span class="m">1</span> -path<span class="o">=</span>aws kv
-<span class="k">fi</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="k">$(</span>vault secrets list <span class="p">|</span> grep aws<span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># mount kv v1 to path `aws`</span>
+</span></span><span class="line"><span class="cl">  vault secrets <span class="nb">enable</span> -version<span class="o">=</span><span class="m">1</span> -path<span class="o">=</span>aws kv
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>And we can put test access key, secret key, security token at path <code>aws/sts/my-role</code>, the path where vault expects if it&rsquo;s to request temporary credentials using assumed role <code>my-role</code></p>
+</div><p>And we can put test access key, secret key, security token at path <code>aws/sts/my-role</code>, the path where vault expects if it&rsquo;s to request temporary credentials using assumed role <code>my-role</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">vault kv put aws/sts/my-role <span class="nv">access_key</span><span class="o">=</span><span class="nb">test</span> <span class="nv">secret_key</span><span class="o">=</span><span class="nb">test</span> <span class="nv">security_token</span><span class="o">=</span>test</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">vault kv put aws/sts/my-role <span class="nv">access_key</span><span class="o">=</span><span class="nb">test</span> <span class="nv">secret_key</span><span class="o">=</span><span class="nb">test</span> <span class="nv">security_token</span><span class="o">=</span><span class="nb">test</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>This is simple and works quite well if the vault sidecar only uses <code>read</code> to request temporary credentials (.i.e. <code>vault read aws/sts/my-role</code>). Once it starts to use <code>write</code> like <code>vault write aws/sts/my-role ttl=60m</code>, it&rsquo;s broken because underlying engine is still key value. That <code>write</code> command just overwrites key <code>aws/sts/my-role</code> with <code>ttl=60m</code> and all the pre-setup test credentials at that path are lost.</p>
-
+</div><p>This is simple and works quite well if the vault sidecar only uses <code>read</code> to request temporary credentials (.i.e. <code>vault read aws/sts/my-role</code>). Once it starts to use <code>write</code> like <code>vault write aws/sts/my-role ttl=60m</code>, it&rsquo;s broken because underlying engine is still key value. That <code>write</code> command just overwrites key <code>aws/sts/my-role</code> with <code>ttl=60m</code> and all the pre-setup test credentials at that path are lost.</p>
 <p>That&rsquo;s why we need to come up with the 2nd trick:</p>
-
 <h2 id="use-aws-secrets-engine-with-moto">Use AWS Secrets Engine with Moto&nbsp;<a class="anchor" href="#use-aws-secrets-engine-with-moto"><i class="small linkify icon"></i></a> </h2>
-
 <p>Turn out Moto is able to simulate IAM quite well that we can point vault aws secrets engine to it without any problem. Localstack also has suppot for IAM but it&rsquo;s only available in its Pro version, makes it not so attractive for local development.</p>
-
 <p>When using Moto, our setup is even closer to how it works in production:</p>
-
-<p><img src="images/vault-moto.png" alt="Moto" /></p>
-
+<p><img src="images/vault-moto.png" alt="Moto"></p>
 <p>Basically instead of AWS, we just plug in Moto. The local setup to point local vault to Moto is a bit more involved:</p>
-
 <ul>
 <li>First we need to enable aws secrets engine:</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="k">$(</span>vault secrets list <span class="p">|</span> grep aws<span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-    vault secrets <span class="nb">enable</span> -path<span class="o">=</span>aws aws
-<span class="k">fi</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="k">$(</span>vault secrets list <span class="p">|</span> grep aws<span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    vault secrets <span class="nb">enable</span> -path<span class="o">=</span>aws aws
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<ul>
+</div><ul>
 <li>and then configure aws secrets engine to point to Moto instead of AWS:</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -634,34 +612,33 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">vault write aws/config/root <span class="se">\
-</span><span class="se"></span>    <span class="nv">access_key</span><span class="o">=</span><span class="nb">test</span> <span class="se">\
-</span><span class="se"></span>    <span class="nv">secret_key</span><span class="o">=</span><span class="nb">test</span> <span class="se">\
-</span><span class="se"></span>    <span class="nv">region</span><span class="o">=</span>us-east-1 <span class="se">\
-</span><span class="se"></span>    <span class="nv">iam_endpoint</span><span class="o">=</span>http://moto:5000 <span class="se">\
-</span><span class="se"></span>    <span class="nv">sts_endpoint</span><span class="o">=</span>http://moto:5000</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">vault write aws/config/root <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="nv">access_key</span><span class="o">=</span><span class="nb">test</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="nv">secret_key</span><span class="o">=</span><span class="nb">test</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="nv">region</span><span class="o">=</span>us-east-1 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="nv">iam_endpoint</span><span class="o">=</span>http://moto:5000 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="nv">sts_endpoint</span><span class="o">=</span>http://moto:5000
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<ul>
+</div><ul>
 <li>finally create the role to be assumed in aws secrets engine</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">vault write aws/roles/my-role <span class="se">\
-</span><span class="se"></span>    <span class="nv">role_arns</span><span class="o">=</span>arn:aws:iam::000000000000:role/my-role <span class="se">\
-</span><span class="se"></span>    <span class="nv">credential_type</span><span class="o">=</span>assumed_role</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">vault write aws/roles/my-role <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="nv">role_arns</span><span class="o">=</span>arn:aws:iam::000000000000:role/my-role <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="nv">credential_type</span><span class="o">=</span>assumed_role
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<h2 id="code">Code&nbsp;<a class="anchor" href="#code"><i class="small linkify icon"></i></a> </h2>
-
+</div><h2 id="code">Code&nbsp;<a class="anchor" href="#code"><i class="small linkify icon"></i></a> </h2>
 <p>Example code for above 2 approaches can be found at <a href="https://github.com/hpcsc/vault-fake-aws">vault-fake-aws</a></p>
 
-				</article>				
+				</article>
 			</section>
 
 			

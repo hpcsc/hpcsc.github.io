@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.55.1" />
+<meta name="generator" content="Hugo 0.97.3" />
 
 
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -524,7 +524,7 @@ var bodyBgSwitchIndex = 0;
 					<div><span><i class="calendar outline icon"></i>Jul 25, 2021</span></div>
 					
 					<div><span class="disqusComment"><i class="comment outline icon"></i><a href="https://pnguyen.io/posts/test-drive-kubernetes-operator-2/#disqus_thread" class="disqus-comment-count" data-disqus-identifier="a18c56f7b884ce35b541757726da50ba"></a></span></div>
-					<div><span><i class="clock outline icon"></i>9 min read</span></div>
+					<div><span><i class="clock outline icon"></i>10 min read</span></div>
 					<div><span><i class="angle double up icon"></i>Last updated on Jul 25, 2021</span></div>
 				</div>
 				<hr>
@@ -532,49 +532,36 @@ var bodyBgSwitchIndex = 0;
 				
 					<div class="toc">
 						<nav id="TableOfContents">
-<ul>
-<li><a href="#posts-in-the-series">Posts in the series</a></li>
-<li><a href="#update-function">Update function</a>
-<ul>
-<li><a href="#end-to-end-test">End to end test</a></li>
-<li><a href="#refactor-githubapi-package">Refactor githubapi package</a></li>
-</ul></li>
-<li><a href="#delete-function">Delete function</a>
-<ul>
-<li><a href="#end-to-end-test-1">End to end test</a></li>
-<li><a href="#implement-deletion">Implement deletion</a></li>
-<li><a href="#add-finalizer-to-controller">Add finalizer to controller</a></li>
-</ul></li>
-<li><a href="#test-it-out">Test it out</a></li>
-</ul>
+  <ul>
+    <li><a href="#end-to-end-test">End to end test</a></li>
+    <li><a href="#refactor-githubapi-package">Refactor githubapi package</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#end-to-end-test-1">End to end test</a></li>
+    <li><a href="#implement-deletion">Implement deletion</a></li>
+    <li><a href="#add-finalizer-to-controller">Add finalizer to controller</a></li>
+  </ul>
 </nav>
 					</div>
 				
 
 				<article class="post-content twemoji">
-					
-
-<p>In the previous <a href="/posts/test-drive-kubernetes-operator-1/">post</a>, we scaffolded the skeleton of our operator and also added functionality to create github repository when the custom resource <code>GithubRepository</code> is created.</p>
-
+					<p>In the previous <a href="/posts/test-drive-kubernetes-operator-1/">post</a>, we scaffolded the skeleton of our operator and also added functionality to create github repository when the custom resource <code>GithubRepository</code> is created.</p>
 <p>In this post, we are going to build on top of that and add functionalities to update and delete the created github repository.</p>
-
 <h1 id="posts-in-the-series">Posts in the series&nbsp;<a class="anchor" href="#posts-in-the-series"><i class="small linkify icon"></i></a> </h1>
-
 <ul>
 <li><a href="/posts/test-drive-kubernetes-operator-1/">Scaffold and first slice of the operator: creation of github repository</a></li>
 <li>Update and delete of github repository (this post)</li>
 <li><a href="/posts/test-drive-kubernetes-operator-3/">Creating of github repository by cloning another repository</a></li>
 <li><a href="/posts/test-drive-kubernetes-operator-4/">Validation using webhooks</a></li>
 </ul>
-
 <h1 id="update-function">Update function&nbsp;<a class="anchor" href="#update-function"><i class="small linkify icon"></i></a> </h1>
-
 <h2 id="end-to-end-test">End to end test&nbsp;<a class="anchor" href="#end-to-end-test"><i class="small linkify icon"></i></a> </h2>
-
 <p>We again start with a failing end to end test:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -628,62 +615,61 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">52
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nf">Context</span><span class="p">(</span><span class="s">&#34;When GithubRepository resource updated&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-	<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span> <span class="kt">string</span>
-	<span class="kd">var</span> <span class="nx">githubRepository</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
-
-	<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-		<span class="nx">namespace</span> <span class="p">=</span> <span class="s">&#34;default&#34;</span>
-		<span class="nx">name</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;existing-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
-	<span class="p">})</span>
-
-	<span class="nf">It</span><span class="p">(</span><span class="s">&#34;should update github repository using github API&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-		<span class="nx">githubRepository</span> <span class="p">=</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span><span class="p">{</span>
-			<span class="nx">ObjectMeta</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">{</span>
-				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
-				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
-			<span class="p">},</span>
-			<span class="nx">Spec</span><span class="p">:</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepositorySpec</span><span class="p">{</span>
-				<span class="nx">Owner</span><span class="p">:</span>       <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
-				<span class="nx">Repo</span><span class="p">:</span>        <span class="nx">name</span><span class="p">,</span>
-				<span class="nx">Description</span><span class="p">:</span> <span class="s">&#34;initial description&#34;</span><span class="p">,</span>
-			<span class="p">},</span>
-		<span class="p">}</span>
-
-		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
-		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
-
-		<span class="nf">Eventually</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">resource</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
-			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">types</span><span class="p">.</span><span class="nx">NamespacedName</span><span class="p">{</span>
-				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
-				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
-			<span class="p">},</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">)</span>
-			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
-			<span class="nf">Expect</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">Successful</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">BeTrue</span><span class="p">())</span>
-		<span class="p">},</span> <span class="mi">10</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Succeed</span><span class="p">())</span>
-
-		<span class="nx">githubRepository</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Description</span> <span class="p">=</span> <span class="s">&#34;updated description&#34;</span>
-		<span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
-
-		<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;/repos/test-owner/%s&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">),</span> <span class="s">&#34;PATCH&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
-		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
-
-		<span class="nf">Expect</span><span class="p">(</span><span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">200</span><span class="p">))</span>
-		<span class="nf">Expect</span><span class="p">(</span><span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Body</span><span class="p">.(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{})[</span><span class="s">&#34;name&#34;</span><span class="p">]).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">name</span><span class="p">))</span>
-	<span class="p">})</span>
-
-	<span class="nf">AfterEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
-		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="nx">logf</span><span class="p">.</span><span class="nx">Log</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;failed to delete GithubRepository&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
-		<span class="p">}</span>
-	<span class="p">})</span>
-<span class="p">})</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nf">Context</span><span class="p">(</span><span class="s">&#34;When GithubRepository resource updated&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">githubRepository</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">namespace</span> <span class="p">=</span> <span class="s">&#34;default&#34;</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">name</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;existing-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">It</span><span class="p">(</span><span class="s">&#34;should update github repository using github API&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">githubRepository</span> <span class="p">=</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">ObjectMeta</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">},</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Spec</span><span class="p">:</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepositorySpec</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Owner</span><span class="p">:</span>       <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Repo</span><span class="p">:</span>        <span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Description</span><span class="p">:</span> <span class="s">&#34;initial description&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nf">Eventually</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">var</span> <span class="nx">resource</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">types</span><span class="p">.</span><span class="nx">NamespacedName</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">},</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">Expect</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">Successful</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">BeTrue</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span> <span class="mi">10</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Succeed</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nx">githubRepository</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Description</span> <span class="p">=</span> <span class="s">&#34;updated description&#34;</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;/repos/test-owner/%s&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">),</span> <span class="s">&#34;PATCH&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nf">Expect</span><span class="p">(</span><span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">200</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">Expect</span><span class="p">(</span><span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Body</span><span class="p">.(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{})[</span><span class="s">&#34;name&#34;</span><span class="p">]).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">name</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">AfterEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">logf</span><span class="p">.</span><span class="nx">Log</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;failed to delete GithubRepository&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>A few things to notice:</p>
-
+</div><p>A few things to notice:</p>
 <ul>
 <li>The test uses the name <code>existing-repo-{random-id}</code> for custom resource and git repo name. This is intended because smocker was setup to return 200 response for any GET request with repo name <code>existing-repo</code> in the path. We are telling smocker to tell github client that that repo exists in github</li>
 <li>For now we only support updating repo description. Owner and repo name cannot be updated and we will add validation for that in subsequent post.</li>
@@ -691,7 +677,7 @@ var bodyBgSwitchIndex = 0;
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -702,38 +688,31 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nf">Eventually</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-	<span class="kd">var</span> <span class="nx">resource</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
-	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">types</span><span class="p">.</span><span class="nx">NamespacedName</span><span class="p">{</span>
-		<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
-		<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
-	<span class="p">},</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">)</span>
-	<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
-	<span class="nf">Expect</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">Successful</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">BeTrue</span><span class="p">())</span>
-<span class="p">},</span> <span class="mi">10</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Succeed</span><span class="p">())</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nf">Eventually</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">resource</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">types</span><span class="p">.</span><span class="nx">NamespacedName</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">},</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">Expect</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">Successful</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">BeTrue</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="mi">10</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Succeed</span><span class="p">())</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>Run the test and we should see an error on no smocker request in history matching our expectation.</p>
-
+</div><p>Run the test and we should see an error on no smocker request in history matching our expectation.</p>
 <h2 id="refactor-githubapi-package">Refactor githubapi package&nbsp;<a class="anchor" href="#refactor-githubapi-package"><i class="small linkify icon"></i></a> </h2>
-
 <p>In the previous post, we decided <code>githubapi.CreateRepository()</code> does a checking of whether given repository exists in github before creating it. Now we need to consider how to implement the same check for update function.</p>
-
 <p>We have several options:</p>
-
 <ul>
 <li>Move logic of checking whether a repo exists in github to another function in <code>githubapi</code>, say <code>githubapi.RepositoryExists()</code>. Controller will use that to decide to call <code>githubapi.CreateRepository()</code> or <code>githubapi.UpdateRepository()</code>. Controller will use the same way to check before doing deletion later too.</li>
 <li>Or update the existing function <code>githubapi.CreateRepository()</code> to do the checking and decide whether to create or update. The function name will need to be updated to <code>githubapi.CreateOrUpdateRepository()</code>. Later when implementing delete function, we will need to repeat the same check in that function too.</li>
 </ul>
-
 <p>I choose option 2 simply because I don&rsquo;t want to put too much logic in controller.</p>
-
 <p>I will skip over the renaming of <code>githubapi.CreateRepository()</code> to <code>githubapi.CreateOrUpdateRepository()</code>. It can be done easily with IDE.</p>
-
 <p>We have a test in previous post to check that <code>githubapi.CreateRepository()</code> not doing a POST to github if repository exists. Let&rsquo;s update that test to check for github PATCH (repo update) call:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -750,27 +729,27 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;call github api to update when repository exists&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
-	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
-	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;valid-token&#34;</span>
-	<span class="nx">repoName</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;existing-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
-	<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
-
-	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateOrUpdateRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">,</span> <span class="s">&#34;some-description&#34;</span><span class="p">)</span>
-
-	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;/repos/test-owner/%s&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">),</span> <span class="s">&#34;PATCH&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
-	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="nx">require</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span> <span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">)</span>
-	<span class="nx">require</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">,</span> <span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Body</span><span class="p">.(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{})[</span><span class="s">&#34;name&#34;</span><span class="p">])</span>
-<span class="p">})</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;call github api to update when repository exists&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;valid-token&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">repoName</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;existing-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateOrUpdateRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">,</span> <span class="s">&#34;some-description&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;/repos/test-owner/%s&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">),</span> <span class="s">&#34;PATCH&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span> <span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">,</span> <span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Body</span><span class="p">.(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{})[</span><span class="s">&#34;name&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>to pass the test, we need to add a smocker definition that responds to github PATCH request:</p>
+</div><p>to pass the test, we need to add a smocker definition that responds to github PATCH request:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -789,29 +768,29 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml">-<span class="w"> </span>request<span class="p">:</span><span class="w">
-</span><span class="w">    </span>path<span class="p">:</span><span class="w">
-</span><span class="w">      </span>matcher<span class="p">:</span><span class="w"> </span>ShouldMatch<span class="w">
-</span><span class="w">      </span>value<span class="p">:</span><span class="w"> </span>/api/v3/repos/.<span class="cp">*/existing-repo.*</span><span class="w">
-</span><span class="w">    </span>method<span class="p">:</span><span class="w"> </span>PATCH<span class="w">
-</span><span class="w">  </span>dynamic_response<span class="p">:</span><span class="w">
-</span><span class="w">    </span>engine<span class="p">:</span><span class="w"> </span>go_template<span class="w">
-</span><span class="w">    </span>script<span class="p">:</span><span class="w"> </span>|<span class="sd">-
-</span><span class="sd">      status: 200</span><span class="w">
-</span><span class="w">      </span>headers<span class="p">:</span><span class="w">
-</span><span class="w">        </span>Content-Type<span class="p">:</span><span class="w"> </span><span class="p">[</span>application/json<span class="p">]</span><span class="w">
-</span><span class="w">      </span>body<span class="p">:</span><span class="w"> </span><span class="sd">&gt;
-</span><span class="sd">        {</span><span class="w">
-</span><span class="w">          </span><span class="s2">&#34;id&#34;</span><span class="p">:</span><span class="w"> </span><span class="m">1296269</span><span class="p">,</span><span class="w">
-</span><span class="w">          </span><span class="s2">&#34;name&#34;</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;{{ regexReplaceAll &#34;</span>/api/v3/repos/.<span class="cp">*/(existing-repo.*)&#34;</span><span class="w"> </span>.Request.Path<span class="w"> </span><span class="s2">&#34;${1}&#34;</span><span class="w"> </span>}}<span class="s2">&#34;,
-</span><span class="s2">          &#34;</span>full_name<span class="s2">&#34;: &#34;</span>{{.Request.Path<span class="w"> </span>|<span class="w"> </span>replace<span class="w"> </span><span class="s2">&#34;/api/v3/repos/&#34;</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="w"> </span>}}&#34;<span class="w">
-</span><span class="w">        </span>}</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl">- <span class="nt">request</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">matcher</span><span class="p">:</span><span class="w"> </span><span class="l">ShouldMatch</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l">/api/v3/repos/.*/existing-repo.*</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l">PATCH</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">dynamic_response</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">engine</span><span class="p">:</span><span class="w"> </span><span class="l">go_template</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">script</span><span class="p">:</span><span class="w"> </span><span class="p">|-</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">      status: 200
+</span></span></span><span class="line"><span class="cl"><span class="sd">      headers:
+</span></span></span><span class="line"><span class="cl"><span class="sd">        Content-Type: [application/json]
+</span></span></span><span class="line"><span class="cl"><span class="sd">      body: &gt;
+</span></span></span><span class="line"><span class="cl"><span class="sd">        {
+</span></span></span><span class="line"><span class="cl"><span class="sd">          &#34;id&#34;: 1296269,
+</span></span></span><span class="line"><span class="cl"><span class="sd">          &#34;name&#34;: &#34;{{ regexReplaceAll &#34;/api/v3/repos/.*/(existing-repo.*)&#34; .Request.Path &#34;${1}&#34; }}&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="sd">          &#34;full_name&#34;: &#34;{{.Request.Path | replace &#34;/api/v3/repos/&#34; &#34;&#34; }}&#34;
+</span></span></span><span class="line"><span class="cl"><span class="sd">        }</span><span class="w">      
+</span></span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>and modify <code>githubapi.CreateOrUpdateRepository()</code> to call github update:</p>
+</div><p>and modify <code>githubapi.CreateOrUpdateRepository()</code> to call github update:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -826,31 +805,28 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// ...
-</span><span class="c1"></span><span class="k">if</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">StatusCode</span> <span class="o">==</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span> <span class="p">{</span>
-	<span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">repository</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="p">}</span>
-<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-	<span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Edit</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">repository</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to update repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="p">}</span>
-<span class="p">}</span>
-<span class="o">//</span> <span class="o">...</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">StatusCode</span> <span class="o">==</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">repository</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Edit</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">repository</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to update repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>That also passes the end to end test</p>
-
+</div><p>That also passes the end to end test</p>
 <h1 id="delete-function">Delete function&nbsp;<a class="anchor" href="#delete-function"><i class="small linkify icon"></i></a> </h1>
-
 <h2 id="end-to-end-test-1">End to end test&nbsp;<a class="anchor" href="#end-to-end-test-1"><i class="small linkify icon"></i></a> </h2>
-
 <p>A similar end to end test:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -897,61 +873,59 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">45
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nf">Context</span><span class="p">(</span><span class="s">&#34;When GithubRepository resource deleted&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-	<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span> <span class="kt">string</span>
-	<span class="kd">var</span> <span class="nx">githubRepository</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
-
-	<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-		<span class="nx">namespace</span> <span class="p">=</span> <span class="s">&#34;default&#34;</span>
-		<span class="nx">name</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;existing-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
-	<span class="p">})</span>
-
-	<span class="nf">It</span><span class="p">(</span><span class="s">&#34;should delete github repository using github API&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-		<span class="nx">githubRepository</span> <span class="p">=</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span><span class="p">{</span>
-			<span class="nx">ObjectMeta</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">{</span>
-				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
-				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
-			<span class="p">},</span>
-			<span class="nx">Spec</span><span class="p">:</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepositorySpec</span><span class="p">{</span>
-				<span class="nx">Owner</span><span class="p">:</span>       <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
-				<span class="nx">Repo</span><span class="p">:</span>        <span class="nx">name</span><span class="p">,</span>
-				<span class="nx">Description</span><span class="p">:</span> <span class="s">&#34;initial description&#34;</span><span class="p">,</span>
-			<span class="p">},</span>
-		<span class="p">}</span>
-
-		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
-		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
-
-		<span class="nf">Eventually</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">resource</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
-			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">types</span><span class="p">.</span><span class="nx">NamespacedName</span><span class="p">{</span>
-				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
-				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
-			<span class="p">},</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">)</span>
-			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
-			<span class="nf">Expect</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">Successful</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">BeTrue</span><span class="p">())</span>
-		<span class="p">},</span> <span class="mi">10</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Succeed</span><span class="p">())</span>
-
-		<span class="nx">err</span> <span class="p">=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
-		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
-
-		<span class="nf">Eventually</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-			<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;/repos/test-owner/%s&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">),</span> <span class="s">&#34;DELETE&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
-			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
-			<span class="nf">Expect</span><span class="p">(</span><span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">204</span><span class="p">))</span>
-		<span class="p">},</span> <span class="mi">10</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Succeed</span><span class="p">())</span>
-	<span class="p">})</span>
-<span class="p">})</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nf">Context</span><span class="p">(</span><span class="s">&#34;When GithubRepository resource deleted&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">githubRepository</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">namespace</span> <span class="p">=</span> <span class="s">&#34;default&#34;</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">name</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;existing-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">It</span><span class="p">(</span><span class="s">&#34;should delete github repository using github API&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">githubRepository</span> <span class="p">=</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">ObjectMeta</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">},</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Spec</span><span class="p">:</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepositorySpec</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Owner</span><span class="p">:</span>       <span class="s">&#34;test-owner&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Repo</span><span class="p">:</span>        <span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Description</span><span class="p">:</span> <span class="s">&#34;initial description&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nf">Eventually</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">var</span> <span class="nx">resource</span> <span class="nx">pnguyeniov1</span><span class="p">.</span><span class="nx">GithubRepository</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">types</span><span class="p">.</span><span class="nx">NamespacedName</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Namespace</span><span class="p">:</span> <span class="nx">namespace</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Name</span><span class="p">:</span>      <span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">},</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">Expect</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">Successful</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">BeTrue</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span> <span class="mi">10</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Succeed</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span> <span class="p">=</span> <span class="nx">k8sClient</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">githubRepository</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nf">Eventually</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;/repos/test-owner/%s&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">),</span> <span class="s">&#34;DELETE&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">Expect</span><span class="p">(</span><span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">204</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span> <span class="mi">10</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Succeed</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>This time we just delete the <code>GithubRepository</code> custom resouce and expect a DELETE request is recorded in smocker</p>
-
+</div><p>This time we just delete the <code>GithubRepository</code> custom resouce and expect a DELETE request is recorded in smocker</p>
 <h2 id="implement-deletion">Implement deletion&nbsp;<a class="anchor" href="#implement-deletion"><i class="small linkify icon"></i></a> </h2>
-
 <p>Back to <code>githubapi</code> test, we need to add tests for a new function <code>DeleteRepository()</code>. Start with happy path test:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -967,26 +941,26 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;call github api to delete when repository exists&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
-	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
-	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;valid-token&#34;</span>
-	<span class="nx">repoName</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;existing-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
-	<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
-
-	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">DeleteRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
-
-	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;/repos/test-owner/%s&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">),</span> <span class="s">&#34;DELETE&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
-	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="nx">require</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNoContent</span><span class="p">,</span> <span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">)</span>
-<span class="p">})</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;call github api to delete when repository exists&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;valid-token&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">repoName</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;existing-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">DeleteRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">history</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;/repos/test-owner/%s&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">),</span> <span class="s">&#34;DELETE&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNoContent</span><span class="p">,</span> <span class="nx">history</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Status</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>Add mock definition to respond to DELETE request and simplest code to pass the test:</p>
+</div><p>Add mock definition to respond to DELETE request and simplest code to pass the test:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -999,23 +973,23 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">api</span><span class="p">)</span> <span class="nf">DeleteRepository</span><span class="p">(</span><span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-	<span class="nx">ts</span> <span class="o">:=</span> <span class="nx">oauth2</span><span class="p">.</span><span class="nf">StaticTokenSource</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">oauth2</span><span class="p">.</span><span class="nx">Token</span><span class="p">{</span><span class="nx">AccessToken</span><span class="p">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">token</span><span class="p">})</span>
-	<span class="nx">oauthClient</span> <span class="o">:=</span> <span class="nx">oauth2</span><span class="p">.</span><span class="nf">NewClient</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">ts</span><span class="p">)</span>
-	<span class="nx">client</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">github</span><span class="p">.</span><span class="nf">NewEnterpriseClient</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">oauthClient</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create github client: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="p">}</span>
-
-	<span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">)</span>
-	<span class="k">return</span> <span class="kc">nil</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">api</span><span class="p">)</span> <span class="nf">DeleteRepository</span><span class="p">(</span><span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ts</span> <span class="o">:=</span> <span class="nx">oauth2</span><span class="p">.</span><span class="nf">StaticTokenSource</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">oauth2</span><span class="p">.</span><span class="nx">Token</span><span class="p">{</span><span class="nx">AccessToken</span><span class="p">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">token</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">oauthClient</span> <span class="o">:=</span> <span class="nx">oauth2</span><span class="p">.</span><span class="nf">NewClient</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">ts</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">client</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">github</span><span class="p">.</span><span class="nf">NewEnterpriseClient</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">oauthClient</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create github client: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>Now add test to make sure it returns error correctly when something&rsquo;s wrong:</p>
+</div><p>Now add test to make sure it returns error correctly when something&rsquo;s wrong:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1029,24 +1003,24 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;return error when failed to delete repository&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
-	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
-	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
-	<span class="nx">repoName</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;existing-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
-	<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
-
-	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">DeleteRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
-
-	<span class="nx">require</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="nx">require</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(),</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;failed to delete repository %s&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">))</span>
-<span class="p">})</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;return error when failed to delete repository&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">repoName</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;existing-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">DeleteRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(),</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;failed to delete repository %s&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>Add smocker mock definition and update code to return error if any:</p>
+</div><p>Add smocker mock definition and update code to return error if any:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -1055,19 +1029,19 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// ...
-</span><span class="c1"></span><span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">)</span>
-<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-	<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to delete repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="k">return</span> <span class="kc">nil</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to delete repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="kc">nil</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>Last test is to make sure we don&rsquo;t call delete if repo not exists in github:</p>
+</div><p>Last test is to make sure we don&rsquo;t call delete if repo not exists in github:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1083,26 +1057,26 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;not call github api to delete when repository not exists&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
-	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
-	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;valid-token&#34;</span>
-	<span class="nx">repoName</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;delete-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
-	<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
-
-	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">DeleteRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
-
-	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;/repos/test-owner/%s&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">),</span> <span class="s">&#34;DELETE&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
-	<span class="nx">require</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="nx">require</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(),</span> <span class="s">&#34;no smocker history matching&#34;</span><span class="p">)</span>
-<span class="p">})</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;not call github api to delete when repository not exists&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">baseUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">uploadUrl</span> <span class="o">:=</span> <span class="s">&#34;http://localhost:8088&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">token</span> <span class="o">:=</span> <span class="s">&#34;valid-token&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">repoName</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;delete-repo-%d&#34;</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">IntnRange</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">api</span> <span class="o">:=</span> <span class="nf">New</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">DeleteRepository</span><span class="p">(</span><span class="s">&#34;test-owner&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">NoError</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">smocker</span><span class="p">.</span><span class="nf">RequestByPath</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;/repos/test-owner/%s&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">),</span> <span class="s">&#34;DELETE&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">require</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(),</span> <span class="s">&#34;no smocker history matching&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>Update code to check whether repo exists:</p>
+</div><p>Update code to check whether repo exists:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1114,22 +1088,22 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// ...
-</span><span class="c1"></span><span class="nx">_</span><span class="p">,</span> <span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">)</span>
-<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">StatusCode</span> <span class="o">!=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span> <span class="p">{</span>
-	<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to get repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="k">if</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">StatusCode</span> <span class="o">==</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span> <span class="p">{</span>
-	<span class="k">return</span> <span class="kc">nil</span>
-<span class="p">}</span>
-<span class="o">//</span> <span class="o">...</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">_</span><span class="p">,</span> <span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">StatusCode</span> <span class="o">!=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to get repository %s: error: %v&#34;</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">StatusCode</span> <span class="o">==</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>Before we move on, let&rsquo;s do some refactoring and clean up in <code>githubapi</code> package. Parameters like <code>baseUrl</code>, <code>uploadUrl</code> are only needed when creating github client, so we can move it to <code>New()</code> function:</p>
+</div><p>Before we move on, let&rsquo;s do some refactoring and clean up in <code>githubapi</code> package. Parameters like <code>baseUrl</code>, <code>uploadUrl</code> are only needed when creating github client, so we can move it to <code>New()</code> function:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1142,38 +1116,32 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">New</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">api</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">client</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">newGithubClient</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create github client: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="p">}</span>
-
-	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">api</span><span class="p">{</span>
-		<span class="nx">ctx</span><span class="p">:</span>    <span class="nx">ctx</span><span class="p">,</span>
-		<span class="nx">client</span><span class="p">:</span> <span class="nx">client</span><span class="p">,</span>
-	<span class="p">},</span> <span class="kc">nil</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">New</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">api</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">client</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">newGithubClient</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">baseUrl</span><span class="p">,</span> <span class="nx">uploadUrl</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create github client: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">api</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ctx</span><span class="p">:</span>    <span class="nx">ctx</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">client</span><span class="p">:</span> <span class="nx">client</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">},</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>that&rsquo;s a breaking change since the function returns additional error now. Thankfully it&rsquo;s simple to fix</p>
-
+</div><p>that&rsquo;s a breaking change since the function returns additional error now. Thankfully it&rsquo;s simple to fix</p>
 <p>next change is to move all hardcoded smocker url <code>http://localhost:8088</code> in <code>api_test.go</code> to a const in the test. It can be updated to take the value from environment variable later.</p>
-
 <p>We are done with <code>githubapi</code> package change. The remaining is to use it in the controller: when <code>GithubRepository</code> custom resource is deleted, controller should call <code>githubapi.DeleteRepository()</code> to delete given repository</p>
-
 <h2 id="add-finalizer-to-controller">Add finalizer to controller&nbsp;<a class="anchor" href="#add-finalizer-to-controller"><i class="small linkify icon"></i></a> </h2>
-
 <p>Kubernetes and operators use finalizer to implement deletion logic. Further details can be found in:</p>
-
 <ul>
 <li><a href="https://kubernetes.io/blog/2021/05/14/using-finalizers-to-control-deletion/">https://kubernetes.io/blog/2021/05/14/using-finalizers-to-control-deletion/</a></li>
 <li><a href="https://book.kubebuilder.io/reference/using-finalizers.html">https://book.kubebuilder.io/reference/using-finalizers.html</a></li>
 </ul>
-
 <p>The kubebuilder book even gives us a template/pattern to follow, so it&rsquo;s straightforward in our case:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1213,50 +1181,48 @@ var bodyBgSwitchIndex = 0;
 </span><span class="lnt">38
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// githubrepository_controller.go
-</span><span class="c1">// ...
-</span><span class="c1"></span><span class="k">if</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">.</span><span class="nx">DeletionTimestamp</span><span class="p">.</span><span class="nf">IsZero</span><span class="p">()</span> <span class="p">{</span>
-	<span class="k">if</span> <span class="p">!</span><span class="nx">controllerutil</span><span class="p">.</span><span class="nf">ContainsFinalizer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">FinalizerName</span><span class="p">)</span> <span class="p">{</span>
-		<span class="c1">// setup finalizer
-</span><span class="c1"></span>		<span class="nx">controllerutil</span><span class="p">.</span><span class="nf">AddFinalizer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">FinalizerName</span><span class="p">)</span>
-		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;unable to add finalizer: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateOrUpdateRepository</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Owner</span><span class="p">,</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Repo</span><span class="p">,</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Description</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">err</span>
-	<span class="p">}</span>
-
-	<span class="nx">resource</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">Successful</span> <span class="p">=</span> <span class="kc">true</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Status</span><span class="p">().</span><span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;unable to update status of GithubRepository resource: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="p">}</span>
-
-	<span class="nx">logger</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;repository created/updated&#34;</span><span class="p">)</span>
-<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-	<span class="c1">// deletion timestamp is set, resource is being deleted
-</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">controllerutil</span><span class="p">.</span><span class="nf">ContainsFinalizer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">FinalizerName</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">DeleteRepository</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Owner</span><span class="p">,</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Repo</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">err</span>
-		<span class="p">}</span>
-
-		<span class="c1">// done finalization logic, remove finalizer
-</span><span class="c1"></span>		<span class="nx">controllerutil</span><span class="p">.</span><span class="nf">RemoveFinalizer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">FinalizerName</span><span class="p">)</span>
-		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;unable to remove finalizer: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-		<span class="p">}</span>
-
-		<span class="nx">logger</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;repository deleted&#34;</span><span class="p">)</span>
-	<span class="p">}</span>
-<span class="p">}</span>
-<span class="o">//</span> <span class="o">...</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// githubrepository_controller.go
+</span></span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">.</span><span class="nx">DeletionTimestamp</span><span class="p">.</span><span class="nf">IsZero</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">!</span><span class="nx">controllerutil</span><span class="p">.</span><span class="nf">ContainsFinalizer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">FinalizerName</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// setup finalizer
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">controllerutil</span><span class="p">.</span><span class="nf">AddFinalizer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">FinalizerName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;unable to add finalizer: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateOrUpdateRepository</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Owner</span><span class="p">,</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Repo</span><span class="p">,</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Description</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">resource</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">Successful</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Status</span><span class="p">().</span><span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;unable to update status of GithubRepository resource: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">logger</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;repository created/updated&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// deletion timestamp is set, resource is being deleted
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">controllerutil</span><span class="p">.</span><span class="nf">ContainsFinalizer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">FinalizerName</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">DeleteRepository</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Owner</span><span class="p">,</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Repo</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// done finalization logic, remove finalizer
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">controllerutil</span><span class="p">.</span><span class="nf">RemoveFinalizer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">FinalizerName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">resource</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">{},</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;unable to remove finalizer: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nx">logger</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;repository deleted&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span></code></pre></td></tr></table>
 </div>
-</div>
-<p>With that we finish our implementation and pass the end to end test</p>
-
+</div><p>With that we finish our implementation and pass the end to end test</p>
 <h1 id="test-it-out">Test it out&nbsp;<a class="anchor" href="#test-it-out"><i class="small linkify icon"></i></a> </h1>
-
 <ul>
 <li>Create github personal access token with <code>repo</code> and <code>delete_repo</code> scope</li>
 <li>Export github token as <code>GITHUB_API_TOKEN</code> environment variable in your terminal</li>
@@ -1272,7 +1238,7 @@ var bodyBgSwitchIndex = 0;
 <li>Verify that the repository is deleted in github</li>
 </ul>
 
-				</article>				
+				</article>
 			</section>
 
 			
