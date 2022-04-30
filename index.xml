@@ -14,7 +14,7 @@
       
       <guid>https://pnguyen.io/posts/outside-in-tdd-go-api/</guid>
       <description>Introduction I always find it challenging to find a non-hello-world walkthrough of TDD on the internet. Recently when I had a chance to implement a complete feature using outside-in TDD in my current project, I thought it&amp;rsquo;s a good time to document the more realistic process.
-In this post, you&amp;rsquo;ll find find a structured approach to test drive an API, from its external endpoints down to its boundary/external dependencies. From this, the advantage of doing TDD and its role in application design get to shine.</description>
+In this post, you&amp;rsquo;ll find find a structured approach to test drive an API, from its external endpoints down to its boundary/external dependencies. I hope this can be beneficial for people who just get started with TDD and have difficulties jumping from introductory articles/tutorials to applying it in their day-to-day work.</description>
     </item>
     
     <item>
