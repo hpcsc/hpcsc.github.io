@@ -30,8 +30,11 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
-      - name: Install Hugo CLI
-        run: make install_hugo
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
@@ -40,7 +43,7 @@ jobs:
           # For maximum backward compatibility with Hugo modules
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
-        run: make build
+        run: task build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
