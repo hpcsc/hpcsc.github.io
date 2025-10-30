@@ -22,8 +22,6 @@ defaults:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      HUGO_VERSION: 0.124.1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,7 +33,11 @@ jobs:
         with:
           version: 3.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Setup Pages
+      - name: Install mise
+        uses: jdx/mise-action@v3
+        with:
+          github_token: ${{ secrets.github_token }}
+      - name: setup pages
         id: pages
         uses: actions/configure-pages@v5
       - name: Build with Hugo

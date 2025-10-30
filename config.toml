@@ -3,9 +3,10 @@ title = "David Nguyen's Personal Blog"
 theme = "dream-plus"
 
 
-paginate = 10
+[pagination]
+	pagerSize  = 10
+
 enableRobotsTXT = true
-disqusShortname = "pnguyen"
 
 #Skip building these files
 ignoreFiles = ["content/cards/\\.*", "content/404.md"]
@@ -26,6 +27,8 @@ enableEmoji=true
 	contentType = "posts"
 
 	siteStartYear = 2018
+
+	disqusShortname = "pnguyen"
 
 	[params.author]
 		name = "David Nguyen"
@@ -54,10 +57,10 @@ enableEmoji=true
 	[params.categories]
 		enabled = true
 
-[social]
-	github = "hpcsc"
-	linkedin = "nguyenhungphuong"
-	codeproject = "hpcsc"
+	[params.social]
+		github = "hpcsc"
+		linkedin = "nguyenhungphuong"
+		codeproject = "hpcsc"
 
 [markup]
 	[markup.goldmark]

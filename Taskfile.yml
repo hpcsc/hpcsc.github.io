@@ -1,19 +1,6 @@
 version: '3'
 
 tasks:
-  install-hugo:
-    cmds:
-      - mkdir -p ./bin
-      - |
-        curl --fail -L https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_${BINARY_OS}-64bit.tar.gz | \
-          tar --overwrite -C ./bin -xvzf - hugo
-    generates:
-      - ./bin/hugo
-    env:
-      HUGO_VERSION: '0.124.1'
-      BINARY_OS:
-        sh: uname | sed 's/Darwin/macOS/'
-
   clean:
     cmds:
       - rm -rf public resources
@@ -28,17 +15,16 @@ tasks:
 
   gen-highlight-css:
     cmds:
-      - ./bin/hugo gen chromastyles --style=dracula | tee ./static/css/highlight.css
+      - hugo gen chromastyles --style=dracula | tee ./static/css/highlight.css
 
   build:
     deps:
       - clean
       - theme:restore
-      - install-hugo
     cmds:
       - task: gen-highlight-css
-      - ./bin/hugo --config config.toml,config.prod.toml
+      - hugo --config config.toml,config.prod.toml
 
   start:
     cmds:
-      - ./bin/hugo --config config.toml,config.dev.toml server
+      - hugo --config config.toml,config.dev.toml server
