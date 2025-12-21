@@ -1,15 +1,14 @@
 languageCode = "en-us"
 title = "David Nguyen's Personal Blog"
-theme = "dream-plus"
-
+theme = "gradient-flow"
 
 [pagination]
-	pagerSize  = 10
+    pagerSize = 10
 
 enableRobotsTXT = true
 
 #Skip building these files
-ignoreFiles = ["content/cards/\\.*", "content/404.md"]
+ignoreFiles = ["content/404.md"]
 
 #Syntax highlighting
 pygmentsCodeFences = true
@@ -17,52 +16,47 @@ pygmentsUseClasses = true
 pygmentsOptions = "linenos=table"
 
 #Enable Hugo Emoji Conversion
-enableEmoji=true
+enableEmoji = true
 
 [params]
-	#Favicon for site
-	favicon = "images/favicon.ico"
+    # Favicon for site
+    favicon = "images/favicon.ico"
+    
+    # Disqus shortname for comments
+    disqusShortname = "pnguyen"
+    
+    # Theme colors (CSS variables)
+    primaryColor = "#58a6ff"        # Accent color for links, highlights
+    secondaryColor = "#13547A"       # Gradient start color  
+    tertiaryColor = "#70BEBC"        # Gradient end color
+    textColor = "#ffffff"           # Main text color
+    
+    # Typography
+    fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    codeFont = "'SF Mono', Monaco, 'Cascadia Code', monospace"
+    
+    # Background blur for glassmorphism effect
+    backgroundBlur = "rgba(19, 84, 122, 0.3)"
+    
+    [params.author]
+        name = "David Nguyen"
+        description = "Just a regular developer who's passionate about crafting high quality software, a martial arts practitioner, a proud dad of two sons."
+        avatar = "https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062?s=150"
+    
+    # Social media links
+    [params.social]
+        github = "hpcsc"
+        linkedin = "davidphuongnguyen"
+    
+    # Custom CSS files (optional)
+    # customCSS = ["/css/highlight.css", "/css/list.css"]
 
-	#Set whether you're hosting "cards" or "post"
-	contentType = "posts"
-
-	siteStartYear = 2018
-
-	disqusShortname = "pnguyen"
-
-	[params.author]
-		name = "David Nguyen"
-		description = "Just a regular developer who's passionate about crafting high quality software, a martial arts practitioner, a proud dad of two sons."
-		avatar = "https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062?s=150"
-		motto = "Developer & Karateka"
-
-	[params.features]
-		#Enable Twitter Emoji
-		twitterEmoji = true
-		#Enable Table of Contents
-		toc = true
-		#Enable share card
-		shareCard = true
-		#Use custom CSS
-		customCSS = ["/css/highlight.css"]
-
-	[params.background]
-		bgColor = "linear-gradient(to bottom, #13547A, #70BEBC)"
-
-	#Tags settings
-	[params.tags]
-		enabled = true
-
-	#Categories settings
-	[params.categories]
-		enabled = true
-
-	[params.social]
-		github = "hpcsc"
-		linkedin = "nguyenhungphuong"
-		codeproject = "hpcsc"
+# Taxonomies configuration
+[taxonomies]
+    category = "categories"
+    tag = "tags"
 
 [markup]
-	[markup.goldmark]
-		[markup.goldmark.renderer]
-			unsafe = true
+    [markup.goldmark]
+        [markup.goldmark.renderer]
+            unsafe = true

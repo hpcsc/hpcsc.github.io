@@ -1,3 +1,4 @@
-[submodule "themes/dream-plus"]
-	path = themes/dream-plus
-	url = https://github.com/hpcsc/dream-plus
+
+[submodule "themes/gradient-flow"]
+	path = themes/gradient-flow
+	url = git@github.com:hpcsc/gradient-flow-theme.git
