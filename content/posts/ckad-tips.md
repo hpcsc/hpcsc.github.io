@@ -3,6 +3,7 @@ title: "A few tips to prepare for your CKAD exam"
 date: 2019-07-15
 draft: false
 cover: /images/card-default-cover.png
+description: "My tips to pass CKAD exam in the 1st attempt."
 tags:
 - ckad
 - kubernetes
