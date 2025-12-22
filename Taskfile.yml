@@ -23,8 +23,8 @@ tasks:
       - theme:restore
     cmds:
       - task: gen-highlight-css
-      - hugo --config config.toml,config.prod.toml
+      - hugo --config config.yaml,config.prod.yaml
 
   start:
     cmds:
-      - hugo --config config.toml,config.dev.toml server
+      - hugo --config config.yaml,config.dev.yaml server

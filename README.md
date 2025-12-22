@@ -5,5 +5,5 @@ This is repository for my personal blog at [https://pnguyen.au](https://pnguyen.
 ### To start hugo server locally
 
 ```
-make start
+task start
 ```
