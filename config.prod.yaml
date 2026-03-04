@@ -1,3 +1,5 @@
 baseURL: "https://pnguyen.au"
 
-googleAnalytics: "G-54FEYHJ6RL"
+services:
+  googleAnalytics:
+    id: "G-54FEYHJ6RL"
