@@ -17,7 +17,7 @@ Currently I'm working on a system that's deployed to Kubernetes and uses Hashico
 
 The system uses a sidecar that's built on top of vault agent to get AWS credentials as below:
 
-![Overview](images/kubernetes-vault.png)
+{{< figure src="images/kubernetes-vault.png" >}}
 
 In local, the application is deployed to minikube in a very similar way (.i.e. including the vault sidecar, aws infrastructures are replaced with either [localstack](https://localstack.cloud/) or [moto](http://docs.getmoto.org/en/latest/)) so that we can catch issues as early as we can. This poses the challenge of how to let vault sidecar work safely with AWS, in particular the part where it gets AWS temporary credentials. We can let everyone work directly with a test AWS account but there are many issues with that like: troublesome setup, slow, maintain/cleanup real infrastructure in AWS.
 
@@ -27,7 +27,7 @@ So we come up with 2 ways to work around this
 
 to replace Vault AWS Secrets Engine. It looks like this:
 
-![KV v1](images/vault-kv1.png)
+{{< figure src="images/vault-kv1.png" >}}
 
 Due to the fact that we can use the same way (`vault read` or `vault write`) to work with different secrets engine, we can kind of trick vault into thinking that a key-value v1 secrets engine mounted at `aws` path is an aws secrets engine. As long as we put the test credentials into this kv v1 secrets engine in the same way that vault expects from an aws secrets engine, vault doesn't care that they are different engines.
 
@@ -56,7 +56,7 @@ Turn out Moto is able to simulate IAM quite well that we can point vault aws sec
 
 When using Moto, our setup is even closer to how it works in production:
 
-![Moto](images/vault-moto.png)
+{{< figure src="images/vault-moto.png" >}}
 
 Basically instead of AWS, we just plug in Moto. The local setup to point local vault to Moto is a bit more involved:
 

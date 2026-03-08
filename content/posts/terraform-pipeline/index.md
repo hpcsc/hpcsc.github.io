@@ -46,7 +46,7 @@ Source code for this demonstration (including GoCD YAML pipelines) can be found 
 
 Here's an overview of the pipeline:
 
-![](images/terraform-pipeline.png  "Terraform Pipeline")
+{{< figure src="images/terraform-pipeline.png" >}}
 
 The purpose of this pipeline is to setup 2 environments (Staging and Production) using Terraform. Each environment has 1 EC2 instance, with Nginx installed and displays a custom HTML page.
 
@@ -62,7 +62,7 @@ As seen from the diagram above, the pipeline goes through 4 stages (4 pipelines 
 
 This is how they look in GoCD overview page:
 
-![](images/terraform-gocd-overview.png  "GoCD Overview")
+{{< figure src="images/terraform-gocd-overview.png" >}}
 
 #### PackerCommit Stage
 
@@ -181,7 +181,7 @@ The TerraformCommit pipeline consists of a few tasks:
 
 `terraform-pipeline-config` repository file layout:
 
-![](images/terraform-config-organization.png  "terraform-pipeline-config Organization")
+{{< figure src="images/terraform-config-organization.png" >}}
 
 The files are stored according to the environments that they belong to. Each environment has 2 files:
 
@@ -215,11 +215,11 @@ Then it keeps invoking `curl` to that public IP every 2 seconds, for 60 seconds.
 
 If everything goes smoothly, we will see something like this in the build log for the first time build. It correctly identifies that a new EC2 server is to be created.
 
-![](images/terraform-staging-log.png  "TerraformStaging first build log")
+{{< figure src="images/terraform-staging-log.png" >}}
 
 Browsing to the public IP gives us this result:
 
-![](images/terraform-staging-nginx.png  "TerraformStaging Nginx output")
+{{< figure src="images/terraform-staging-nginx.png" >}}
 
 As we can see, all the tasks in this step is specific to Staging and use only files in `staging` folder.
 
@@ -231,11 +231,11 @@ That should be all. Now we have a complete Terraform pipeline that can deploy an
 
 As the final demonstration of deploying changes in code to Staging and Production, I update the text in `index.html` in `terraform-pipeline-packer` repository to `Triggered by a Code Change` and make a commit. The whole pipeline is triggered again and Terraform correctly identifies that previous server needs to be teared down and a new server needs to be spinned up for the new change:
 
-![](images/terraform-code-change-log.png  "Terraform Code Change output")
+{{< figure src="images/terraform-code-change-log.png" >}}
 
 Visiting the new Public IP gives us this page:
 
-![](images/terraform-updated-staging-nginx.png  "Updated Staging")
+{{< figure src="images/terraform-updated-staging-nginx.png" >}}
 
 ## Summary
 

@@ -77,7 +77,7 @@ operator-sdk create api --group pnguyen.io --version v1 --kind GithubRepository 
 
 Let's go over some of the most important directories/files in the generated project:
 
-![](images/initial-skeleton.png  "Initial skeleton")
+{{< figure src="images/initial-skeleton.png" >}}
 
 - `api/v1/githubrepository_types.go`: contain Go declaration of our custom resource, its spec and status structure. We are going to modify this file next to add additional fields that we need above
 - `controllers/githubrepository_controller.go`: our controller. The most important function here is `Reconcile`, which is called whenever there's any update to the custom resource
@@ -244,7 +244,7 @@ type GithubRepositoryStatus struct {
 
 Now run the test with `make test` and it should fail with below error:
 
-![](images/status-not-updated-error.png  "Status not updated error")
+{{< figure src="images/status-not-updated-error.png" >}}
 
 ## Fix the test
 
@@ -279,7 +279,7 @@ func (r *GithubRepositoryReconciler) Reconcile(ctx context.Context, req ctrl.Req
 The test should fail with 2nd error message:
 
 
-![](images/no-smocker-match-error.png  "No smocker match error")
+{{< figure src="images/no-smocker-match-error.png" >}}
 
 To fix it, we need to invoke Github API to create repository. We will use [Go Github](https://github.com/google/go-github) for that:
 

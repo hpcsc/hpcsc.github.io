@@ -18,7 +18,7 @@ As a developer, I spend a lot of time on command line and since I found [fzf](ht
 
 ### Usage
 
-![](images/fzf-fignore.gif "fignore demo")
+{{< figure src="images/fzf-fignore.gif" >}}
 
 ### Source
 
@@ -35,7 +35,7 @@ curl -s https://api.github.com/repos/github/gitignore/git/trees/master?recursive
 
 ### Usage
 
-![](images/fzf-fnpm.gif "fnpm demo")
+{{< figure src="images/fzf-fnpm.gif" >}}
 
 ### Source
 
@@ -52,7 +52,7 @@ This script looks into current folder `package.json`, extract all the npm script
 
 ### Usage
 
-![](images/fzf-fsb.gif "fsb demo")
+{{< figure src="images/fzf-fsb.gif" >}}
 
 ### Source
 
@@ -74,7 +74,7 @@ This script takes in an optional pattern to search available git branches. If a 
 
 ### Usage
 
-![](images/fzf-zf.gif "zf demo")
+{{< figure src="images/fzf-zf.gif" >}}
 
 ### Source
 
@@ -109,7 +109,7 @@ This alias lists user installed programs in the current emulator/device to unins
 
 #### Usage
 
-![](images/fzf-fkrm.gif "fkrm demo")
+{{< figure src="images/fzf-fkrm.gif" >}}
 
 #### Source
 
@@ -136,7 +136,7 @@ The script takes in resource type (pod, deployment, service, etc) as 1st paramet
 
 #### Usage
 
-![](images/fzf-fkl.gif "fkl demo")
+{{< figure src="images/fzf-fkl.gif" >}}
 
 #### Source
 

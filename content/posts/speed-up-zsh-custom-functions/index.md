@@ -18,7 +18,7 @@ I have been using zsh with Prezto for a few years and have always been conscious
 
 If comparing the startup time of my shell to shell startup time of most other people who I have worked with, my current startup time is not bad:
 
-!["zsh startup time before"](images/zsh-startup-before.png)
+{{< figure src="images/zsh-startup-before.png" >}}
 
 In average, it takes around 0.5s to start.
 
@@ -41,7 +41,7 @@ autoload -Uz ~/.functions/**/*
 
 Here's the resutl after using `autoload`:
 
-![](images/zsh-startup-after.png "zsh startup time after")
+{{< figure src="images/zsh-startup-after.png" >}}
 
 It takes 0.3s now, that's 40% faster than before.
 

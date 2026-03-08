@@ -62,11 +62,11 @@ When judging aggregate size, I find it useful to assess the aggregate cohesion, 
 
 In other words, we would like to see more of this
 
-![cohesive.png](./images/cohesive.png)
+{{< figure src="images/cohesive.png" >}}
 
 not this
 
-![non-cohesive.png](./images/non-cohesive.png)
+{{< figure src="images/non-cohesive.png" >}}
 
 for the latter, we might have 3 different aggregates instead of 1
 

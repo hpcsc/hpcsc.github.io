@@ -28,7 +28,7 @@ In my current project, we use Bamboo from Atlassian as our CI server. We have a 
 
 Bamboo Online Knowledge Base already has a post on setting up this at [https://confluence.atlassian.com/bamkb/configuring-bamboo-to-start-automatically-on-startup-on-mac-os-x-302812729.html](https://confluence.atlassian.com/bamkb/configuring-bamboo-to-start-automatically-on-startup-on-mac-os-x-302812729.html) so the setup is quite straightforward for us. But to make the updating/maintaining of `launchd` configuration easier/repeatable in the future, we created a Bamboo playbook/role just for this purpose. Here's the structure of the Bamboo agent role:
 
-![](images/ansible-bamboo-role-structure.png "Ansible Bamboo Role Structure")
+{{< figure src="images/ansible-bamboo-role-structure.png" >}}
 
 `vars/main.yml` only defines single variable `bamboo_home` which is the location of the Bamboo working directory at the remote machine.
 
@@ -134,7 +134,7 @@ In the beginning, we setup recurring calendar invite and let it run an AppleScri
 
 This is almost the same process like the Bamboo agent job above so we also use Ansible to setup:
 
-![](images/ansible-standup-alert-role-structure.png "Ansible Standup Alert Role Structure")
+{{< figure src="images/ansible-standup-alert-role-structure.png" >}}
 
 The structure is the same with Bamboo agent role. One thing of interest is `play-standup-songs.sh` script:
 

@@ -28,7 +28,7 @@ This post covers the approach that we come up with
 
 What we do is to run a local DNS server (CoreDNS) on the host machine (MacBook) which resolves all DNS requests for specific suffix to either minikube IP (for Kubernetes Ingres) or IP assigned to Istio Ingress Gateway. Below is how it looks like:
 
-![](images/coredns-setup.png  "CoreDNS Setup")
+{{< figure src="images/coredns-setup.png" >}}
 
 ## CoreDNS Setup
 

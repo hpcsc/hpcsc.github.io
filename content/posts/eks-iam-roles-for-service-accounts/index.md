@@ -15,7 +15,7 @@ At my current client, we recently switched from [Kiam](https://github.com/uswitc
 
 Disclaimer: a lot of the things described here are from my own research through different sources and may not be exactly how they are implemented. Feel free to drop me a message if I miss out anything.
 
-![](images/structure.png "Structure")
+{{< figure src="images/structure.png" >}}
 
 The flow is summarised in the diagram above. There are a few components involved in this flow:
 

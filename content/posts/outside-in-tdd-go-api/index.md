@@ -74,7 +74,7 @@ aws configure set aws_secret_access_key "$(echo "${CREDENTIALS}" | jq -r '.Acces
 
 Since this script is run in moto container, golang container that we use to run tests will not have access to the new user credentials without explicit file sharing. The script above uses `aws configure` to create AWS credentials file in the location set by `AWS_SHARED_CREDENTIALS_FILE` variable (`/secrets/test-user-credentials`). This file will be mounted to golang container and made available to AWS SDK for Go through variable `AWS_SHARED_CREDENTIALS_FILE`
 
-![](images/initial-setup.png  "Initial setup")
+{{< figure src="images/initial-setup.png" >}}
 
 ## End to end/API test
 
@@ -128,7 +128,7 @@ There are a few helper functions used in the test like `s3ClientToMockAws`, `new
 
 Visually, this is how it looks like at the moment:
 
-![](images/e2e-test.png  "E2E Test")
+{{< figure src="images/e2e-test.png" >}}
 
 Note that at this point, API is like a black box to us. The only thing we know is how the endpoint is supposed to look like
 
@@ -325,7 +325,7 @@ func (h *reportsHandler) Single(w http.ResponseWriter, r *http.Request) {
 
 I'm not going to bother you with the remaining tests. Once done, the tests should look like this
 
-![](images/single-endpoint-tests.png  "Single endpoint tests")
+{{< figure src="images/single-endpoint-tests.png" >}}
 
 ### Cumulative endpoint
 
@@ -333,7 +333,7 @@ Cumulative endpoint and its tests are almost duplicate of single endpoint/tests.
 
 with handler and handler tests done, our mental model should look like this:
 
-![](images/after-handler-tests.png  "After handler tests")
+{{< figure src="images/after-handler-tests.png" >}}
 
 e2e test is still failing. Handler and handler tests work with public interface and mock implementation from generator package. The actual generator logic is not yet implemented and is still a black box to us.
 
@@ -457,11 +457,11 @@ With dependency and behavior well defined, finishing up the remaining tests and 
 
 Below is the list of tests for generator that I have at the end. Full code is available in github
 
-![](images/generator-tests.png  "Generator Tests")
+{{< figure src="images/generator-tests.png" >}}
 
 Our current state looks like this:
 
-![](images/after-generator-tests.png  "After Generator Tests")
+{{< figure src="images/after-generator-tests.png" >}}
 
 ## Storer
 
@@ -584,11 +584,11 @@ This function looks complicated, but it only does 2 things:
 
 The other 2 functions (`RetrieveAggregated`, `StoreAggregated`) from S3 storer implementation are done in the same way.
 
-![](images/storer-tests.png  "Storer Tests")
+{{< figure src="images/storer-tests.png" >}}
 
 The system state now looks like:
 
-![](images/after-storer-tests.png  "After Storer Tests")
+{{< figure src="images/after-storer-tests.png" >}}
 
 Would the e2e test pass now if we run it again? Not yet. We already have all the components implemented and tested independently, now what's left is to wire up the handler and its dependencies in the main function using chi router:
 

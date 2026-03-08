@@ -21,7 +21,7 @@ As a software developer at ThoughtWorks, I had always wanted to try out GoCD (an
 
 First, I created a docker-compose file ([https://github.com/hpcsc/gocd](https://github.com/hpcsc/gocd)) to easily spin up a GoCD server, 3 agents, 1 local Git repository (Gogs) for demonstration purpose.
 
-![GoCD Setup Local](images/gocd-setup-local.png  "GoCD Setup Local")
+{{< figure src="images/gocd-setup-local.png" >}}
 
 3 agents are created from GoCD `gocd-agent-docker-dind` image so docker is available within the agents
 
@@ -54,7 +54,7 @@ If you want to try out the following sample pipelines in your local machine, fol
 
 Below is overview of the Value Stream Map that I created for demonstration. This Value Stream Map is designed to be as close as possible to the current build pipeline used at my client.
 
-![](images/gocd-sample-pipeline.png  "GoCD Sample Pipeline")
+{{< figure src="images/gocd-sample-pipeline.png" >}}
 
 It contains 3 Git materials:
 
@@ -64,7 +64,7 @@ It contains 3 Git materials:
 
 Each repository has similar structure:
 
-![](images/backend-repo-organization.png  "Backend Repository Organization")
+{{< figure src="images/backend-repo-organization.png" >}}
 
 - `gocd-pipelines`: GoCD pipeline as code (to be explained later)
 - `scripts`: build scripts, to be invoked by tasks in GoCD pipelines. These build scripts are organized into `commit` and `acceptance` stages as in `Continuous Delivery` book. Each script does nothing but just `echo` some message and `sleep` for several seconds, .e.g. this is `build.sh`
@@ -85,7 +85,7 @@ Once the commit phase is done, deployment to dev environment is triggered. For m
 
 When all dev deployments are done, `SystemTests` pipeline is triggered. In a real world pipeline, this will pull system tests tool and scripts from `system-tests` repo, start backend, start mobile and run system tests against mobile which in turn hit backend server. The last stage of this pipeline is `Approve` stage, which can only be triggered manually. This is to simulate a real scenario where the decision to deploy to UAT is decided by some business user.
 
-![](images/system-tests-pipeline.png  "System Tests Pipeline")
+{{< figure src="images/system-tests-pipeline.png" >}}
 
 Once pipeline is approved, it will run 3 pipelines in parallel: `MobileUATDeploymentAndroid`, `MobileUATDeploymentIOS` and `MobileUATDeploymentBackend`. Note that these pipelines use the same scripts as in Dev deployment pipelines, only differ by parameters passing to the scripts.
 
@@ -95,7 +95,7 @@ Now I'm going to go through how pipeline as code is setup in GoCD. This is one o
 
 In this sample, I'm going to define the backend commit pipeline using YAML:
 
-![](images/sample-pipeline-as-code.png  "Sample Pipeline as Code")
+{{< figure src="images/sample-pipeline-as-code.png" >}}
 
 I have highlighted in the screenshot the relevant places where pipeline, stage, job, and task are defined. It should be straightforward to read the remaining definition of the pipeline.
 
@@ -121,12 +121,12 @@ GoCD YAML plugin will watch these repositories and find all files with `.gocd.ya
 
 That's all for the technical part. After playing with GoCD for a while, I find GoCD quite pleasant to use. Its UI and interaction flow are carefully considered to maximize user experience. One example of that is when clicking in a pipeline, I'm presented with a history of that pipeline instances, with stages that it contains and ability to rerun any stage in a single click:
 
-![](images/pipeline-history.png  "GoCD Pipeline History")
+{{< figure src="images/pipeline-history.png" >}}
 
 For me, this is a big plus compared to Bamboo, where you need to click into individual build to see which stage fails, and you can only re-run failed stage or re-run the whole build, not re-run any stage like GoCD.
 
 Another nice feature of GoCD is Value Stream Map, which is the full end-to-end view across pipelines. It allows you to quickly see upstream dependencies, downstream pipelines for a pipeline instance.
 
-![](images/value-stream-map.png  "GoCD Value Stream Map")
+{{< figure src="images/value-stream-map.png" >}}
 
 In summary, GoCD is a powerful tool with rich feature set built in that allows you to easily model any complicated pipeline. I highly recommend it for projects of any size.

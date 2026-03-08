@@ -23,13 +23,13 @@ This post is about how we model external interactions (especially outbound inter
 First, let's categorise a few different interactions between a system and its external dependencies:
 
 - `Inbound event notification`: e.g. Stripe calls a webhook in our system to inform us about a payment status. This is usually handled by a translator that translates external requests into internal events
-![inbound-event-notification.png](./images/inbound-event-notification.png)
+{{< figure src="images/inbound-event-notification.png" >}}
 - `Inbound command`: e.g. users click on a button in a web page to cancel their payment plan. Our system receives the request and issues a command to cancel the payment plan, which may lead to an event. Note the difference between this and the inbound event notification above:
     - when the system receives the inbound event notification, the external event already happened in the external system and we are not able to reject it. The external system just tells us about it, not asking our opinion
     - when the system receives the inbound command, it needs to ensure all the invariances are satisfied when processing the command. It can reject the command when an invariance is broken
-![inbound-command.png](./images/inbound-command.png)
+{{< figure src="images/inbound-command.png" >}}
 - `Outbound query`: automations/processors (terminologies from event modelling) make queries to external systems to retrieve some information before issuing commands. An example is as below where the weather processor makes a call to the external system (weather forecast) before issuing a command to add the forecast to the appointments (this example is from [event modelling cheat sheet](https://eventmodeling.org/posts/event-modeling-cheatsheet/cheatsheet.jpg))
-![outbound-query.png](./images/outbound-query.png)
+{{< figure src="images/outbound-query.png" >}}
 - `Outbound command`: causes side effect in external systems, e.g. sending emails with SendGrid, calling Stripe API. This is my main interest and what this blog post focusing on. In this blog post, I'll use sending emails as primary examples for external outbound interactions
 
 ## Should we model an external outbound interaction?
@@ -46,7 +46,7 @@ Having said that, I do believe that this is case by case and not all the situati
 
 In the system that I'm working on, we usually use events like `EmailInitiated` to trigger a reactor (an automation/processor that performs operations with side-effect) like below:
 
-![trigger-with-initiated.png](./images/trigger-with-initiated.png)
+{{< figure src="images/trigger-with-initiated.png" >}}
 
 In my opinion, this approach is not ideal because:
 
@@ -84,7 +84,7 @@ If we need to use `...Initiated` events to trigger external interactions, we pro
 
 ## How an ideal external interaction looks like (to me)?
 
-![ideal-external-interaction.png](./images/ideal-external-interaction.png)
+{{< figure src="images/ideal-external-interaction.png" >}}
 
 1. A reactor is triggered by a business event
 2. (Optional) It emits `EmailSendingAttempted`
