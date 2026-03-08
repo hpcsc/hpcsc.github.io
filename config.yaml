@@ -38,6 +38,13 @@ params:
     description: "Just a regular developer who's passionate about crafting high quality software, a martial arts practitioner, a proud dad of two sons."
     avatar: "https://www.gravatar.com/avatar/624eb530503fe6117f4b4b5ad3acf062?s=150"
 
+  # Mermaid diagram colors (optional)
+  mermaid:
+    primaryColor: "#00e5ff"
+    lineColor: "#79c0ff"
+    background: "#0d1117"
+    textColor: "#f0f6fc"
+
   # Social media links
   social:
     github: "hpcsc"
