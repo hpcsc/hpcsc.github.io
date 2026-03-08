@@ -1,6 +1,6 @@
 ---
 title: "Using CUE to Manage Build Pipelines at Scale"
-description: "How to version events in event-sourced systems where events must remain compatible forever."
+description: "How to use CUE configuration language to manage build pipelines at scale and avoid YAML drift."
 date: 2026-03-08
 draft: false
 cover: /images/card-default-cover.png
